@@ -5,12 +5,13 @@ Swift that can also be used from Objective-C. It can serve static or dynamic con
 when used from the command line and includes "processors" for proxying http and https
 requests on your local host for debugging.
 
-Dynamic content can be coded entirely in Swift and can be used inside an iOS or OSX app
-allowing you to write "lag free" a portable web interface connecting to the embedded server
-on the local device rather than a remote server. This is shown shown in the two examples 
-included in the release. You could term this "Server Client" architecture.
+Dynamic content can be coded entirely in Swift and one interesting use case is that it
+can be used inside an iOS or OS X app. This allows you to write a "lag free" portable web 
+interface connecting to the embedded server on the local device rather than a remote server. 
+This is shown shown in the two examples included in the release. You could term this 
+"Server Client" architecture.
 
-![Icon](http://injectionforxcode.johnholdsworth.com/yaws.png)
+![Icon](http://injectionforxcode.johnholdsworth.com/yaws2.png)
 
 Incorporating the YawsWebServer in your web server or application is simple. The initialiser
 takes a port number and a list of "processors" (applications or document processors)
@@ -51,7 +52,8 @@ A processor runs in it's own thread and is an instance of subclass of "YawsProce
 
 Other than this, once a YawsProcessor has recognised a request it can process it
 in any manner it chooses returning .ProcessedAndReusable if the connection can be
-reused (as can be done with HTTP/1.1)
+reused (as can be done with HTTP/1.1) This requires a "Content-Length" HTP header
+value to have been set.
 
 A user written subclass of one particular subclass of YawsProcessor, "YawsApplicationProcessor"
 receives the  queryString and any Cookies preprocessed is used for dynamic content.
@@ -67,7 +69,7 @@ written implementation of the following function.
 ```
 
 Note: that while the "YawsHTTPConnection" representing the request is transient,
-the proceseor is persistent for the life of the server and can implement sessions
+the procesor is persistent for the life of the server and can implement sessions
 or state as it chooses.
 
 A further subclass of YawsApplicationProcessor, "YawsHTMLAppProcessor" provides
@@ -100,8 +102,24 @@ A subclass of this, the "MultiHostProcessor" can be used to implement multiple
 sites on one server using the "Host:" http request header. In this case it's
 up to any dynamic content to make sure it runs on the right host.
 
+### Design
+
+YawsWebServer has been implemented using BSD sockets rather than Apple's CFSocket as I wasn't convinced 
+it was any less low level and I didn't want to tangle with run loops. Sticking to socket level and
+threading is also very fast and does not risk the possibility of deadlocks. If you don't share this decision
+the classes YawsWebServer and YawsHTTPConnection where all this code is concentrated can be re-implemented
+without affecting the basic architecture of the server and affecting any of the "processor" code.
+
+Each incoming connection is processed in it's own GCD thread in the queue "YawsThread" until it a 
+processor has been found and any re-use of the connection has been performed. "YawsHTMLAppProcessor"
+borrows it's design from the original Perl CGI module - the grand-daddy of all dynamic web content.
+This is my third, and by far the cleanest Web server I've implemented in various languages and
+combines a lot of experience but thankfully none of the code from the "PSP" and "jhttpd" servers.
+
 As ever, announcements of major commits to the repo will be made on twitter 
-[@Injection4Xcode](https://twitter.com/#!/@Injection4Xcode). Enjoy!
+[@Injection4Xcode](https://twitter.com/#!/@Injection4Xcode).
+
+Enjoy!
 
 ### MIT License
 
