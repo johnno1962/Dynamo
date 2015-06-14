@@ -2,14 +2,17 @@
 
 Yaws is a minimal (?? 1750 lines??) single file implementation of a Web server written
 Swift that can also be used from Objective-C. It can serve static or dynamic content
-and includes "processors" for proxying http and https requests on your local host for 
-debugging.
+when used from the command line and includes "processors" for proxying http and https
+requests on your local host for debugging.
 
-Dynamic content can be coded entirely in Swift and can be used inside an OSX or iOS app
-to provide a portable web interface connecting to the embedded server on the local device
-rather than a remote server as shown in the two examples included in the release.
+Dynamic content can be coded entirely in Swift and can be used inside an iOS or OSX app
+allowing you to write "lag free" a portable web interface connecting to the embedded server
+on the local device rather than a remote server. This is shown shown in the two examples 
+included in the release. You could term this "Server Client" architecture.
 
-Incorporating the YawsWebServer in your application is simple. The initialiser
+![Icon](http://injectionforxcode.johnholdsworth.com/yaws.png)
+
+Incorporating the YawsWebServer in your web server or application is simple. The initialiser
 takes a port number and a list of "processors" (applications or document processors)
 that will each be presented the incoming requests in the order specified and have the
 option of processing them. The basic code pattern for initialisation in your app delegate is:
@@ -27,7 +30,7 @@ option of processing them. The basic code pattern for initialisation in your app
     webView.mainFrame.loadRequest( NSURLRequest( URL: NSURL( string: "http://localhost:\(serverPort)" )! ) )
 ```
 
-A processor runs in it's own thread and is am instance of subclass of "YawsProcessor" that returns one of three values:
+A processor runs in it's own thread and is an instance of subclass of "YawsProcessor" that returns one of three values:
 
 ```Swift
     @objc public enum YawsProcessed : Int {
