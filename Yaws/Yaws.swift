@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Yaws/Yaws/Yaws.swift#26 $
+//  $Id: //depot/Yaws/Yaws/Yaws.swift#28 $
 //
 //  Repo: https://github.com/johnno1962/Yaws
 //
@@ -1736,8 +1736,8 @@ public class YawsDocumentProcessor : YawsProcessor {
         let fileExt = fullPath.pathExtension
         let mimeType = yawsMimeTypeMapping[fileExt] ?? yawsHtmlMimeType
 
+        yawsClient.addHeader( "Date", value: webDate( NSDate() ) )
         yawsClient.addHeader( "Content-Type", value: mimeType )
-        yawsClient.addHeader( "Date", value: mimeType )
 
         let zippedPath = fullPath+".gz"
         if fileManager.fileExistsAtPath( zippedPath ) {
@@ -1745,10 +1745,11 @@ public class YawsDocumentProcessor : YawsProcessor {
             fullPath = zippedPath
         }
 
-        if let since = yawsClient.requestHeaders["If-Modified-Since"],
-            attrs = fileManager.attributesOfItemAtPath( fullPath, error: nil ),
-            modificationDate = attrs[NSFileModificationDate] as? NSDate {
-            if webDate( modificationDate ) == since {
+        var lastModified = fileManager.attributesOfItemAtPath( fullPath,
+            error: nil )?[NSFileModificationDate] as? NSDate
+
+        if let since = yawsClient.requestHeaders["If-Modified-Since"] {
+            if lastModified != nil && webDate( lastModified! ) == since {
                 yawsClient.status = 304
                 yawsClient.addHeader( "Content-Length", value: "0" ) // ???
                 yawsClient.print( "" )
@@ -1759,12 +1760,14 @@ public class YawsDocumentProcessor : YawsProcessor {
         if let data = NSData( contentsOfFile: fullPath ) {
             yawsClient.status = 200
             yawsClient.addHeader( "Content-Length", value: "\(data.length)" )
+            yawsClient.addHeader( "Last-Modified", value: "\(webDate( lastModified! ))" )
             yawsClient.write( data )
             return .ProcessedAndReusable
         }
         else {
             yawsClient.status = 404
             yawsClient.print( "<b>File not found:</b> \(fullPath)" )
+            yawsLog( "404 File not Found: \(fullPath)" )
             return .Processed
         }
     }
