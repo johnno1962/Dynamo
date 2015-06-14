@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Yaws/Yaws/Yaws.swift#16 $
+//  $Id: //depot/Yaws/Yaws/Yaws.swift#21 $
 //
 //  Repo: https://github.com/johnno1962/Yaws
 //
@@ -132,10 +132,10 @@ private func Strerror( msg: String ) {
         else if Darwin.bind( serverSocket, sockaddr_cast(&ip4addr), socklen_t(ip4addr.sin_len) ) < 0 {
             Strerror( "Could not bind service socket on port \(portNumber)" )
         }
-        else if listen( serverSocket, 5 ) < 0 {
+        else if listen( serverSocket, 50 ) < 0 {
             Strerror( "Service socket would not listen" )
         } else {
-            dispatch_async( yawsQueue, {
+            dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), {
 
                 while serverSocket >= 0 {
                     var addrLen = socklen_t(sizeof(ip4addr.dynamicType))
@@ -196,8 +196,8 @@ private var yawsStatusText = [
 
 @objc public class YawsHTTPConnection {
 
-    private let clientSocket: Int32
     private let readFILE: UnsafeMutablePointer<FILE>, writeFILE: UnsafeMutablePointer<FILE>
+    public let clientSocket: Int32
 
     public var method = "GET", uri = "/", httpVersion = "HTTP/1.1"
     public var url = dummyBase
@@ -212,6 +212,14 @@ private var yawsStatusText = [
         writeFILE = fdopen( clientSocket, "w" )
     }
 
+    func read( buffer: UnsafeMutablePointer<Void>, count: Int ) -> Int {
+        return fread( buffer, 1, count, readFILE )
+    }
+
+    func write( buffer: UnsafePointer<Void>, count: Int ) -> Int {
+        return fwrite( buffer, 1, count, writeFILE )
+    }
+    
     func readHeaders() -> Bool {
         if let request = readLine() {
             yawsTrace(request)
@@ -249,7 +257,7 @@ private var yawsStatusText = [
 
     func readLine() -> String? {
         if readFILE != nil &&
-            fgets( UnsafeMutablePointer<Int8>(buffer), Int32(buffer.count), readFILE ) != nil {
+            fgets( &buffer, Int32(buffer.count), readFILE ) != nil {
             return String( UTF8String: buffer )?
                 .stringByTrimmingCharactersInSet( NSCharacterSet.whitespaceAndNewlineCharacterSet() )
         }
@@ -261,7 +269,7 @@ private var yawsStatusText = [
     func readPost() -> String? {
         if let postLength = contentLength() {
             var buffer = [Int8](count: postLength+1, repeatedValue: 0)
-            if fread( UnsafeMutablePointer<Int8>(buffer), 1, postLength, readFILE ) == postLength {
+            if read( &buffer, count: postLength ) == postLength {
                 return String( UTF8String: buffer )?
                     .stringByTrimmingCharactersInSet( NSCharacterSet.whitespaceAndNewlineCharacterSet() )
             }
@@ -310,7 +318,7 @@ private var yawsStatusText = [
     
     public func rawPrint( output: String ) {
         let bytes = (output as NSString).UTF8String
-        fwrite( bytes, 1, Int(strlen(bytes)), writeFILE )
+        write( bytes, count: Int(strlen(bytes)) )
     }
 
     public func print( output: String ) {
@@ -320,7 +328,7 @@ private var yawsStatusText = [
 
     public func write( data: NSData ) {
         writeHeaders()
-        fwrite( data.bytes, 1, data.length, writeFILE )
+        write( data.bytes, count: data.length )
     }
 
     public func flush() {
@@ -330,6 +338,7 @@ private var yawsStatusText = [
     deinit {
         fclose( writeFILE )
         fclose( readFILE )
+        close( clientSocket )
     }
 
 }
@@ -392,19 +401,23 @@ private func yawsConnect( url: NSURL ) -> YawsHTTPConnection? {
     return nil
 }
 
-private func yawsRelay( dir: String, #from: YawsHTTPConnection, #to: YawsHTTPConnection, logger: (String) -> () ) {
+private var yawsRelayThreads = 0
+
+private func yawsRelay( label: String, #from: YawsHTTPConnection, #to: YawsHTTPConnection, logger: (String) -> () ) {
+    yawsRelayThreads++
     dispatch_async( yawsQueue, {
         var buffer = [Int8](count: 8192, repeatedValue: 0)
 
         while true {
-            let bytesRead = read( Int32(from.clientSocket), UnsafeMutablePointer<Void>(buffer), buffer.count )
-            logger( "Relaying \(dir) \(bytesRead) bytes" )
+            let bytesRead = read( Int32(from.clientSocket), &buffer, buffer.count )
+            logger( "Relaying \(label) \(bytesRead) bytes (\(yawsRelayThreads))" )
             if bytesRead <= 0 ||
-                send( Int32(to.clientSocket), UnsafeMutablePointer<Void>(buffer), bytesRead, 0 ) != bytesRead {
+                send( Int32(to.clientSocket), &buffer, bytesRead, 0 ) != bytesRead {
                     break
             }
         }
 
+        yawsRelayThreads--
         close( from.clientSocket )
         close( to.clientSocket )
     } )
@@ -511,7 +524,7 @@ public class YawsApplicationProcessor : YawsProcessor {
     }
 
     @objc public func processRequest( out: YawsHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
-        fatalError( "Application Subclass responsibility" )
+        fatalError( "YawsApplicationProcessor.processRequest(): Subclass responsibility" )
     }
 
 }
@@ -1692,11 +1705,6 @@ public class YawsDocumentProcessor : YawsProcessor {
     let fileManager = NSFileManager.defaultManager()
     let documentRoot: String
 
-//    public override init() {
-//        let appResources = NSBundle.mainBundle().resourcePath!
-//        init( documentRoot: appResources )
-//    }
-//
     public init( documentRoot: String ) {
         self.documentRoot = documentRoot
     }

@@ -61,7 +61,9 @@ public class TickTackToe: YawsHTMLAppProcessor {
         let scores = ", ".join( cookies.keys.map( { "\($0) wins: \(cookies[$0]!)" } ) )
 
         out.print( html( nil ) + head( title( "Table Example" ) +
-            style( "body, table { font: 10pt Arial; } table, td { border: 4px inset; }" ) ) + body( nil ) +
+            style( "body, table { font: 10pt Arial; } " +
+                    "table { border: 4px outset; } " +
+                    "td { border: 4px inset; }" ) ) + body( nil ) +
             h3( "Tick Tack Toe "+scores ) )
 
         // make move
