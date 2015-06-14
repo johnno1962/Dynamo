@@ -1,0 +1,726 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BB7C7EE91B2A380100A676CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7C7EE81B2A380100A676CD /* AppDelegate.swift */; };
+		BB7C7EEB1B2A380100A676CD /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB7C7EEA1B2A380100A676CD /* Images.xcassets */; };
+		BB7C7EEE1B2A380100A676CD /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BB7C7EEC1B2A380100A676CD /* MainMenu.xib */; };
+		BB7C7EFA1B2A380100A676CD /* YawsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7C7EF91B2A380100A676CD /* YawsTests.swift */; };
+		BB7C7F041B2A381D00A676CD /* Yaws.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7C7F031B2A381D00A676CD /* Yaws.swift */; };
+		BB7C7F061B2B9CBE00A676CD /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = BB7C7F051B2B9CBE00A676CD /* index.html */; };
+		BB7C7F081B2BA93400A676CD /* file.html.gz in Resources */ = {isa = PBXBuildFile; fileRef = BB7C7F071B2BA93400A676CD /* file.html.gz */; };
+		BB7C7F0A1B2BAEB500A676CD /* test.html in Resources */ = {isa = PBXBuildFile; fileRef = BB7C7F091B2BAEB500A676CD /* test.html */; };
+		BB7C7F4D1B2CA4D400A676CD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7C7F4C1B2CA4D400A676CD /* main.m */; };
+		BB7C7F501B2CA4D400A676CD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7C7F4F1B2CA4D400A676CD /* AppDelegate.m */; };
+		BB7C7F531B2CA4D400A676CD /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7C7F521B2CA4D400A676CD /* ViewController.m */; };
+		BB7C7F561B2CA4D400A676CD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BB7C7F541B2CA4D400A676CD /* Main.storyboard */; };
+		BB7C7F581B2CA4D400A676CD /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB7C7F571B2CA4D400A676CD /* Images.xcassets */; };
+		BB7C7F5B1B2CA4D400A676CD /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = BB7C7F591B2CA4D400A676CD /* LaunchScreen.xib */; };
+		BB7C7F671B2CA4D400A676CD /* YawsiOSTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7C7F661B2CA4D400A676CD /* YawsiOSTests.m */; };
+		BB7C7F6E1B2CA4EE00A676CD /* Yaws.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7C7F031B2A381D00A676CD /* Yaws.swift */; };
+		BB7C7F721B2CBA2000A676CD /* TickTackToe.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7C7F711B2CBA2000A676CD /* TickTackToe.swift */; };
+		BB7C7F731B2CC04500A676CD /* TickTackToe.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7C7F711B2CBA2000A676CD /* TickTackToe.swift */; };
+		BB7C7F741B2CC21300A676CD /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = BB7C7F051B2B9CBE00A676CD /* index.html */; };
+		BB7C7F751B2CC21300A676CD /* file.html.gz in Resources */ = {isa = PBXBuildFile; fileRef = BB7C7F071B2BA93400A676CD /* file.html.gz */; };
+		BB7C7F761B2CC21300A676CD /* test.html in Resources */ = {isa = PBXBuildFile; fileRef = BB7C7F091B2BAEB500A676CD /* test.html */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		BB7C7EF41B2A380100A676CD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BB7C7EDB1B2A380000A676CD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BB7C7EE21B2A380100A676CD;
+			remoteInfo = Yaws;
+		};
+		BB7C7F611B2CA4D400A676CD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BB7C7EDB1B2A380000A676CD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BB7C7F471B2CA4D400A676CD;
+			remoteInfo = YawsiOS;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		BB7C7EE31B2A380100A676CD /* Yaws.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yaws.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB7C7EE71B2A380100A676CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BB7C7EE81B2A380100A676CD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		BB7C7EEA1B2A380100A676CD /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		BB7C7EED1B2A380100A676CD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		BB7C7EF31B2A380100A676CD /* YawsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YawsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB7C7EF81B2A380100A676CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BB7C7EF91B2A380100A676CD /* YawsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YawsTests.swift; sourceTree = "<group>"; };
+		BB7C7F031B2A381D00A676CD /* Yaws.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Yaws.swift; sourceTree = "<group>"; };
+		BB7C7F051B2B9CBE00A676CD /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
+		BB7C7F071B2BA93400A676CD /* file.html.gz */ = {isa = PBXFileReference; lastKnownFileType = archive.gzip; path = file.html.gz; sourceTree = "<group>"; };
+		BB7C7F091B2BAEB500A676CD /* test.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = test.html; sourceTree = "<group>"; };
+		BB7C7F401B2C865900A676CD /* gentags.pl */ = {isa = PBXFileReference; lastKnownFileType = text.script.perl; path = gentags.pl; sourceTree = "<group>"; };
+		BB7C7F481B2CA4D400A676CD /* YawsiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YawsiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB7C7F4B1B2CA4D400A676CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BB7C7F4C1B2CA4D400A676CD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		BB7C7F4E1B2CA4D400A676CD /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		BB7C7F4F1B2CA4D400A676CD /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		BB7C7F511B2CA4D400A676CD /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		BB7C7F521B2CA4D400A676CD /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		BB7C7F551B2CA4D400A676CD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		BB7C7F571B2CA4D400A676CD /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		BB7C7F5A1B2CA4D400A676CD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		BB7C7F601B2CA4D400A676CD /* YawsiOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YawsiOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB7C7F651B2CA4D400A676CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BB7C7F661B2CA4D400A676CD /* YawsiOSTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YawsiOSTests.m; sourceTree = "<group>"; };
+		BB7C7F711B2CBA2000A676CD /* TickTackToe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TickTackToe.swift; sourceTree = "<group>"; };
+		BB7C7F771B2CD2A900A676CD /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BB7C7EE01B2A380100A676CD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB7C7EF01B2A380100A676CD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB7C7F451B2CA4D400A676CD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB7C7F5D1B2CA4D400A676CD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		BB7C7EDA1B2A380000A676CD = {
+			isa = PBXGroup;
+			children = (
+				BB7C7F771B2CD2A900A676CD /* README.md */,
+				BB7C7EE51B2A380100A676CD /* Yaws */,
+				BB7C7EF61B2A380100A676CD /* YawsTests */,
+				BB7C7F491B2CA4D400A676CD /* YawsiOS */,
+				BB7C7F631B2CA4D400A676CD /* YawsiOSTests */,
+				BB7C7EE41B2A380100A676CD /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BB7C7EE41B2A380100A676CD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BB7C7EE31B2A380100A676CD /* Yaws.app */,
+				BB7C7EF31B2A380100A676CD /* YawsTests.xctest */,
+				BB7C7F481B2CA4D400A676CD /* YawsiOS.app */,
+				BB7C7F601B2CA4D400A676CD /* YawsiOSTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BB7C7EE51B2A380100A676CD /* Yaws */ = {
+			isa = PBXGroup;
+			children = (
+				BB7C7EE81B2A380100A676CD /* AppDelegate.swift */,
+				BB7C7F711B2CBA2000A676CD /* TickTackToe.swift */,
+				BB7C7F031B2A381D00A676CD /* Yaws.swift */,
+				BB7C7EEA1B2A380100A676CD /* Images.xcassets */,
+				BB7C7EEC1B2A380100A676CD /* MainMenu.xib */,
+				BB7C7EE61B2A380100A676CD /* Supporting Files */,
+			);
+			path = Yaws;
+			sourceTree = "<group>";
+		};
+		BB7C7EE61B2A380100A676CD /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BB7C7EE71B2A380100A676CD /* Info.plist */,
+				BB7C7F051B2B9CBE00A676CD /* index.html */,
+				BB7C7F071B2BA93400A676CD /* file.html.gz */,
+				BB7C7F091B2BAEB500A676CD /* test.html */,
+				BB7C7F401B2C865900A676CD /* gentags.pl */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BB7C7EF61B2A380100A676CD /* YawsTests */ = {
+			isa = PBXGroup;
+			children = (
+				BB7C7EF91B2A380100A676CD /* YawsTests.swift */,
+				BB7C7EF71B2A380100A676CD /* Supporting Files */,
+			);
+			path = YawsTests;
+			sourceTree = "<group>";
+		};
+		BB7C7EF71B2A380100A676CD /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BB7C7EF81B2A380100A676CD /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BB7C7F491B2CA4D400A676CD /* YawsiOS */ = {
+			isa = PBXGroup;
+			children = (
+				BB7C7F4E1B2CA4D400A676CD /* AppDelegate.h */,
+				BB7C7F4F1B2CA4D400A676CD /* AppDelegate.m */,
+				BB7C7F511B2CA4D400A676CD /* ViewController.h */,
+				BB7C7F521B2CA4D400A676CD /* ViewController.m */,
+				BB7C7F541B2CA4D400A676CD /* Main.storyboard */,
+				BB7C7F571B2CA4D400A676CD /* Images.xcassets */,
+				BB7C7F591B2CA4D400A676CD /* LaunchScreen.xib */,
+				BB7C7F4A1B2CA4D400A676CD /* Supporting Files */,
+			);
+			path = YawsiOS;
+			sourceTree = "<group>";
+		};
+		BB7C7F4A1B2CA4D400A676CD /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BB7C7F4B1B2CA4D400A676CD /* Info.plist */,
+				BB7C7F4C1B2CA4D400A676CD /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BB7C7F631B2CA4D400A676CD /* YawsiOSTests */ = {
+			isa = PBXGroup;
+			children = (
+				BB7C7F661B2CA4D400A676CD /* YawsiOSTests.m */,
+				BB7C7F641B2CA4D400A676CD /* Supporting Files */,
+			);
+			path = YawsiOSTests;
+			sourceTree = "<group>";
+		};
+		BB7C7F641B2CA4D400A676CD /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BB7C7F651B2CA4D400A676CD /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BB7C7EE21B2A380100A676CD /* Yaws */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB7C7EFD1B2A380100A676CD /* Build configuration list for PBXNativeTarget "Yaws" */;
+			buildPhases = (
+				BB7C7EDF1B2A380100A676CD /* Sources */,
+				BB7C7EE01B2A380100A676CD /* Frameworks */,
+				BB7C7EE11B2A380100A676CD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Yaws;
+			productName = Yaws;
+			productReference = BB7C7EE31B2A380100A676CD /* Yaws.app */;
+			productType = "com.apple.product-type.application";
+		};
+		BB7C7EF21B2A380100A676CD /* YawsTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB7C7F001B2A380100A676CD /* Build configuration list for PBXNativeTarget "YawsTests" */;
+			buildPhases = (
+				BB7C7EEF1B2A380100A676CD /* Sources */,
+				BB7C7EF01B2A380100A676CD /* Frameworks */,
+				BB7C7EF11B2A380100A676CD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BB7C7EF51B2A380100A676CD /* PBXTargetDependency */,
+			);
+			name = YawsTests;
+			productName = YawsTests;
+			productReference = BB7C7EF31B2A380100A676CD /* YawsTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		BB7C7F471B2CA4D400A676CD /* YawsiOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB7C7F6C1B2CA4D700A676CD /* Build configuration list for PBXNativeTarget "YawsiOS" */;
+			buildPhases = (
+				BB7C7F441B2CA4D400A676CD /* Sources */,
+				BB7C7F451B2CA4D400A676CD /* Frameworks */,
+				BB7C7F461B2CA4D400A676CD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = YawsiOS;
+			productName = YawsiOS;
+			productReference = BB7C7F481B2CA4D400A676CD /* YawsiOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		BB7C7F5F1B2CA4D400A676CD /* YawsiOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB7C7F6D1B2CA4D700A676CD /* Build configuration list for PBXNativeTarget "YawsiOSTests" */;
+			buildPhases = (
+				BB7C7F5C1B2CA4D400A676CD /* Sources */,
+				BB7C7F5D1B2CA4D400A676CD /* Frameworks */,
+				BB7C7F5E1B2CA4D400A676CD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BB7C7F621B2CA4D400A676CD /* PBXTargetDependency */,
+			);
+			name = YawsiOSTests;
+			productName = YawsiOSTests;
+			productReference = BB7C7F601B2CA4D400A676CD /* YawsiOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BB7C7EDB1B2A380000A676CD /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0640;
+				ORGANIZATIONNAME = "John Holdsworth";
+				TargetAttributes = {
+					BB7C7EE21B2A380100A676CD = {
+						CreatedOnToolsVersion = 6.4;
+					};
+					BB7C7EF21B2A380100A676CD = {
+						CreatedOnToolsVersion = 6.4;
+						TestTargetID = BB7C7EE21B2A380100A676CD;
+					};
+					BB7C7F471B2CA4D400A676CD = {
+						CreatedOnToolsVersion = 6.4;
+						DevelopmentTeam = 9V5A8WE85E;
+					};
+					BB7C7F5F1B2CA4D400A676CD = {
+						CreatedOnToolsVersion = 6.4;
+						TestTargetID = BB7C7F471B2CA4D400A676CD;
+					};
+				};
+			};
+			buildConfigurationList = BB7C7EDE1B2A380000A676CD /* Build configuration list for PBXProject "Yaws" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = BB7C7EDA1B2A380000A676CD;
+			productRefGroup = BB7C7EE41B2A380100A676CD /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BB7C7EE21B2A380100A676CD /* Yaws */,
+				BB7C7EF21B2A380100A676CD /* YawsTests */,
+				BB7C7F471B2CA4D400A676CD /* YawsiOS */,
+				BB7C7F5F1B2CA4D400A676CD /* YawsiOSTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BB7C7EE11B2A380100A676CD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB7C7F061B2B9CBE00A676CD /* index.html in Resources */,
+				BB7C7EEB1B2A380100A676CD /* Images.xcassets in Resources */,
+				BB7C7F081B2BA93400A676CD /* file.html.gz in Resources */,
+				BB7C7F0A1B2BAEB500A676CD /* test.html in Resources */,
+				BB7C7EEE1B2A380100A676CD /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB7C7EF11B2A380100A676CD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB7C7F461B2CA4D400A676CD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB7C7F741B2CC21300A676CD /* index.html in Resources */,
+				BB7C7F751B2CC21300A676CD /* file.html.gz in Resources */,
+				BB7C7F761B2CC21300A676CD /* test.html in Resources */,
+				BB7C7F561B2CA4D400A676CD /* Main.storyboard in Resources */,
+				BB7C7F5B1B2CA4D400A676CD /* LaunchScreen.xib in Resources */,
+				BB7C7F581B2CA4D400A676CD /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB7C7F5E1B2CA4D400A676CD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BB7C7EDF1B2A380100A676CD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB7C7F721B2CBA2000A676CD /* TickTackToe.swift in Sources */,
+				BB7C7EE91B2A380100A676CD /* AppDelegate.swift in Sources */,
+				BB7C7F041B2A381D00A676CD /* Yaws.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB7C7EEF1B2A380100A676CD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB7C7EFA1B2A380100A676CD /* YawsTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB7C7F441B2CA4D400A676CD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB7C7F6E1B2CA4EE00A676CD /* Yaws.swift in Sources */,
+				BB7C7F731B2CC04500A676CD /* TickTackToe.swift in Sources */,
+				BB7C7F531B2CA4D400A676CD /* ViewController.m in Sources */,
+				BB7C7F501B2CA4D400A676CD /* AppDelegate.m in Sources */,
+				BB7C7F4D1B2CA4D400A676CD /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB7C7F5C1B2CA4D400A676CD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB7C7F671B2CA4D400A676CD /* YawsiOSTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BB7C7EF51B2A380100A676CD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BB7C7EE21B2A380100A676CD /* Yaws */;
+			targetProxy = BB7C7EF41B2A380100A676CD /* PBXContainerItemProxy */;
+		};
+		BB7C7F621B2CA4D400A676CD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BB7C7F471B2CA4D400A676CD /* YawsiOS */;
+			targetProxy = BB7C7F611B2CA4D400A676CD /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		BB7C7EEC1B2A380100A676CD /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BB7C7EED1B2A380100A676CD /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		BB7C7F541B2CA4D400A676CD /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BB7C7F551B2CA4D400A676CD /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		BB7C7F591B2CA4D400A676CD /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BB7C7F5A1B2CA4D400A676CD /* Base */,
+			);
+			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		BB7C7EFB1B2A380100A676CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		BB7C7EFC1B2A380100A676CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		BB7C7EFE1B2A380100A676CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Yaws/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		BB7C7EFF1B2A380100A676CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Yaws/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		BB7C7F011B2A380100A676CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = YawsTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Yaws.app/Contents/MacOS/Yaws";
+			};
+			name = Debug;
+		};
+		BB7C7F021B2A380100A676CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = YawsTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Yaws.app/Contents/MacOS/Yaws";
+			};
+			name = Release;
+		};
+		BB7C7F681B2CA4D500A676CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = YawsiOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BB7C7F691B2CA4D500A676CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				INFOPLIST_FILE = YawsiOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		BB7C7F6A1B2CA4D500A676CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: John Holdsworth (M385L4U472)";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = YawsiOSTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/YawsiOS.app/YawsiOS";
+			};
+			name = Debug;
+		};
+		BB7C7F6B1B2CA4D500A676CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: John Holdsworth (M385L4U472)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = YawsiOSTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/YawsiOS.app/YawsiOS";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BB7C7EDE1B2A380000A676CD /* Build configuration list for PBXProject "Yaws" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB7C7EFB1B2A380100A676CD /* Debug */,
+				BB7C7EFC1B2A380100A676CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB7C7EFD1B2A380100A676CD /* Build configuration list for PBXNativeTarget "Yaws" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB7C7EFE1B2A380100A676CD /* Debug */,
+				BB7C7EFF1B2A380100A676CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		BB7C7F001B2A380100A676CD /* Build configuration list for PBXNativeTarget "YawsTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB7C7F011B2A380100A676CD /* Debug */,
+				BB7C7F021B2A380100A676CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		BB7C7F6C1B2CA4D700A676CD /* Build configuration list for PBXNativeTarget "YawsiOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB7C7F681B2CA4D500A676CD /* Debug */,
+				BB7C7F691B2CA4D500A676CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		BB7C7F6D1B2CA4D700A676CD /* Build configuration list for PBXNativeTarget "YawsiOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB7C7F6A1B2CA4D500A676CD /* Debug */,
+				BB7C7F6B1B2CA4D500A676CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BB7C7EDB1B2A380000A676CD /* Project object */;
+}
