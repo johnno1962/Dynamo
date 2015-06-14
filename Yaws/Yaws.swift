@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Yaws/Yaws/Yaws.swift#21 $
+//  $Id: //depot/Yaws/Yaws/Yaws.swift#26 $
 //
 //  Repo: https://github.com/johnno1962/Yaws
 //
@@ -187,7 +187,8 @@ private func Strerror( msg: String ) {
 }
 
 private let dummyBase = NSURL( string: "http://nohost" )!
-private var yawsStatusText = [
+private var yawsRelayThreads = 0
+public var yawsStatusText = [
     200: "OK",
     304: "Redirect",
     404: "File not found",
@@ -210,6 +211,60 @@ private var yawsStatusText = [
         self.clientSocket = clientSocket
         readFILE = fdopen( clientSocket, "r" )
         writeFILE = fdopen( clientSocket, "w" )
+    }
+
+    convenience init?( url: NSURL ) {
+        let host = (url.host! as NSString)
+        let addr = gethostbyname( host.UTF8String )
+        let sockadddr: UnsafeMutablePointer<sockaddr>
+
+        if addr != nil {
+            let port = UInt16(url.port?.intValue ?? 80)
+            let addrList = addr.memory.h_addr_list
+            switch addr.memory.h_addrtype {
+            case AF_INET:
+                let addr0 = UnsafePointer<in_addr>(addrList.memory)
+                var ip4addr = sockaddr_in(sin_len: UInt8(sizeof(sockaddr_in)),
+                    sin_family: sa_family_t(addr.memory.h_addrtype),
+                    sin_port: htons( port ), sin_addr: addr0.memory,
+                    sin_zero: (Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0)))
+                sockadddr = sockaddr_cast(&ip4addr)
+            case AF_INET6: // TODO completely untested
+                let addr0 = UnsafePointer<in6_addr>(addrList.memory)
+                var ip6addr = sockaddr_in6(sin6_len: UInt8(sizeof(sockaddr_in6)),
+                    sin6_family: sa_family_t(addr.memory.h_addrtype),
+                    sin6_port: htons( port ), sin6_flowinfo: 0, sin6_addr: addr0.memory,
+                    sin6_scope_id: 0)
+                sockadddr = sockaddr_cast6(&ip6addr)
+            default:
+                yawsLog( "Unknown address family: \(addr.memory.h_addrtype)" )
+                self.init( clientSocket: 0 )
+                return nil
+            }
+
+            let remoteSocket = socket( Int32(sockadddr.memory.sa_family), SOCK_STREAM, 0 )
+            if remoteSocket < 0 {
+                Strerror( "Could not obtain socket" )
+            }
+            else if connect( remoteSocket, sockadddr, socklen_t(sockadddr.memory.sa_len) ) < 0 {
+                Strerror( "Could not connect to: \(host)" )
+            }
+            else {
+                var yes: u_int = 1, yeslen = socklen_t(sizeof(yes.dynamicType))
+                if setsockopt( remoteSocket, SOL_SOCKET, SO_NOSIGPIPE, &yes, yeslen ) < 0 {
+                    Strerror( "Could not set SO_NOSIGPIPE" )
+                }
+
+                self.init( clientSocket: remoteSocket )
+                return
+            }
+        }
+        else {
+            yawsLog( "Could not resolve host: \(host)" )
+        }
+
+        self.init( clientSocket: 0 )
+        return nil
     }
 
     func read( buffer: UnsafeMutablePointer<Void>, count: Int ) -> Int {
@@ -334,7 +389,27 @@ private var yawsStatusText = [
     public func flush() {
         fflush( writeFILE )
     }
-    
+
+    private func relay( label: String, to: YawsHTTPConnection, _ logger: (String) -> () ) {
+        yawsRelayThreads++
+        dispatch_async( yawsQueue, {
+            var buffer = [Int8](count: 8192, repeatedValue: 0)
+
+            while true {
+                let bytesRead = recv( Int32(self.clientSocket), &buffer, buffer.count, 0 )
+                logger( "Relaying \(label) \(bytesRead) bytes (\(yawsRelayThreads)/\(self.clientSocket))" )
+                if bytesRead <= 0 ||
+                    send( Int32(to.clientSocket), &buffer, bytesRead, 0 ) != bytesRead {
+                        break
+                }
+            }
+
+            yawsRelayThreads--
+            close( self.clientSocket )
+            close( to.clientSocket )
+        } )
+    }
+
     deinit {
         fclose( writeFILE )
         fclose( readFILE )
@@ -351,78 +426,6 @@ public class YawsProcessor: NSObject {
 
 }
 
-private func yawsConnect( url: NSURL ) -> YawsHTTPConnection? {
-    let host = (url.host! as NSString)
-    let addr = gethostbyname( host.UTF8String )
-    let sockadddr: UnsafeMutablePointer<sockaddr>
-
-    if addr != nil {
-        let port = UInt16(url.port?.intValue ?? 80)
-        let addrList = addr.memory.h_addr_list
-        switch addr.memory.h_addrtype {
-        case AF_INET:
-            let addr0 = UnsafePointer<in_addr>(addrList.memory)
-            var ip4addr = sockaddr_in(sin_len: UInt8(sizeof(sockaddr_in)),
-                sin_family: sa_family_t(addr.memory.h_addrtype),
-                sin_port: htons( port ), sin_addr: addr0.memory,
-                sin_zero: (Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0)))
-            sockadddr = sockaddr_cast(&ip4addr)
-        case AF_INET6: // TODO untested
-            let addr0 = UnsafePointer<in6_addr>(addrList.memory)
-            var ip6addr = sockaddr_in6(sin6_len: UInt8(sizeof(sockaddr_in6)),
-                sin6_family: sa_family_t(addr.memory.h_addrtype),
-                sin6_port: htons( port ), sin6_flowinfo: 0, sin6_addr: addr0.memory,
-                sin6_scope_id: 0)
-            sockadddr = sockaddr_cast6(&ip6addr)
-        default:
-            yawsLog( "Unknown address family: \(addr.memory.h_addrtype)" )
-            return nil
-        }
-
-        let remoteSocket = socket( Int32(sockadddr.memory.sa_family), SOCK_STREAM, 0 )
-        if remoteSocket < 0 {
-            Strerror( "Could not obtain socket" )
-        }
-        else if connect( remoteSocket, sockadddr, socklen_t(sockadddr.memory.sa_len) ) < 0 {
-            Strerror( "Could not connect to: \(host)" )
-        }
-        else {
-            var yes: u_int = 1, yeslen = socklen_t(sizeof(yes.dynamicType))
-            if setsockopt( remoteSocket, SOL_SOCKET, SO_NOSIGPIPE, &yes, yeslen ) < 0 {
-                Strerror( "Could not set SO_NOSIGPIPE" )
-            }
-            return YawsHTTPConnection( clientSocket: remoteSocket )
-        }
-    }
-    else {
-        yawsLog( "Could not resolve host: \(host)" )
-    }
-
-    return nil
-}
-
-private var yawsRelayThreads = 0
-
-private func yawsRelay( label: String, #from: YawsHTTPConnection, #to: YawsHTTPConnection, logger: (String) -> () ) {
-    yawsRelayThreads++
-    dispatch_async( yawsQueue, {
-        var buffer = [Int8](count: 8192, repeatedValue: 0)
-
-        while true {
-            let bytesRead = read( Int32(from.clientSocket), &buffer, buffer.count )
-            logger( "Relaying \(label) \(bytesRead) bytes (\(yawsRelayThreads))" )
-            if bytesRead <= 0 ||
-                send( Int32(to.clientSocket), &buffer, bytesRead, 0 ) != bytesRead {
-                    break
-            }
-        }
-
-        yawsRelayThreads--
-        close( from.clientSocket )
-        close( to.clientSocket )
-    } )
-}
-
 public class YawsSSLProxyProcessor : YawsProxyProcessor {
 
     override func process( yawsClient: YawsHTTPConnection ) -> YawsProcessed {
@@ -431,11 +434,11 @@ public class YawsSSLProxyProcessor : YawsProxyProcessor {
         }
 
         if let urlForDestination = NSURL( string: "https://\(yawsClient.uri)" ),
-            remoteConnection = yawsConnect( urlForDestination ) {
+            remoteConnection = YawsHTTPConnection( url: urlForDestination ) {
                 yawsClient.rawPrint( "HTTP/1.0 200 Connection established\r\nProxy-agent: Yaws/1.0\r\n\r\n" )
                 yawsClient.flush()
-                yawsRelay( "<- \(yawsClient.uri)", from: remoteConnection, to: yawsClient, logger )
-                yawsRelay( "-> \(yawsClient.uri)", from: yawsClient, to: remoteConnection, logger )
+                remoteConnection.relay( "<- \(yawsClient.uri)", to: yawsClient, logger )
+                yawsClient.relay( "-> \(yawsClient.uri)", to: remoteConnection, logger )
         }
 
         return .Processed
@@ -457,7 +460,7 @@ public class YawsProxyProcessor : YawsProcessor {
             return .NotProcessed
         }
 
-        if let host = yawsClient.url.host, remoteConnection = yawsConnect( yawsClient.url ) {
+        if let host = yawsClient.url.host, remoteConnection = YawsHTTPConnection( url: yawsClient.url ) {
 
             var remotePath = yawsClient.url.path ?? "/"
             if let query = yawsClient.url.query {
@@ -471,8 +474,8 @@ public class YawsProxyProcessor : YawsProcessor {
             remoteConnection.rawPrint( "\r\n" )
             remoteConnection.flush()
 
-            yawsRelay( "<- \(host)", from: remoteConnection, to: yawsClient, logger )
-            yawsRelay( "-> \(host)", from: yawsClient, to: remoteConnection, logger )
+            remoteConnection.relay( "<- \(host)", to: yawsClient, logger )
+            yawsClient.relay( "-> \(host)", to: remoteConnection, logger )
         }
 
         return .Processed
@@ -480,18 +483,11 @@ public class YawsProxyProcessor : YawsProcessor {
     
 }
 
-private func addParameters(  inout parameters: [String:String], from queryString: String, delimeter: String = "&" ) {
-    for nameValue in queryString.componentsSeparatedByString( "&" ) {
-        let nameValue = split( nameValue, maxSplit: 2, allowEmptySlices: true, isSeparator: { $0 == "=" } )
-        parameters[nameValue[0]] = nameValue.count > 1 ? nameValue[1].stringByRemovingPercentEncoding! : ""
-    }
-}
-
 public class YawsApplicationProcessor : YawsProcessor {
 
     let pathPrefix: String
 
-    @objc public init( pathPrefix: String ) {
+    public init( pathPrefix: String ) {
         self.pathPrefix = pathPrefix
     }
 
@@ -523,6 +519,13 @@ public class YawsApplicationProcessor : YawsProcessor {
         return .NotProcessed
     }
 
+    private func addParameters(  inout parameters: [String:String], from queryString: String, delimeter: String = "&" ) {
+        for nameValue in queryString.componentsSeparatedByString( "&" ) {
+            let nameValue = split( nameValue, maxSplit: 2, allowEmptySlices: true, isSeparator: { $0 == "=" } )
+            parameters[nameValue[0]] = nameValue.count > 1 ? nameValue[1].stringByRemovingPercentEncoding! : ""
+        }
+    }
+    
     @objc public func processRequest( out: YawsHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
         fatalError( "YawsApplicationProcessor.processRequest(): Subclass responsibility" )
     }
@@ -1703,10 +1706,21 @@ public var yawsMimeTypeMapping = [
 public class YawsDocumentProcessor : YawsProcessor {
 
     let fileManager = NSFileManager.defaultManager()
+    let webDateFormatter = NSDateFormatter()
     let documentRoot: String
+
+    convenience override init() {
+        let appResources = NSBundle.mainBundle().resourcePath!
+        self.init( documentRoot: appResources )
+    }
 
     public init( documentRoot: String ) {
         self.documentRoot = documentRoot
+        webDateFormatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
+    }
+
+    func webDate( date: NSDate ) -> String {
+        return webDateFormatter.stringFromDate( date )
     }
 
     override func process( yawsClient: YawsHTTPConnection ) -> YawsProcessed {
@@ -1720,6 +1734,10 @@ public class YawsDocumentProcessor : YawsProcessor {
         }
 
         let fileExt = fullPath.pathExtension
+        let mimeType = yawsMimeTypeMapping[fileExt] ?? yawsHtmlMimeType
+
+        yawsClient.addHeader( "Content-Type", value: mimeType )
+        yawsClient.addHeader( "Date", value: mimeType )
 
         let zippedPath = fullPath+".gz"
         if fileManager.fileExistsAtPath( zippedPath ) {
@@ -1727,10 +1745,20 @@ public class YawsDocumentProcessor : YawsProcessor {
             fullPath = zippedPath
         }
 
+        if let since = yawsClient.requestHeaders["If-Modified-Since"],
+            attrs = fileManager.attributesOfItemAtPath( fullPath, error: nil ),
+            modificationDate = attrs[NSFileModificationDate] as? NSDate {
+            if webDate( modificationDate ) == since {
+                yawsClient.status = 304
+                yawsClient.addHeader( "Content-Length", value: "0" ) // ???
+                yawsClient.print( "" )
+                return .ProcessedAndReusable
+            }
+        }
+
         if let data = NSData( contentsOfFile: fullPath ) {
             yawsClient.status = 200
             yawsClient.addHeader( "Content-Length", value: "\(data.length)" )
-            yawsClient.addHeader( "Content-Type", value: yawsMimeTypeMapping[fileExt] ?? yawsHtmlMimeType )
             yawsClient.write( data )
             return .ProcessedAndReusable
         }

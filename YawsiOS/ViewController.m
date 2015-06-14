@@ -28,7 +28,7 @@
     [processors addObject:[[TickTackToe alloc] init]];
     [processors addObject:[[YawsSSLProxyProcessor alloc] initWithLogger:logger]];
     [processors addObject:[[YawsProxyProcessor alloc] initWithLogger:logger]];
-    [processors addObject:[[YawsDocumentProcessor alloc] initWithDocumentRoot:[NSBundle mainBundle].resourcePath]];
+    [processors addObject:[[YawsDocumentProcessor alloc] init]];
 
     (void)[[YawsWebServer alloc] initWithPortNumber:8080 processors:processors localhostOnly:YES];
     [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://localhost:8080"]]];
