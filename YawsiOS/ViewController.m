@@ -25,7 +25,7 @@
 
     NSMutableArray *processors = [NSMutableArray new];
     [processors addObject:[[YawsExampleAppProcessor alloc] initWithPathPrefix:@"/example"]];
-    [processors addObject:[[TickTackToe alloc] init]];
+    [processors addObject:[[YawsSessionProcessor alloc] initWithPathPrefix:@"/ticktacktoe" appClass:[TickTackToe class]]];
     [processors addObject:[[YawsSSLProxyProcessor alloc] initWithLogger:logger]];
     [processors addObject:[[YawsProxyProcessor alloc] initWithLogger:logger]];
     [processors addObject:[[YawsDocumentProcessor alloc] init]];

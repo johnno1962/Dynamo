@@ -22,7 +22,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate {
 
         // create shared processors for server applications
         let exampleTableGeneratorApp = YawsExampleAppProcessor( pathPrefix: "/example" )
-        let tickTackToeGame = TickTackToe()
+        let tickTackToeGame = YawsSessionProcessor( pathPrefix: "/ticktacktoe", appClass: TickTackToe.self )
 
         // create non-SSL server/proxy on 8080
         YawsWebServer( portNumber: serverPort, processors: [

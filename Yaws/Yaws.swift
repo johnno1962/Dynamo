@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Yaws/Yaws/Yaws.swift#44 $
+//  $Id: //depot/Yaws/Yaws/Yaws.swift#45 $
 //
 //  Repo: https://github.com/johnno1962/Yaws
 //
@@ -402,7 +402,8 @@ public var yawsStatusText = [
     public var status = 200
 
     var requestHeaders = [String: String]()
-    var responseHeaders: String?
+    var responseHeaders = ""
+    var sentHeaders = false
 
     init( clientSocket: Int32 ) {
         self.clientSocket = clientSocket
@@ -484,6 +485,7 @@ public var yawsStatusText = [
             url = NSURL( string: uri, relativeToURL: dummyBase ) ?? dummyBase
             requestHeaders = [String: String]()
             responseHeaders = ""
+            sentHeaders = false
             status = 200
 
             while let line = readLine() {
@@ -551,11 +553,11 @@ public var yawsStatusText = [
     }
 
     public func addHeader( name: String, value: String ) {
-        responseHeaders! += "\(name): \(value)\r\n"
+        responseHeaders += "\(name): \(value)\r\n"
     }
 
     public func setCookie( name: String, value: String, domain: String? = nil, path: String? = nil, expires: Int? = nil ) {
-        if responseHeaders != nil {
+        if !sentHeaders {
             var value = "\(name)=\(value.stringByAddingPercentEscapesUsingEncoding( NSUTF8StringEncoding )!)"
 
             if domain != nil {
@@ -582,15 +584,13 @@ public var yawsStatusText = [
     }
 
     private final func writeHeaders() {
-        if var responseHeaders = responseHeaders {
-            if responseHeaders == "" {
-                responseHeaders += "Content-Type: \(yawsHtmlMimeType)\r\n"
-            }
-
-            let statusText = yawsStatusText[status] ?? "Unknown Status"
-            rawPrint( "\(httpVersion) \(status) \(statusText)\r\n\(responseHeaders)\r\n" )
-            self.responseHeaders = nil
+        if responseHeaders == "" {
+            addHeader( "Content-Type", value: yawsHtmlMimeType )
         }
+
+        let statusText = yawsStatusText[status] ?? "Unknown Status"
+        rawPrint( "\(httpVersion) \(status) \(statusText)\r\n\(responseHeaders)\r\n" )
+        sentHeaders = true
     }
     
     public func rawPrint( output: String ) {
@@ -599,12 +599,16 @@ public var yawsStatusText = [
     }
 
     public func print( output: String ) {
-        writeHeaders()
+        if !sentHeaders {
+            writeHeaders()
+        }
         rawPrint( output )
     }
 
     public func write( data: NSData ) {
-        writeHeaders()
+        if !sentHeaders {
+            writeHeaders()
+        }
         write( data.bytes, count: data.length )
     }
 
@@ -1886,6 +1890,45 @@ public class YawsHTMLAppProcessor : YawsApplicationProcessor {
     }
     public func _wbr() -> String {
         return "</wbr>"
+    }
+
+}
+
+// MARK: Session based applicatoins
+
+public class YawsSessionProcessor : YawsApplicationProcessor {
+
+    let appClass: YawsSessionBasedApplcation.Type
+    var sessions = [String:YawsSessionBasedApplcation]()
+
+    public init( pathPrefix: String, appClass: YawsSessionBasedApplcation.Type ) {
+        self.appClass = appClass
+        super.init( pathPrefix: pathPrefix )
+    }
+
+    public override func processRequest( out: YawsHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
+
+        let sessionCookieName = "YAWS_SESSION"
+        var sessionKey = cookies[sessionCookieName]
+        if sessionKey == nil || sessions[sessionKey!] == nil {
+            sessionKey = NSUUID().UUIDString
+            sessions[sessionKey!] = appClass()
+            out.addHeader( "Content-Type", value: yawsHtmlMimeType )
+            out.setCookie( sessionCookieName, value: sessionKey!, path: pathPrefix )
+        }
+
+        sessions[sessionKey!]?.processRequest( out, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
+    }
+}
+
+public class YawsSessionBasedApplcation : YawsHTMLAppProcessor {
+
+    required public init() {
+        super.init( pathPrefix: "N/A" )
+    }
+
+    public override func processRequest( out: YawsHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
+        yawsLog( "YawsSessionBsedApplcation.processRequest(): Subclass responsibility" )
     }
 
 }

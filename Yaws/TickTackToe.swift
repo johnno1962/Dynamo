@@ -42,13 +42,9 @@ private class TickTackGameEngine {
 
 }
 
-public class TickTackToe: YawsHTMLAppProcessor {
+public class TickTackToe: YawsSessionBasedApplcation {
 
     private var engine = TickTackGameEngine()
-
-    public init() {
-        super.init( pathPrefix: "/ticktacktoe" )
-    }
 
     override public func processRequest( out: YawsHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
         var cookies = cookies
@@ -68,7 +64,9 @@ public class TickTackToe: YawsHTMLAppProcessor {
             }
         }
 
-        let scores = ", ".join( cookies.keys.map( { "\($0) wins: \(cookies[$0]!)" } ) )
+        let scores = ", ".join( cookies.keys
+            .filter( { $0 == "red" || $0 == "green" } )
+            .map( { "\($0) wins: \(cookies[$0]!)" } ) )
 
         out.print( html( nil ) + head( title( "Table Example" ) +
             style( "body, table { font: 10pt Arial; } " +
