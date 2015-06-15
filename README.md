@@ -1,9 +1,9 @@
 ## Yaws - Yet another Swift Web Server
 
-Yaws is a minimal single file implementation of a Web server written
-Swift that can also be used from Objective-C. It can serve static or dynamic content
-when used from the command line and includes "processors" for proxying http and https
-requests on your local host for debugging.
+Yaws is a minimal, 100% Swift, single file implementation of a Web server supporting SSL
+that can also be used from Objective-C. It can serve static or dynamic content and
+when used from the command line and includes "processors" for acting as a http and https
+proxy on your local host for debugging and tracing.
 
 Incorporating the YawsWebServer in your web server or application is simple. The initialiser
 takes a port number and a list of "processors" (applications or document processors)
@@ -23,7 +23,9 @@ option of processing them. The basic code pattern for initialisation in your app
     webView.mainFrame.loadRequest( NSURLRequest( URL: NSURL( string: "http://localhost:\(serverPort)" )! ) )
 ```
 
-A processor runs in it's own thread and is an instance of subclass of "YawsProcessor" that returns one of three values:
+See AppDelegate.swift in the example project for further details. 
+A processor runs in it's own thread and is an instance of subclass 
+of "YawsProcessor" that has the following signature:
 
 ```Swift
     @objc public enum YawsProcessed : Int {
@@ -43,12 +45,12 @@ A processor runs in it's own thread and is an instance of subclass of "YawsProce
 ```
 
 Other than this, once a YawsProcessor has recognised a request it can process it
-in any manner it chooses. It returns .ProcessedAndReusable if the connection can be
-reused (as can be done with HTTP/1.1) This requires a "Content-Length" HTTP header
-value to have been set.
+in any manner it pleases accessing the client through the YawsHTTPConnection class.
+It returns .ProcessedAndReusable if the connection can be reused (as can be done
+with HTTP/1.1) This requires a "Content-Length" HTTP header value to have been set.
 
 A user written subclass of one particular subclass of YawsProcessor, "YawsApplicationProcessor"
-receives the  query string, POST data and any Cookies preprocessed is used for dynamic content.
+receives the  query string, POST data and any Cookies preprocessed and is used for dynamic content.
 Application processors must provide a "pathPrefix" that will be matched against the
 first part of the URL to distinguish them from each other and the default document
 serving processor. After parsing the request processing is handed over to the user
@@ -60,8 +62,8 @@ written implementation of the following function.
     }
 ```
 
-Note: that while the "YawsHTTPConnection" object representing the request is transient,
-the procesor instance is persistent for the life of the server and can implement sessions
+Note: while the "YawsHTTPConnection" object representing the request is transient,
+the processor instance is persistent for the life of the server and must implement sessions
 or state as it chooses.
 
 A further subclass of YawsApplicationProcessor, "YawsHTMLAppProcessor" provides
@@ -97,15 +99,39 @@ up to any dynamic content to make sure it runs on the right host.
 ### Design
 
 YawsWebServer has been implemented using BSD sockets rather than Apple's CFSocket as I wasn't convinced 
-it was any less low level and I didn't want to tangle with run loops. Sticking to socket level and
-threading is also very fast and does not risk the possibility of deadlocks. If you don't share this decision
+it was any less low level and I didn't want to tangle with the main run loop. This also simplifies the
+parsing of the HTTP headers as they come in using the venerable "fgets". If you don't share this vision
 the classes YawsWebServer and YawsHTTPConnection where all this code is concentrated can be re-implemented
-without affecting the basic architecture of the server and affecting any of the "processor" code.
+without affecting the basic architecture of the server or affecting any of the "processor" code.
 
-"YawsHTMLAppProcessor"
-borrows it's design from the original Perl CGI module - the grand-daddy of all dynamic web content.
-This is my third and by far the cleanest Web server I've implemented in various languages and
-combines a lot of experience but thankfully none of the code from the "PSP" and "jhttpd" servers.
+One thing CFSocket/NSStreams does give however is support for an SSL server so a way had to be found
+to turn the "push" of CFSockets to the "pull" of the Yaws code. The solution was to run a separate
+CFSocket based SSL server as a proxy relaying decrypted data to a "surrogate" Yaws server on localhost
+satisfying both architectures. The code to generate the required certificates in DDKeychain.[nm] was taken from
+robbiehanson's [CocoaHTTPServer](https://github.com/robbiehanson/CocoaHTTPServer) under the following license:
+
+    Software License Agreement (BSD License)
+
+    Copyright (c) 2011, Deusty, LLC
+    All rights reserved.
+
+    Redistribution and use of this software in source and binary forms,
+    with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above
+    copyright notice, this list of conditions and the
+    following disclaimer.
+
+    * Neither the name of Deusty nor the names of its
+    contributors may be used to endorse or promote products
+    derived from this software without specific prior
+    written permission of Deusty, LLC.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+YawsHTMLAppProcessor borrows it's design from the original Perl CGI module the grand-daddy of all dynamic web
+content. This is my third and by far the cleanest Web server I've implemented in various languages 
+and combines the experience but thankfully none of the code from the "PSP" and "jhttpd" servers.
 
 Dynamic content can be coded entirely in Swift and one interesting use case is that it
 can be used inside an iOS or OS X app. This allows you to write a "lag free" portable web 

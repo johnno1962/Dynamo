@@ -17,14 +17,34 @@ class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate {
 
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         // Insert code here to initialize your application
-        let serverPort: UInt16 = 8080
+
+        let serverPort: UInt16 = 8080, sslServerPort: UInt16 = 9090
+
+        // create shared processors for server applications
+        let exampleTableGeneratorApp = YawsExampleAppProcessor( pathPrefix: "/example" )
+        let tickTackToeGame = TickTackToe()
+
+        // create non-SSL server/proxy on 8080
         YawsWebServer( portNumber: serverPort, processors: [
-            YawsExampleAppProcessor( pathPrefix: "/example" ),
-            TickTackToe(),
+            exampleTableGeneratorApp,
+            tickTackToeGame,
             YawsSSLProxyProcessor(),
             YawsProxyProcessor(),
             YawsDocumentProcessor( documentRoot: NSBundle.mainBundle().resourcePath! ),
         ] )
+
+        var certs = DDKeychain.SSLIdentityAndCertificates()
+        if certs.count == 0 {
+            DDKeychain.createNewIdentity()
+            certs = DDKeychain.SSLIdentityAndCertificates()
+        }
+
+        // create SSL server on port 9090
+        YawsSSLWebServer( portNumber: sslServerPort, pocessors: [
+            exampleTableGeneratorApp,
+            tickTackToeGame,
+            YawsDocumentProcessor( documentRoot: NSBundle.mainBundle().resourcePath! ),
+        ], certs: certs )
 
         webView.mainFrame.loadRequest( NSURLRequest( URL: NSURL( string: "http://localhost:\(serverPort)" )! ) )
     }

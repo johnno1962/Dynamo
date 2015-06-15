@@ -20,18 +20,24 @@ private class TickTackGameEngine {
             board[0][1] == middle && middle == board[2][1] ||
             board[0][0] == middle && middle == board[2][2] ||
             board[0][2] == middle && middle == board[2][0] {
-                won = middle
+                if middle != "white" {
+                    won = middle
+                }
         }
-        else if board[0][0] == board[0][1] && board[0][1] == board[0][2] ||
+        if board[0][0] == board[0][1] && board[0][1] == board[0][2] ||
             board[0][0] == board[1][0] && board[1][0] == board[2][0] {
-                won = board[0][0]
+                if board[0][0] != "white" {
+                    won = board[0][0]
+                }
         }
-        else if board[0][2] == board[1][2] && board[1][2] == board[2][2] ||
+        if board[0][2] == board[1][2] && board[1][2] == board[2][2] ||
             board[2][0] == board[2][1] && board[2][1] == board[2][2] {
-                won = board[2][2]
+                if board[2][2] != "white" {
+                    won = board[2][2]
+                }
         }
 
-        return won != "white" ? won : nil
+        return won
     }
 
 }
@@ -47,13 +53,17 @@ public class TickTackToe: YawsHTMLAppProcessor {
     override public func processRequest( out: YawsHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
         var cookies = cookies
 
+        let webDateFormatter = NSDateFormatter()
+        webDateFormatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
+        out.addHeader( "Date", value: webDateFormatter.stringFromDate( NSDate() ) )
+
         // reset board and keep scores
         if let whoWon = parameters["reset"] {
             engine = TickTackGameEngine()
             if whoWon != "draw" {
                 let newCount = cookies[whoWon] ?? "0"
                 let newValue = "\(newCount.toInt()!+1)"
-                out.setCookie( whoWon, value: newValue )
+                out.setCookie( whoWon, value: newValue, expires: 60 )
                 cookies[whoWon] = newValue
             }
         }
@@ -99,7 +109,7 @@ public class TickTackToe: YawsHTMLAppProcessor {
         var won = engine.winner()
 
         if won != nil {
-            out.print( script( "alert( '\(player) has won' ); document.location.href = '/ticktacktoe?reset=\(won!)';" ) )
+            out.print( script( "alert( '\(player) wins' ); document.location.href = '/ticktacktoe?reset=\(won!)';" ) )
         }
         else if played == 9 {
             out.print( script( "alert( 'It\\'s a draw!' ); document.location.href = '/ticktacktoe?reset=draw';" ) )

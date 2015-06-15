@@ -5,12 +5,14 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Yaws/Yaws/Yaws.swift#28 $
+//  $Id: //depot/Yaws/Yaws/Yaws.swift#44 $
 //
 //  Repo: https://github.com/johnno1962/Yaws
 //
 
 import Foundation
+
+// MARK: Example web application
 
 public class YawsExampleAppProcessor : YawsHTMLAppProcessor {
 
@@ -68,8 +70,12 @@ public class YawsExampleAppProcessor : YawsHTMLAppProcessor {
     
 }
 
+// MARK: Private functions
+
+private let yawsSSLQueue = dispatch_queue_create( "YawsSSLThread", DISPATCH_QUEUE_CONCURRENT )
 private let yawsQueue = dispatch_queue_create( "YawsThread", DISPATCH_QUEUE_CONCURRENT )
-private let htons  = Int(OSHostByteOrder()) == OSLittleEndian ? _OSSwapInt16 : { $0 }
+private let htons = Int(OSHostByteOrder()) == OSLittleEndian ? _OSSwapInt16 : { $0 }
+private let ntohs = htons
 private let INADDR_ANY = in_addr_t(0)
 
 private func sockaddr_cast(p: UnsafeMutablePointer<sockaddr_in>) -> UnsafeMutablePointer<sockaddr> {
@@ -78,6 +84,16 @@ private func sockaddr_cast(p: UnsafeMutablePointer<sockaddr_in>) -> UnsafeMutabl
 
 private func sockaddr_cast6(p: UnsafeMutablePointer<sockaddr_in6>) -> UnsafeMutablePointer<sockaddr> {
     return UnsafeMutablePointer<sockaddr>(p)
+}
+
+private func setupSocket( socket: Int32 ) {
+    var yes: u_int = 1, yeslen = socklen_t(sizeof(yes.dynamicType))
+    if setsockopt( socket, SOL_SOCKET, SO_NOSIGPIPE, &yes, yeslen ) < 0 {
+        Strerror( "Could not set SO_NOSIGPIPE" )
+    }
+    if setsockopt( socket, IPPROTO_TCP, TCP_NODELAY, &yes, yeslen ) < 0 {
+        Strerror( "Could not set TCP_NODELAY" )
+    }
 }
 
 private func yawsTrace<T>( msg: T ) {
@@ -92,6 +108,8 @@ private func Strerror( msg: String ) {
     yawsLog( msg+" - "+String( UTF8String: strerror(errno) )! )
 }
 
+// MARK: Basic http: Web server
+
 @objc public enum YawsProcessed : Int {
     case
         NotProcessed, // does not recogise the request
@@ -99,10 +117,55 @@ private func Strerror( msg: String ) {
         ProcessedAndReusable // "" and connection may be reused
 }
 
-@objc public class YawsWebServer : NSObject {
+public class YawsWebServer : NSObject, NSStreamDelegate {
 
-    @objc public init?( portNumber: UInt16, processors: [YawsProcessor], localhostOnly: Bool = false ) {
-        super.init()
+    private let serverSocket: Int32
+    public var serverPort: UInt16 = 0
+
+    public convenience init?( portNumber: UInt16, processors: [YawsProcessor], localhostOnly: Bool = false ) {
+
+        self.init( portNumber, localhostOnly: localhostOnly )
+
+        if serverPort != 0 {
+            runConnectionHandler( {
+                (clientSocket: Int32) in
+
+                let yawsClient = YawsHTTPConnection( clientSocket: clientSocket )
+
+                while yawsClient.readHeaders() {
+                    var processed = false
+
+                    for processor in processors {
+
+                        switch processor.process( yawsClient ) {
+                        case .NotProcessed:
+                            continue
+                        case .Processed:
+                            return
+                        case .ProcessedAndReusable:
+                            yawsClient.flush()
+                            processed = true
+                            break
+                        }
+
+                        break
+                    }
+
+                    if !processed {
+                        yawsClient.status = 500
+                        yawsClient.print( "Invalid request: \(yawsClient.method) \(yawsClient.uri) \(yawsClient.httpVersion)" )
+                        return
+                    }
+                }
+
+            } )
+        }
+        else {
+            return nil
+        }
+    }
+
+    private init( _ portNumber: UInt16, localhostOnly: Bool ) {
 
         var ip4addr = sockaddr_in(sin_len: UInt8(sizeof(sockaddr_in)),
             sin_family: sa_family_t(AF_INET),
@@ -114,77 +177,211 @@ private func Strerror( msg: String ) {
             inet_aton( "127.0.0.1", &ip4addr.sin_addr )
         }
 
-        let serverSocket = socket( Int32(ip4addr.sin_family), SOCK_STREAM, 0 )
+        serverSocket = socket( Int32(ip4addr.sin_family), SOCK_STREAM, 0 )
         var yes: u_int = 1, yeslen = socklen_t(sizeof(yes.dynamicType))
 
         if serverSocket < 0 {
             Strerror( "Could not get mutlicast socket" )
         }
-//        else if fcntl( filedesc, F_SETFD, FD_CLOEXEC ) < 0 {
-//            Strerror( "Could not set close exec" )
-//        }
         else if setsockopt( serverSocket, SOL_SOCKET, SO_REUSEADDR, &yes, yeslen ) < 0 {
             Strerror( "Could not set SO_REUSEADDR" )
-        }
-        else if setsockopt( serverSocket, IPPROTO_TCP, TCP_NODELAY, &yes, yeslen ) < 0 {
-            Strerror( "Could not set TCP_NODELAY" )
         }
         else if Darwin.bind( serverSocket, sockaddr_cast(&ip4addr), socklen_t(ip4addr.sin_len) ) < 0 {
             Strerror( "Could not bind service socket on port \(portNumber)" )
         }
         else if listen( serverSocket, 50 ) < 0 {
             Strerror( "Service socket would not listen" )
-        } else {
-            dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), {
-
-                while serverSocket >= 0 {
-                    var addrLen = socklen_t(sizeof(ip4addr.dynamicType))
-                    let clientSocket = accept( serverSocket, sockaddr_cast(&ip4addr), &addrLen )
-
-                    if clientSocket >= 0 {
-                        dispatch_async( yawsQueue, {
-                            if setsockopt( clientSocket, SOL_SOCKET, SO_NOSIGPIPE, &yes, yeslen ) < 0 {
-                                Strerror( "Could not set SO_NOSIGPIPE" )
-                            }
-                            
-                            let yawsClient = YawsHTTPConnection( clientSocket: clientSocket )
-
-                            while yawsClient.readHeaders() {
-                                var processed = false
-
-                                for processor in processors {
-
-                                    switch processor.process( yawsClient ) {
-                                    case .NotProcessed:
-                                        continue
-                                    case .Processed:
-                                        return
-                                    case .ProcessedAndReusable:
-                                        yawsClient.flush()
-                                        processed = true
-                                        break
-                                    }
-
-                                    break
-                                }
-
-                                if !processed {
-                                    yawsClient.status = 500
-                                    yawsClient.print( "Invalid request: \(yawsClient.method) \(yawsClient.uri) \(yawsClient.httpVersion)" )
-                                    return
-                                }
-                            }
-                        } )
-                    }
-                }
-            } )
-
-            return
+        }
+        else {
+            var addrLen = socklen_t(sizeof(ip4addr.dynamicType))
+            if getsockname( serverSocket, sockaddr_cast(&ip4addr), &addrLen ) == 0 {
+                serverPort = ntohs( ip4addr.sin_port )
+            }
         }
 
-        return nil
+        super.init()
+    }
+
+    private func runConnectionHandler( connectionHandler: (Int32) -> Void ) {
+        dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), {
+            while self.serverSocket >= 0 {
+
+                let clientSocket = accept( self.serverSocket, nil, nil )
+
+                if clientSocket >= 0 {
+                    dispatch_async( yawsQueue, {
+                        setupSocket( clientSocket )
+                        connectionHandler( clientSocket )
+                    } )
+                }
+            }
+        } )
+    }
+
+}
+
+// MARK: SSL https: Web Server
+
+public class YawsSSLWebServer : YawsWebServer, NSStreamDelegate {
+
+    private var relayMap = [NSStream:YawsSSLRelay]()
+
+    public init?( portNumber: UInt16, pocessors: [YawsProcessor], certs: [AnyObject]? ) {
+
+        var nonSSLPortOnLocalhost = portNumber-1
+
+        // port number 0 uses any available port
+        if let surrogateServer = YawsWebServer( portNumber: 0, processors: pocessors, localhostOnly: true ) {
+            nonSSLPortOnLocalhost = surrogateServer.serverPort
+            yawsLog( "Surrogate server on port \(nonSSLPortOnLocalhost)" )
+        }
+
+        super.init( portNumber, localhostOnly: false )
+
+        if serverPort != 0 {
+
+            var ip4addr = sockaddr_in(sin_len: UInt8(sizeof(sockaddr_in)),
+                sin_family: sa_family_t(AF_INET),
+                sin_port: htons( nonSSLPortOnLocalhost ), sin_addr: in_addr(s_addr:INADDR_ANY),
+                sin_zero: (Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0)))
+
+            let localhost = "127.0.0.1"
+            inet_aton( localhost, &ip4addr.sin_addr )
+
+            runConnectionHandler( {
+                (clientSocket: Int32) in
+
+                let localSocket = socket( Int32(ip4addr.sin_family), SOCK_STREAM, 0 )
+                if localSocket < 0 {
+                    Strerror( "Could not obtain socket" )
+                }
+                else if connect( localSocket, sockaddr_cast(&ip4addr), socklen_t(ip4addr.sin_len) ) < 0 {
+                    Strerror( "Could not connect to: \(localhost):\(nonSSLPortOnLocalhost)" )
+                }
+                else {
+                    setupSocket( localSocket )
+
+                    let relay = YawsSSLRelay( clientSocket, localSocket, server: self, certs: certs )
+
+                    dispatch_async( yawsSSLQueue, {
+                        var buffer = [UInt8](count: 8192, repeatedValue: 0)
+                        while true {
+                            let bytesRead = recv( localSocket, &buffer, buffer.count, 0 )
+                            if bytesRead <= 0 {
+                                self.close( relay.outputStream )
+                                return
+                            }
+                            else {
+                                var ptr = 0
+                                while ptr < bytesRead {
+                                    let remaining = UnsafePointer<UInt8>(buffer)+ptr
+                                    let bytesWritten = relay.outputStream.write( remaining, maxLength: bytesRead-ptr )
+                                    if bytesWritten <= 0 {
+                                        yawsLog( "Short write on relay" )
+                                        self.close( relay.outputStream )
+                                        return
+                                    }
+                                    ptr += bytesWritten
+                                }
+                            }
+                        }
+                    } )
+                }
+            } )
+        }
+        else {
+            return nil
+        }
+    }
+
+    public func stream( aStream: NSStream, handleEvent eventCode: NSStreamEvent ) {
+        switch eventCode {
+        case NSStreamEvent.HasBytesAvailable:
+            var buffer = [UInt8](count: 8192, repeatedValue: 0)
+            let bytesRead = (aStream as! NSInputStream).read( &buffer, maxLength: buffer.count )
+            if bytesRead < 0 {
+                close( aStream )
+            }
+            else if let relay = relayMap[aStream] {
+                if send( relay.localSocket, &buffer, bytesRead, 0 ) != bytesRead {
+                    yawsLog( "Short write to surrogate" )
+                }
+            }
+        case NSStreamEvent.ErrorOccurred:
+            println( "ErrorOccurred: \(aStream) \(eventCode)" )
+            fallthrough
+        case NSStreamEvent.EndEncountered:
+            close( aStream )
+        default:
+            break
+        }
+    }
+
+    func close( aStream: NSStream ) {
+        if let relay = relayMap[aStream] {
+            relayMap.removeValueForKey( relay.inputStream )
+            relayMap.removeValueForKey( relay.outputStream )
+            relay.closer()
+        }
     }
 }
+
+private class YawsSSLRelay {
+
+    let clientSocket: Int32
+    let localSocket: Int32
+    let inputStream: NSInputStream
+    let outputStream: NSOutputStream
+
+    init( _ clientSocket: Int32, _ localSocket: Int32, server: YawsSSLWebServer, certs: [AnyObject]? ) {
+
+        self.clientSocket = clientSocket
+        self.localSocket = localSocket
+
+        var readStream:  Unmanaged<CFReadStream>?
+        var writeStream: Unmanaged<CFWriteStream>?
+
+        CFStreamCreatePairWithSocket( nil, clientSocket, &readStream, &writeStream )
+
+        inputStream = readStream!.takeRetainedValue()
+        outputStream = writeStream!.takeRetainedValue()
+
+        server.relayMap[outputStream] = self
+        server.relayMap[inputStream] = self
+
+        outputStream.delegate = server
+        inputStream.delegate = server
+
+        inputStream.scheduleInRunLoop( NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode )
+        outputStream.scheduleInRunLoop( NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode )
+
+        inputStream.open()
+        outputStream.open()
+
+        if certs != nil {
+            let sslSettings: [NSString:AnyObject] = [
+                kCFStreamSSLIsServer: NSNumber( bool: true ),
+                kCFStreamSSLLevel: kCFStreamSSLLevel,
+                kCFStreamSSLCertificates: certs!
+            ]
+
+            CFReadStreamSetProperty( inputStream, kCFStreamPropertySSLSettings, sslSettings )
+            CFWriteStreamSetProperty( outputStream, kCFStreamPropertySSLSettings, sslSettings )
+        }
+    }
+
+    func closer() {
+        outputStream.removeFromRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
+        inputStream.removeFromRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
+        outputStream.close()
+        inputStream.close()
+        close( clientSocket )
+        close( localSocket )
+    }
+
+}
+
+// MARK: HTTP request parser
 
 private let dummyBase = NSURL( string: "http://nohost" )!
 private var yawsRelayThreads = 0
@@ -229,7 +426,7 @@ public var yawsStatusText = [
                     sin_port: htons( port ), sin_addr: addr0.memory,
                     sin_zero: (Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0)))
                 sockadddr = sockaddr_cast(&ip4addr)
-            case AF_INET6: // TODO completely untested
+            case AF_INET6: // TODO... completely untested
                 let addr0 = UnsafePointer<in6_addr>(addrList.memory)
                 var ip6addr = sockaddr_in6(sin6_len: UInt8(sizeof(sockaddr_in6)),
                     sin6_family: sa_family_t(addr.memory.h_addrtype),
@@ -247,14 +444,10 @@ public var yawsStatusText = [
                 Strerror( "Could not obtain socket" )
             }
             else if connect( remoteSocket, sockadddr, socklen_t(sockadddr.memory.sa_len) ) < 0 {
-                Strerror( "Could not connect to: \(host)" )
+                Strerror( "Could not connect to: \(host):\(port)" )
             }
             else {
-                var yes: u_int = 1, yeslen = socklen_t(sizeof(yes.dynamicType))
-                if setsockopt( remoteSocket, SOL_SOCKET, SO_NOSIGPIPE, &yes, yeslen ) < 0 {
-                    Strerror( "Could not set SO_NOSIGPIPE" )
-                }
-
+                setupSocket( remoteSocket )
                 self.init( clientSocket: remoteSocket )
                 return
             }
@@ -274,7 +467,7 @@ public var yawsStatusText = [
     func write( buffer: UnsafePointer<Void>, count: Int ) -> Int {
         return fwrite( buffer, 1, count, writeFILE )
     }
-    
+
     func readHeaders() -> Bool {
         if let request = readLine() {
             yawsTrace(request)
@@ -294,7 +487,7 @@ public var yawsStatusText = [
             status = 200
 
             while let line = readLine() {
-                yawsTrace(line)
+                yawsTrace( line )
                 let nameValue = split( line, maxSplit: 1, allowEmptySlices: true, isSeparator: { $0 == ":" } )
                 if nameValue.count < 2 {
                     return true
@@ -321,6 +514,27 @@ public var yawsStatusText = [
         }
     }
 
+    private let cr = Int8(("\r" as NSString).characterAtIndex(0)), nl = Int8(("\n" as NSString).characterAtIndex(0))
+
+    func readLine2() -> String? {
+        var ptr = 0
+        while ptr < buffer.count-1 {
+            if recv( clientSocket, &buffer[ptr], 1, 0 ) != 1 {
+                return nil
+            }
+            if buffer[ptr] == cr {
+                continue
+            }
+            if buffer[ptr] == nl {
+                break
+            }
+            ptr++
+        }
+        buffer[ptr] = 0
+        return String( UTF8String: buffer )?
+            .stringByTrimmingCharactersInSet( NSCharacterSet.whitespaceAndNewlineCharacterSet() )
+    }
+
     func readPost() -> String? {
         if let postLength = contentLength() {
             var buffer = [Int8](count: postLength+1, repeatedValue: 0)
@@ -343,6 +557,7 @@ public var yawsStatusText = [
     public func setCookie( name: String, value: String, domain: String? = nil, path: String? = nil, expires: Int? = nil ) {
         if responseHeaders != nil {
             var value = "\(name)=\(value.stringByAddingPercentEscapesUsingEncoding( NSUTF8StringEncoding )!)"
+
             if domain != nil {
                 value += "; Domain="+domain!
             }
@@ -350,8 +565,15 @@ public var yawsStatusText = [
                 value += "; Path="+path!
             }
             if expires != nil {
-                yawsLog( "Cookie expiry not implemented" ) // TODO
+                let webDateFormatter = NSDateFormatter()
+                webDateFormatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
+                addHeader( "Date", value: webDateFormatter.stringFromDate( NSDate() ) )
+                let cookieDateFormatter = NSDateFormatter()
+                cookieDateFormatter.dateFormat = "EEE, dd-MMM-yyyy HH:mm:ss zzz"
+                let expires = NSDate().dateByAddingTimeInterval( NSTimeInterval(expires!) )
+                value += "; Expires=" + cookieDateFormatter.stringFromDate( expires )
             }
+
             addHeader( "Set-Cookie", value: value )
         }
         else {
@@ -366,7 +588,7 @@ public var yawsStatusText = [
             }
 
             let statusText = yawsStatusText[status] ?? "Unknown Status"
-            rawPrint( "HTTP/1.1 \(status) \(statusText)\r\n\(responseHeaders)\r\n" )
+            rawPrint( "\(httpVersion) \(status) \(statusText)\r\n\(responseHeaders)\r\n" )
             self.responseHeaders = nil
         }
     }
@@ -396,8 +618,7 @@ public var yawsStatusText = [
             var buffer = [Int8](count: 8192, repeatedValue: 0)
 
             while true {
-                let bytesRead = recv( Int32(self.clientSocket), &buffer, buffer.count, 0 )
-                logger( "Relaying \(label) \(bytesRead) bytes (\(yawsRelayThreads)/\(self.clientSocket))" )
+                let bytesRead = recv( self.clientSocket, &buffer, buffer.count, 0 )
                 if bytesRead <= 0 ||
                     send( Int32(to.clientSocket), &buffer, bytesRead, 0 ) != bytesRead {
                         break
@@ -418,6 +639,8 @@ public var yawsStatusText = [
 
 }
 
+// MARK: PROCESSORS
+
 public class YawsProcessor: NSObject {
 
     @objc func process( yawsClient: YawsHTTPConnection ) -> YawsProcessed {
@@ -425,6 +648,8 @@ public class YawsProcessor: NSObject {
     }
 
 }
+
+// MARK: Proxy Processors
 
 public class YawsSSLProxyProcessor : YawsProxyProcessor {
 
@@ -483,6 +708,8 @@ public class YawsProxyProcessor : YawsProcessor {
     
 }
 
+// MARK: Processors for dynamic content
+
 public class YawsApplicationProcessor : YawsProcessor {
 
     let pathPrefix: String
@@ -520,7 +747,7 @@ public class YawsApplicationProcessor : YawsProcessor {
     }
 
     private func addParameters(  inout parameters: [String:String], from queryString: String, delimeter: String = "&" ) {
-        for nameValue in queryString.componentsSeparatedByString( "&" ) {
+        for nameValue in queryString.componentsSeparatedByString( delimeter ) {
             let nameValue = split( nameValue, maxSplit: 2, allowEmptySlices: true, isSeparator: { $0 == "=" } )
             parameters[nameValue[0]] = nameValue.count > 1 ? nameValue[1].stringByRemovingPercentEncoding! : ""
         }
@@ -539,6 +766,8 @@ private func htmlEscape( attrValue: String ) -> String {
         .stringByReplacingOccurrencesOfString( "<", withString: "&lt;" )
         .stringByReplacingOccurrencesOfString( ">", withString: "&gt;" )
 }
+
+// MARK: HTML Generator
 
 public class YawsHTMLAppProcessor : YawsApplicationProcessor {
 
@@ -1660,6 +1889,8 @@ public class YawsHTMLAppProcessor : YawsApplicationProcessor {
     }
 
 }
+
+// MARK: Document Processors
 
 public var yawsHtmlMimeType = "text/html; charset=utf-8"
 public var yawsMimeTypeMapping = [
