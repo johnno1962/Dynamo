@@ -64,7 +64,7 @@ written implementation of the following function.
 
 Note: while the "YawsHTTPConnection" object representing the request is transient,
 the processor instance is persistent for the life of the server so you may want to
-look at using a the "YawsSessionProcessor" subclass.
+look at the "YawsSessionProcessor" subclass.
 
 A further subclass of YawsApplicationProcessor, "YawsHTMLAppProcessor" provides
 functions to generate balanced HTML tags easily using functions. for example:
