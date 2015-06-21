@@ -1,5 +1,5 @@
 
-# ![Icon](http://johnholdsworth.com/dynamo/dynamo.jpg) Dynamo - Dynamic Swift Web Server
+# Dynamo - Dynamic Swift Web Server
 
 Dynamo is a minimal, Swift implementation of a Web server supporting SSL that can also be used
 in Objective-C applications. Dynamic content can be provided in what you could
