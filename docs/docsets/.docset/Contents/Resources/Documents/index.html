@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+  </head>
+  <body>
+    <a title="  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html"> Docs</a> (4% documented)</p>
+        <p class="header-right"><a href=""><img src="img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="index.html"> Reference</a>
+        <img id="carat" src="img/carat.png" />
+          Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+          <a href="Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Classes/DynamoApplicationProcessor.html">DynamoApplicationProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DynamoDocumentProcessor.html">DynamoDocumentProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DynamoExampleAppProcessor.html">DynamoExampleAppProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DynamoHTMLAppProcessor.html">DynamoHTMLAppProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DynamoHTTPConnection.html">DynamoHTTPConnection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DynamoLoggingProcessor.html">DynamoLoggingProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DynamoProxyProcessor.html">DynamoProxyProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DynamoReloadingProcessor.html">DynamoReloadingProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DynamoSSLProxyProcessor.html">DynamoSSLProxyProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DynamoSSLWebServer.html">DynamoSSLWebServer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DynamoSessionBasedApplication.html">DynamoSessionBasedApplication</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DynamoSessionProcessor.html">DynamoSessionProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DynamoSwiftServerPagesProcessor.html">DynamoSwiftServerPagesProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DynamoWebServer.html">DynamoWebServer</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+          <a href="Global Variables.html">Global Variables</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Global Variables.html#/s:v6Dynamo18dynamoHtmlMimeTypeSS">dynamoHtmlMimeType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Global Variables.html#/s:v6Dynamo21dynamoMimeTypeMappingGVSs10DictionarySSSS_">dynamoMimeTypeMapping</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Global Variables.html#/s:v6Dynamo16dynamoStatusTextGVSs10DictionarySiSS_">dynamoStatusText</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Global Variables.html#/s:v6Dynamo27dynanmoDefaultSessionExpirySd">dynanmoDefaultSessionExpiry</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+          <a href="Enums.html">Enums</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Enums.html#/s:O6Dynamo15DynamoProcessed">DynamoProcessed</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+          <a href="Functions.html">Functions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:F6Dynamo14addressForHostFTCSo8NSStringVSs6UInt16_GSqVSC8sockaddr_">addressForHost(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Functions.html#/s:F6Dynamo11dynamoTraceU__FQ_T_">dynamoTrace(_:)</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+          <a href="Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Protocols/DynamoApplicationProtoccol.html">DynamoApplicationProtoccol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/DynamoProcessor.html">DynamoProcessor</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            
+            <a href='#dynamo_100_swift_dynamic_web_server' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h2 id='dynamo_100_swift_dynamic_web_server'>Dynamo - 100% Swift Dynamic Web Server</h2>
+
+<p>Dynamo is a minimal, 100% Swift, single file implementation of a Web server supporting SSL
+that can also be used from Objective-C. It can serve static or dynamic content and
+when used from the command line and includes <q>processors</q> for acting as a http and https
+proxy on your local host for debugging and tracing.</p>
+
+<p>Incorporating the DynamoWebServer in your web server or application is simple. The initialiser
+takes a port number and a list of <q>processors</q> (applications or document processors)
+that will each be presented the incoming requests in the order specified and have the
+option of processing them. The basic code pattern for initialisation in your app delegate is:</p>
+<pre class="highlight plaintext"><code>    let serverPort: UInt16 = 8080
+    DynamoWebServer( portNumber: serverPort, processors: [
+        DynamoExampleAppProcessor( pathPrefix: "/example" ),
+        TickTackToe(),
+        DynamoSSLProxyProcessor(),
+        DynamoProxyProcessor(),
+        DynamoDocumentProcessor( documentRoot: NSBundle.mainBundle().resourcePath! ),
+    ] )
+
+    webView.mainFrame.loadRequest( NSURLRequest( URL: NSURL( string: "http://localhost:\(serverPort)" )! ) )
+</code></pre>
+
+<p>See AppDelegate.swift in the example project for further details. 
+A processor runs in it&rsquo;s own thread and is an instance of subclass 
+of <q>DynamoProcessor</q> that has the following signature:</p>
+<pre class="highlight plaintext"><code>    @objc public enum DynamoProcessed : Int {
+    case
+        NotProcessed, // does not recognise the request
+        Processed, // has processed the request
+        ProcessedAndReusable // "" and connection may be reused
+    }
+
+    public class DynamoProcessor: NSObject {
+
+        @objc func process( DynamoClient: DynamoHTTPConnection ) -&gt; DynamoProcessed {
+            fatalError( "DynamoProcessor: Abstract method process() called" )
+        }
+
+    }
+</code></pre>
+
+<p>Other than this, once a DynamoProcessor has recognised a request it can process it
+in any manner it pleases accessing the client through the DynamoHTTPConnection class.
+It returns .ProcessedAndReusable if the connection can be reused (as can be done
+with HTTP/1.1) This requires a <q>Content-Length</q> HTTP header value to have been set.</p>
+
+<p>A user written subclass of one particular subclass of DynamoProcessor, <q>DynamoApplicationProcessor</q>
+receives the  query string, POST data and any Cookies preprocessed and is used for dynamic content.
+Application processors must provide a <q>pathPrefix</q> that will be matched against the
+first part of the URL to distinguish them from each other and the default document
+serving processor. After parsing the request processing is handed over to the user
+written implementation of the following function.</p>
+<pre class="highlight plaintext"><code>    @objc public func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
+        fatalError( "Application Subclass responsibility" )
+    }
+</code></pre>
+
+<p>Note: while the <q>DynamoHTTPConnection</q> object representing the request is transient,
+the processor instance is persistent for the life of the server so you may want to
+look at the <q>DynamoSessionProcessor</q> subclass.</p>
+
+<p>A further subclass of DynamoApplicationProcessor, <q>DynamoHTMLAppProcessor</q> provides
+functions to generate balanced HTML tags easily using functions. for example:</p>
+<pre class="highlight plaintext"><code>    out.print( html( nil ) + head( title( "Table Example" ) +
+        style( "body, table { font: 10pt Arial" ) ) + body( nil ) )
+
+    if parameters["width"] == nil {
+        out.print( h3( "Quick table creation example" ) )
+        out.print(
+            form( ["method":"GET"],
+                table(
+                    tr( td( "Width: " ) + td( input( ["type":"textfield", "name":"width"] ) ) ) +
+                    tr( td( "Height: " ) + td( input( ["type":"textfield", "name":"height"] ) ) ) +
+                    tr( td( ["colspan":"2"], input( ["type": "submit"] )) )
+                )
+            )
+        )
+    }
+</code></pre>
+
+<p>In these tag functions an optional dictionary of attributes for the tag can be supplied 
+and a contents of nil specifies not to close the tag.</p>
+
+<p>A final processor, the <q>DynamoDocumentProcessor</q> generally takes the end of the chain
+serving documents from a document root (which can be your app’s resource directory.)
+A subclass of this, the <q>MultiHostProcessor</q> can be used to implement multiple
+sites on one server using the <q>Host:</q> http request header. In this case it&rsquo;s
+up to any dynamic content to make sure it runs on the right host.</p>
+<a href='#design' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='design'>Design</h3>
+
+<p>DynamoWebServer has been implemented using BSD sockets rather than Apple&rsquo;s CFSocket as I wasn&rsquo;t convinced 
+it was any less low level and I didn&rsquo;t want to tangle with the main run loop. This also simplifies the
+parsing of the HTTP headers as they come in using the venerable <q>fgets</q>. If you don&rsquo;t share this vision
+the classes DynamoWebServer and DynamoHTTPConnection where all this code is concentrated can be re-implemented
+without affecting the basic architecture of the server or affecting any of the <q>processor</q> code.</p>
+
+<p>One thing CFSocket/NSStreams does give however is support for an SSL server so a way had to be found
+to turn the <q>push</q> of CFSockets to the <q>pull</q> of the Dynamo code. The solution was to run a separate
+CFSocket based SSL server as a proxy relaying decrypted data to a <q>surrogate</q> Dynamo server on localhost
+satisfying both architectures. The code to generate the required certificates in DDKeychain.[nm] was taken from
+robbiehanson&rsquo;s <a href="https://github.com/robbiehanson/CocoaHTTPServer">CocoaHTTPServer</a> under the following license:</p>
+<pre class="highlight plaintext"><code>Software License Agreement (BSD License)
+
+Copyright (c) 2011, Deusty, LLC
+All rights reserved.
+
+Redistribution and use of this software in source and binary forms,
+with or without modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above
+copyright notice, this list of conditions and the
+following disclaimer.
+
+* Neither the name of Deusty nor the names of its
+contributors may be used to endorse or promote products
+derived from this software without specific prior
+written permission of Deusty, LLC.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</code></pre>
+
+<p>DynamoHTMLAppProcessor borrows it&rsquo;s design from the original Perl CGI module the grand-daddy of all dynamic web
+content. This is my third and by far the cleanest Web server I&rsquo;ve implemented in various languages 
+and combines the experience but thankfully none of the code from the <q>PSP</q> and <q>jhttpd</q> servers.</p>
+
+<p>Dynamic content can be coded entirely in Swift and one interesting use case is that it
+can be used inside an iOS or OS X app. This allows you to write a <q>lag free</q> portable web 
+interface connecting to the embedded server on the local device rather than a remote server. 
+This is shown in the two examples included in the release.</p>
+
+<p><img src="http://injectionforxcode.johnholdsworth.com/Dynamo2.png" alt="Icon"></p>
+
+<p>As ever, announcements of major commits to the repo will be made on twitter 
+<a href="https://twitter.com/#!/@Injection4Xcode">@Injection4Xcode</a>.</p>
+
+<p>Enjoy!</p>
+<a href='#mit_license' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='mit_license'>MIT License</h3>
+
+<p>Copyright &copy; 2015 John Holdsworth</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
+documentation files (the <q>Software</q>), to deal in the Software without restriction, including without limitation 
+the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, 
+and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial 
+portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED <q>AS IS</q>, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2015 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2015-06-21)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.2.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>DynamoHTTPConnection Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/DynamoHTTPConnection" class="dashAnchor"></a>
+    <a title="DynamoHTTPConnection Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html"> Docs</a> (4% documented)</p>
+        <p class="header-right"><a href=""><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html"> Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        DynamoHTTPConnection Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+          <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/DynamoApplicationProcessor.html">DynamoApplicationProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DynamoDocumentProcessor.html">DynamoDocumentProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DynamoExampleAppProcessor.html">DynamoExampleAppProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DynamoHTMLAppProcessor.html">DynamoHTMLAppProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DynamoHTTPConnection.html">DynamoHTTPConnection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DynamoLoggingProcessor.html">DynamoLoggingProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DynamoProxyProcessor.html">DynamoProxyProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DynamoReloadingProcessor.html">DynamoReloadingProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DynamoSSLProxyProcessor.html">DynamoSSLProxyProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DynamoSSLWebServer.html">DynamoSSLWebServer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DynamoSessionBasedApplication.html">DynamoSessionBasedApplication</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DynamoSessionProcessor.html">DynamoSessionProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DynamoSwiftServerPagesProcessor.html">DynamoSwiftServerPagesProcessor</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DynamoWebServer.html">DynamoWebServer</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+          <a href="../Global Variables.html">Global Variables</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Global Variables.html#/s:v6Dynamo18dynamoHtmlMimeTypeSS">dynamoHtmlMimeType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Global Variables.html#/s:v6Dynamo21dynamoMimeTypeMappingGVSs10DictionarySSSS_">dynamoMimeTypeMapping</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Global Variables.html#/s:v6Dynamo16dynamoStatusTextGVSs10DictionarySiSS_">dynamoStatusText</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Global Variables.html#/s:v6Dynamo27dynanmoDefaultSessionExpirySd">dynanmoDefaultSessionExpiry</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+          <a href="../Enums.html">Enums</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums.html#/s:O6Dynamo15DynamoProcessed">DynamoProcessed</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+          <a href="../Functions.html">Functions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:F6Dynamo14addressForHostFTCSo8NSStringVSs6UInt16_GSqVSC8sockaddr_">addressForHost(_:_:)</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:F6Dynamo11dynamoTraceU__FQ_T_">dynamoTrace(_:)</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+          <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/DynamoApplicationProtoccol.html">DynamoApplicationProtoccol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/DynamoProcessor.html">DynamoProcessor</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>DynamoHTTPConnection</h1>
+            <p>Class representing a connection to a client web browser. One is created each time the server
+connects to read the standard HTTP headers ready to present to each of the processors of the server.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC6Dynamo20DynamoHTTPConnection6methodSS"></a>
+                    <a name="//apple_ref/swift/Property/method" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC6Dynamo20DynamoHTTPConnection6methodSS">method</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC6Dynamo20DynamoHTTPConnection3urlCSo5NSURL"></a>
+                    <a name="//apple_ref/swift/Property/url" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC6Dynamo20DynamoHTTPConnection3urlCSo5NSURL">url</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC6Dynamo20DynamoHTTPConnection6statusSi"></a>
+                    <a name="//apple_ref/swift/Property/status" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC6Dynamo20DynamoHTTPConnection6statusSi">status</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC6Dynamo20DynamoHTTPConnection9addHeaderFS0_FTSS5valueSS_T_"></a>
+                    <a name="//apple_ref/swift/Method/addHeader(_:value:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo20DynamoHTTPConnection9addHeaderFS0_FTSS5valueSS_T_">addHeader(_:value:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC6Dynamo20DynamoHTTPConnection9setCookieFS0_FTSS5valueSS6domainGSqSS_4pathGSqSS_7expiresGSqSi__T_"></a>
+                    <a name="//apple_ref/swift/Method/setCookie(_:value:domain:path:expires:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo20DynamoHTTPConnection9setCookieFS0_FTSS5valueSS6domainGSqSS_4pathGSqSS_7expiresGSqSi__T_">setCookie(_:value:domain:path:expires:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC6Dynamo20DynamoHTTPConnection8rawPrintFS0_FSST_"></a>
+                    <a name="//apple_ref/swift/Method/rawPrint(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo20DynamoHTTPConnection8rawPrintFS0_FSST_">rawPrint(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC6Dynamo20DynamoHTTPConnection5printFS0_FSST_"></a>
+                    <a name="//apple_ref/swift/Method/print(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo20DynamoHTTPConnection5printFS0_FSST_">print(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC6Dynamo20DynamoHTTPConnection5writeFS0_FCSo6NSDataT_"></a>
+                    <a name="//apple_ref/swift/Method/write(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo20DynamoHTTPConnection5writeFS0_FCSo6NSDataT_">write(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC6Dynamo20DynamoHTTPConnection5flushFS0_FT_T_"></a>
+                    <a name="//apple_ref/swift/Method/flush()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo20DynamoHTTPConnection5flushFS0_FT_T_">flush()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC6Dynamo20DynamoHTTPConnection10remoteAddrFS0_FT_SS"></a>
+                    <a name="//apple_ref/swift/Method/remoteAddr()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo20DynamoHTTPConnection10remoteAddrFS0_FT_SS">remoteAddr()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2015 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2015-06-21)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.2.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

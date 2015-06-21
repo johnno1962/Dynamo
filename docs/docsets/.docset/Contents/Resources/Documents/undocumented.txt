@@ -1,0 +1,407 @@
+Proxies.swift
+	public init?( portNumber: UInt16, pocessors: [DynamoProcessor], certs: [AnyObject]? )
+	public func stream( aStream: NSStream, handleEvent eventCode: NSStreamEvent )
+	public init( logger: ((String) -> ())? = nil )
+	@objc public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
+	public override func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
+Generated.swift
+	public func tag( name: String, attributes: [String: String]?, content: String? ) -> String
+	public func backButton() -> String
+	public func _DOCTYPE( _ content: String? = "" ) -> String
+	public func _DOCTYPE( attributes: [String: String], _ content: String? = "" ) -> String
+	public func a( _ content: String? = "" ) -> String
+	public func a( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _a() -> String
+	public func abbr( _ content: String? = "" ) -> String
+	public func abbr( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _abbr() -> String
+	public func acronym( _ content: String? = "" ) -> String
+	public func acronym( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _acronym() -> String
+	public func address( _ content: String? = "" ) -> String
+	public func address( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _address() -> String
+	public func applet( _ content: String? = "" ) -> String
+	public func applet( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _applet() -> String
+	public func area( _ content: String? = "" ) -> String
+	public func area( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _area() -> String
+	public func article( _ content: String? = "" ) -> String
+	public func article( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _article() -> String
+	public func aside( _ content: String? = "" ) -> String
+	public func aside( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _aside() -> String
+	public func audio( _ content: String? = "" ) -> String
+	public func audio( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _audio() -> String
+	public func b( _ content: String? = "" ) -> String
+	public func b( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _b() -> String
+	public func base( _ content: String? = "" ) -> String
+	public func base( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _base() -> String
+	public func basefont( _ content: String? = "" ) -> String
+	public func basefont( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _basefont() -> String
+	public func bdi( _ content: String? = "" ) -> String
+	public func bdi( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _bdi() -> String
+	public func bdo( _ content: String? = "" ) -> String
+	public func bdo( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _bdo() -> String
+	public func big( _ content: String? = "" ) -> String
+	public func big( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _big() -> String
+	public func blockquote( _ content: String? = "" ) -> String
+	public func blockquote( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _blockquote() -> String
+	public func body( _ content: String? = "" ) -> String
+	public func body( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _body() -> String
+	public func br( _ content: String? = "" ) -> String
+	public func br( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _br() -> String
+	public func button( _ content: String? = "" ) -> String
+	public func button( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _button() -> String
+	public func canvas( _ content: String? = "" ) -> String
+	public func canvas( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _canvas() -> String
+	public func caption( _ content: String? = "" ) -> String
+	public func caption( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _caption() -> String
+	public func center( _ content: String? = "" ) -> String
+	public func center( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _center() -> String
+	public func cite( _ content: String? = "" ) -> String
+	public func cite( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _cite() -> String
+	public func code( _ content: String? = "" ) -> String
+	public func code( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _code() -> String
+	public func col( _ content: String? = "" ) -> String
+	public func col( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _col() -> String
+	public func colgroup( _ content: String? = "" ) -> String
+	public func colgroup( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _colgroup() -> String
+	public func datalist( _ content: String? = "" ) -> String
+	public func datalist( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _datalist() -> String
+	public func dd( _ content: String? = "" ) -> String
+	public func dd( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _dd() -> String
+	public func del( _ content: String? = "" ) -> String
+	public func del( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _del() -> String
+	public func details( _ content: String? = "" ) -> String
+	public func details( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _details() -> String
+	public func dfn( _ content: String? = "" ) -> String
+	public func dfn( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _dfn() -> String
+	public func dialog( _ content: String? = "" ) -> String
+	public func dialog( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _dialog() -> String
+	public func dir( _ content: String? = "" ) -> String
+	public func dir( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _dir() -> String
+	public func div( _ content: String? = "" ) -> String
+	public func div( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _div() -> String
+	public func dl( _ content: String? = "" ) -> String
+	public func dl( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _dl() -> String
+	public func dt( _ content: String? = "" ) -> String
+	public func dt( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _dt() -> String
+	public func em( _ content: String? = "" ) -> String
+	public func em( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _em() -> String
+	public func embed( _ content: String? = "" ) -> String
+	public func embed( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _embed() -> String
+	public func fieldset( _ content: String? = "" ) -> String
+	public func fieldset( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _fieldset() -> String
+	public func figcaption( _ content: String? = "" ) -> String
+	public func figcaption( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _figcaption() -> String
+	public func figure( _ content: String? = "" ) -> String
+	public func figure( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _figure() -> String
+	public func font( _ content: String? = "" ) -> String
+	public func font( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _font() -> String
+	public func footer( _ content: String? = "" ) -> String
+	public func footer( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _footer() -> String
+	public func form( _ content: String? = "" ) -> String
+	public func form( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _form() -> String
+	public func frame( _ content: String? = "" ) -> String
+	public func frame( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _frame() -> String
+	public func frameset( _ content: String? = "" ) -> String
+	public func frameset( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _frameset() -> String
+	public func h1( _ content: String? = "" ) -> String
+	public func h1( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _h1() -> String
+	public func h2( _ content: String? = "" ) -> String
+	public func h2( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _h2() -> String
+	public func h3( _ content: String? = "" ) -> String
+	public func h3( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _h3() -> String
+	public func h4( _ content: String? = "" ) -> String
+	public func h4( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _h4() -> String
+	public func h5( _ content: String? = "" ) -> String
+	public func h5( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _h5() -> String
+	public func h6( _ content: String? = "" ) -> String
+	public func h6( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _h6() -> String
+	public func head( _ content: String? = "" ) -> String
+	public func head( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _head() -> String
+	public func header( _ content: String? = "" ) -> String
+	public func header( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _header() -> String
+	public func hr( _ content: String? = "" ) -> String
+	public func hr( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _hr() -> String
+	public func html( _ content: String? = "" ) -> String
+	public func html( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _html() -> String
+	public func i( _ content: String? = "" ) -> String
+	public func i( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _i() -> String
+	public func iframe( _ content: String? = "" ) -> String
+	public func iframe( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _iframe() -> String
+	public func img( _ content: String? = "" ) -> String
+	public func img( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _img() -> String
+	public func input( _ content: String? = "" ) -> String
+	public func input( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _input() -> String
+	public func ins( _ content: String? = "" ) -> String
+	public func ins( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _ins() -> String
+	public func kbd( _ content: String? = "" ) -> String
+	public func kbd( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _kbd() -> String
+	public func keygen( _ content: String? = "" ) -> String
+	public func keygen( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _keygen() -> String
+	public func label( _ content: String? = "" ) -> String
+	public func label( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _label() -> String
+	public func legend( _ content: String? = "" ) -> String
+	public func legend( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _legend() -> String
+	public func li( _ content: String? = "" ) -> String
+	public func li( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _li() -> String
+	public func link( _ content: String? = "" ) -> String
+	public func link( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _link() -> String
+	public func main( _ content: String? = "" ) -> String
+	public func main( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _main() -> String
+	public func map( _ content: String? = "" ) -> String
+	public func map( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _map() -> String
+	public func mark( _ content: String? = "" ) -> String
+	public func mark( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _mark() -> String
+	public func menu( _ content: String? = "" ) -> String
+	public func menu( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _menu() -> String
+	public func menuitem( _ content: String? = "" ) -> String
+	public func menuitem( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _menuitem() -> String
+	public func meta( _ content: String? = "" ) -> String
+	public func meta( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _meta() -> String
+	public func meter( _ content: String? = "" ) -> String
+	public func meter( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _meter() -> String
+	public func nav( _ content: String? = "" ) -> String
+	public func nav( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _nav() -> String
+	public func noframes( _ content: String? = "" ) -> String
+	public func noframes( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _noframes() -> String
+	public func noscript( _ content: String? = "" ) -> String
+	public func noscript( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _noscript() -> String
+	public func object( _ content: String? = "" ) -> String
+	public func object( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _object() -> String
+	public func ol( _ content: String? = "" ) -> String
+	public func ol( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _ol() -> String
+	public func optgroup( _ content: String? = "" ) -> String
+	public func optgroup( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _optgroup() -> String
+	public func option( _ content: String? = "" ) -> String
+	public func option( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _option() -> String
+	public func output( _ content: String? = "" ) -> String
+	public func output( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _output() -> String
+	public func p( _ content: String? = "" ) -> String
+	public func p( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _p() -> String
+	public func param( _ content: String? = "" ) -> String
+	public func param( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _param() -> String
+	public func pre( _ content: String? = "" ) -> String
+	public func pre( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _pre() -> String
+	public func progress( _ content: String? = "" ) -> String
+	public func progress( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _progress() -> String
+	public func q( _ content: String? = "" ) -> String
+	public func q( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _q() -> String
+	public func rp( _ content: String? = "" ) -> String
+	public func rp( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _rp() -> String
+	public func rt( _ content: String? = "" ) -> String
+	public func rt( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _rt() -> String
+	public func ruby( _ content: String? = "" ) -> String
+	public func ruby( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _ruby() -> String
+	public func s( _ content: String? = "" ) -> String
+	public func s( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _s() -> String
+	public func samp( _ content: String? = "" ) -> String
+	public func samp( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _samp() -> String
+	public func script( _ content: String? = "" ) -> String
+	public func script( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _script() -> String
+	public func section( _ content: String? = "" ) -> String
+	public func section( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _section() -> String
+	public func select( _ content: String? = "" ) -> String
+	public func select( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _select() -> String
+	public func small( _ content: String? = "" ) -> String
+	public func small( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _small() -> String
+	public func source( _ content: String? = "" ) -> String
+	public func source( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _source() -> String
+	public func span( _ content: String? = "" ) -> String
+	public func span( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _span() -> String
+	public func strike( _ content: String? = "" ) -> String
+	public func strike( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _strike() -> String
+	public func strong( _ content: String? = "" ) -> String
+	public func strong( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _strong() -> String
+	public func style( _ content: String? = "" ) -> String
+	public func style( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _style() -> String
+	public func sub( _ content: String? = "" ) -> String
+	public func sub( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _sub() -> String
+	public func summary( _ content: String? = "" ) -> String
+	public func summary( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _summary() -> String
+	public func sup( _ content: String? = "" ) -> String
+	public func sup( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _sup() -> String
+	public func table( _ content: String? = "" ) -> String
+	public func table( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _table() -> String
+	public func tbody( _ content: String? = "" ) -> String
+	public func tbody( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _tbody() -> String
+	public func td( _ content: String? = "" ) -> String
+	public func td( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _td() -> String
+	public func textarea( _ content: String? = "" ) -> String
+	public func textarea( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _textarea() -> String
+	public func tfoot( _ content: String? = "" ) -> String
+	public func tfoot( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _tfoot() -> String
+	public func th( _ content: String? = "" ) -> String
+	public func th( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _th() -> String
+	public func thead( _ content: String? = "" ) -> String
+	public func thead( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _thead() -> String
+	public func time( _ content: String? = "" ) -> String
+	public func time( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _time() -> String
+	public func title( _ content: String? = "" ) -> String
+	public func title( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _title() -> String
+	public func tr( _ content: String? = "" ) -> String
+	public func tr( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _tr() -> String
+	public func track( _ content: String? = "" ) -> String
+	public func track( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _track() -> String
+	public func tt( _ content: String? = "" ) -> String
+	public func tt( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _tt() -> String
+	public func u( _ content: String? = "" ) -> String
+	public func u( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _u() -> String
+	public func ul( _ content: String? = "" ) -> String
+	public func ul( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _ul() -> String
+	public func video( _ content: String? = "" ) -> String
+	public func video( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _video() -> String
+	public func wbr( _ content: String? = "" ) -> String
+	public func wbr( attributes: [String: String], _ content: String? = "" ) -> String
+	public func _wbr() -> String
+Servers.swift
+	public func dynamoTrace<T>( msg: T )
+	@objc public protocol DynamoProcessor
+	@objc func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
+	public var serverPort: UInt16 = 0
+	public convenience init?( portNumber: UInt16, processors: [DynamoProcessor], localhostOnly: Bool = false )
+	public var method = "GET", uri = "/", httpVersion = "HTTP/1.1"
+	public var url = dummyBase
+	public var status = 200
+	public func addHeader( name: String, value: String )
+	public func setCookie( name: String, value: String, domain: String? = nil, path: String? = nil, expires: Int? = nil )
+	public func rawPrint( output: String )
+	public func print( output: String )
+	public func write( data: NSData )
+	public func flush()
+	public func remoteAddr() -> String
+WebApps.swift
+	override public func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] )
+	@objc func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
+	public init( pathPrefix: String )
+	@objc public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
+	@objc public func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] )
+	public init( logger: (String) -> Void )
+	@objc public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
+	public init( pathPrefix: String, appClass: DynamoSessionBasedApplication.Type )
+	public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
+	public func clearSession()
+	required public init( manager: DynamoSessionProcessor, sessionKey: String )
+	public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
+	public convenience init( pathPrefix: String, bundleName: String )
+	public init( pathPrefix: String, bundleName: String, bundlePath: String )
+	public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
+	public init( documentRoot: String )
+	override public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
+	public init( documentRoot: String )
+	@objc public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed

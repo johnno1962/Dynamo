@@ -1,0 +1,1495 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BB03E7561B35E20C00025085 /* AutoLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E551B3576F40001EDCA /* AutoLoader.m */; };
+		BB03E7571B35EA4A00025085 /* DDKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E581B3576F40001EDCA /* DDKeychain.m */; };
+		BB4B4E191B355F0F0001EDCA /* Servers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E181B355F0F0001EDCA /* Servers.swift */; };
+		BB4B4E1B1B355F350001EDCA /* Proxies.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E1A1B355F350001EDCA /* Proxies.swift */; };
+		BB4B4E1D1B355F4C0001EDCA /* WebApps.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E1C1B355F4C0001EDCA /* WebApps.swift */; };
+		BB4B4E1F1B355F610001EDCA /* Generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E1E1B355F610001EDCA /* Generated.swift */; };
+		BB4B4E4A1B356B7D0001EDCA /* NumberGuesser.shtml in Resources */ = {isa = PBXBuildFile; fileRef = BB4B4E481B356B7D0001EDCA /* NumberGuesser.shtml */; };
+		BB4B4E4B1B356B7D0001EDCA /* NumberGuesser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E491B356B7D0001EDCA /* NumberGuesser.swift */; };
+		BB4B4E4D1B356BBF0001EDCA /* TickTackToe.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E4C1B356BBF0001EDCA /* TickTackToe.swift */; };
+		BB4B4E591B3576F40001EDCA /* AutoLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E551B3576F40001EDCA /* AutoLoader.m */; };
+		BB4B4E5A1B3576F40001EDCA /* sspcompiler.py in Resources */ = {isa = PBXBuildFile; fileRef = BB4B4E561B3576F40001EDCA /* sspcompiler.py */; };
+		BB4B4E5C1B357A0A0001EDCA /* DDKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E581B3576F40001EDCA /* DDKeychain.m */; };
+		BB4B4E5D1B357B9E0001EDCA /* TickTackToe.ssp in Resources */ = {isa = PBXBuildFile; fileRef = BB4B4E361B356AE70001EDCA /* TickTackToe.ssp */; };
+		BB4B4E671B3599490001EDCA /* Servers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E181B355F0F0001EDCA /* Servers.swift */; };
+		BB4B4E681B3599490001EDCA /* Proxies.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E1A1B355F350001EDCA /* Proxies.swift */; };
+		BB4B4E691B3599490001EDCA /* WebApps.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E1C1B355F4C0001EDCA /* WebApps.swift */; };
+		BB4B4E6A1B3599490001EDCA /* Generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E1E1B355F610001EDCA /* Generated.swift */; };
+		BB4B4E6B1B35997E0001EDCA /* TickTackToe.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E4C1B356BBF0001EDCA /* TickTackToe.swift */; };
+		BB4B4E6C1B3599860001EDCA /* NumberGuesser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E491B356B7D0001EDCA /* NumberGuesser.swift */; };
+		BB4B4E6E1B359B480001EDCA /* localhost:8080 in Resources */ = {isa = PBXBuildFile; fileRef = BB4B4E6D1B359B480001EDCA /* localhost:8080 */; };
+		BB4B4E6F1B359B650001EDCA /* localhost:8080 in Resources */ = {isa = PBXBuildFile; fileRef = BB4B4E6D1B359B480001EDCA /* localhost:8080 */; };
+		BB4B4E871B35BDA60001EDCA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E861B35BDA60001EDCA /* main.m */; };
+		BB4B4E881B35C4AE0001EDCA /* dynamod in Resources */ = {isa = PBXBuildFile; fileRef = BBA52F591B355A4C006F12AC /* dynamod */; };
+		BBA52ECD1B3556C3006F12AC /* Dynamo.h in Headers */ = {isa = PBXBuildFile; fileRef = BBA52ECC1B3556C3006F12AC /* Dynamo.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BBA52ED31B3556C3006F12AC /* Dynamo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BBA52EC71B3556C3006F12AC /* Dynamo.framework */; };
+		BBA52EDA1B3556C3006F12AC /* DynamoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA52ED91B3556C3006F12AC /* DynamoTests.swift */; };
+		BBA52F0A1B35576B006F12AC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA52F091B35576B006F12AC /* AppDelegate.swift */; };
+		BBA52F0C1B35576B006F12AC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BBA52F0B1B35576B006F12AC /* Images.xcassets */; };
+		BBA52F0F1B35576B006F12AC /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BBA52F0D1B35576B006F12AC /* MainMenu.xib */; };
+		BBA52F1B1B35576B006F12AC /* OSXTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA52F1A1B35576B006F12AC /* OSXTests.swift */; };
+		BBA52F2B1B3557A2006F12AC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BBA52F2A1B3557A2006F12AC /* main.m */; };
+		BBA52F2E1B3557A2006F12AC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BBA52F2D1B3557A2006F12AC /* AppDelegate.m */; };
+		BBA52F311B3557A2006F12AC /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BBA52F301B3557A2006F12AC /* ViewController.m */; };
+		BBA52F341B3557A2006F12AC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BBA52F321B3557A2006F12AC /* Main.storyboard */; };
+		BBA52F361B3557A2006F12AC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BBA52F351B3557A2006F12AC /* Images.xcassets */; };
+		BBA52F391B3557A2006F12AC /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = BBA52F371B3557A2006F12AC /* LaunchScreen.xib */; };
+		BBA52F451B3557A3006F12AC /* iOSTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BBA52F441B3557A3006F12AC /* iOSTests.m */; };
+		BBA52F4C1B3559C7006F12AC /* Dynamo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BBA52EC71B3556C3006F12AC /* Dynamo.framework */; };
+		BBA52F4D1B3559C7006F12AC /* Dynamo.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BBA52EC71B3556C3006F12AC /* Dynamo.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		BB4B4E731B35A4960001EDCA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BBA52EBE1B3556C3006F12AC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BB4B4E351B356AE70001EDCA;
+			remoteInfo = TickTackToe;
+		};
+		BB4B4E751B35A4990001EDCA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BBA52EBE1B3556C3006F12AC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BB4B4E401B356AFC0001EDCA;
+			remoteInfo = NumberGuesser;
+		};
+		BB4B4E801B35AFA30001EDCA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BBA52EBE1B3556C3006F12AC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BBA52EC61B3556C3006F12AC;
+			remoteInfo = Dynamo;
+		};
+		BB4B4E821B35AFA80001EDCA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BBA52EBE1B3556C3006F12AC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BBA52EC61B3556C3006F12AC;
+			remoteInfo = Dynamo;
+		};
+		BB4B4E891B35C5810001EDCA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BBA52EBE1B3556C3006F12AC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BBA52F581B355A4C006F12AC;
+			remoteInfo = Daemon;
+		};
+		BB4B4E8B1B35C6450001EDCA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BBA52EBE1B3556C3006F12AC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BBA52EC61B3556C3006F12AC;
+			remoteInfo = Dynamo;
+		};
+		BBA52ED41B3556C3006F12AC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BBA52EBE1B3556C3006F12AC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BBA52EC61B3556C3006F12AC;
+			remoteInfo = Dynamo;
+		};
+		BBA52F151B35576B006F12AC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BBA52EBE1B3556C3006F12AC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BBA52F041B35576B006F12AC;
+			remoteInfo = OSX;
+		};
+		BBA52F3F1B3557A3006F12AC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BBA52EBE1B3556C3006F12AC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BBA52F251B3557A2006F12AC;
+			remoteInfo = iOS;
+		};
+		BBA52F4E1B3559C7006F12AC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BBA52EBE1B3556C3006F12AC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BBA52EC61B3556C3006F12AC;
+			remoteInfo = Dynamo;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BBA52F501B3559C8006F12AC /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				BBA52F4D1B3559C7006F12AC /* Dynamo.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52F571B355A4C006F12AC /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		BB4B4E181B355F0F0001EDCA /* Servers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Servers.swift; sourceTree = "<group>"; };
+		BB4B4E1A1B355F350001EDCA /* Proxies.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Proxies.swift; sourceTree = "<group>"; };
+		BB4B4E1C1B355F4C0001EDCA /* WebApps.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebApps.swift; sourceTree = "<group>"; };
+		BB4B4E1E1B355F610001EDCA /* Generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Generated.swift; sourceTree = "<group>"; };
+		BB4B4E2E1B3565CA0001EDCA /* OSX-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "OSX-Bridging-Header.h"; sourceTree = "<group>"; };
+		BB4B4E361B356AE70001EDCA /* TickTackToe.ssp */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TickTackToe.ssp; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB4B4E391B356AE70001EDCA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BB4B4E411B356AFC0001EDCA /* NumberGuesser.ssp */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NumberGuesser.ssp; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB4B4E441B356AFC0001EDCA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BB4B4E481B356B7D0001EDCA /* NumberGuesser.shtml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.other; path = NumberGuesser.shtml; sourceTree = "<group>"; };
+		BB4B4E491B356B7D0001EDCA /* NumberGuesser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NumberGuesser.swift; sourceTree = "<group>"; };
+		BB4B4E4C1B356BBF0001EDCA /* TickTackToe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TickTackToe.swift; sourceTree = "<group>"; };
+		BB4B4E551B3576F40001EDCA /* AutoLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AutoLoader.m; path = Utilities/AutoLoader.m; sourceTree = "<group>"; };
+		BB4B4E561B3576F40001EDCA /* sspcompiler.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; name = sspcompiler.py; path = Utilities/sspcompiler.py; sourceTree = "<group>"; };
+		BB4B4E571B3576F40001EDCA /* DDKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDKeychain.h; path = Utilities/DDKeychain.h; sourceTree = "<group>"; };
+		BB4B4E581B3576F40001EDCA /* DDKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDKeychain.m; path = Utilities/DDKeychain.m; sourceTree = "<group>"; };
+		BB4B4E6D1B359B480001EDCA /* localhost:8080 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "localhost:8080"; sourceTree = "<group>"; };
+		BB4B4E861B35BDA60001EDCA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		BB7631C21B37003D00646A50 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		BBA52EC71B3556C3006F12AC /* Dynamo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Dynamo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BBA52ECB1B3556C3006F12AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BBA52ECC1B3556C3006F12AC /* Dynamo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Dynamo.h; sourceTree = "<group>"; };
+		BBA52ED21B3556C3006F12AC /* DynamoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DynamoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BBA52ED81B3556C3006F12AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BBA52ED91B3556C3006F12AC /* DynamoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamoTests.swift; sourceTree = "<group>"; };
+		BBA52F051B35576B006F12AC /* DynamoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DynamoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BBA52F081B35576B006F12AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BBA52F091B35576B006F12AC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		BBA52F0B1B35576B006F12AC /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		BBA52F0E1B35576B006F12AC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		BBA52F141B35576B006F12AC /* OSXTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OSXTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BBA52F191B35576B006F12AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BBA52F1A1B35576B006F12AC /* OSXTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OSXTests.swift; sourceTree = "<group>"; };
+		BBA52F261B3557A2006F12AC /* Dynamo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dynamo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BBA52F291B3557A2006F12AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BBA52F2A1B3557A2006F12AC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		BBA52F2C1B3557A2006F12AC /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		BBA52F2D1B3557A2006F12AC /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		BBA52F2F1B3557A2006F12AC /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		BBA52F301B3557A2006F12AC /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		BBA52F331B3557A2006F12AC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		BBA52F351B3557A2006F12AC /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		BBA52F381B3557A2006F12AC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		BBA52F3E1B3557A3006F12AC /* iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BBA52F431B3557A3006F12AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BBA52F441B3557A3006F12AC /* iOSTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = iOSTests.m; sourceTree = "<group>"; };
+		BBA52F591B355A4C006F12AC /* dynamod */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dynamod; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BB4B4E331B356AE70001EDCA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB4B4E3E1B356AFC0001EDCA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52EC31B3556C3006F12AC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52ECF1B3556C3006F12AC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BBA52ED31B3556C3006F12AC /* Dynamo.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52F021B35576B006F12AC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BBA52F4C1B3559C7006F12AC /* Dynamo.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52F111B35576B006F12AC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52F231B3557A2006F12AC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52F3B1B3557A3006F12AC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52F561B355A4C006F12AC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		BB4B4E371B356AE70001EDCA /* TickTackToe */ = {
+			isa = PBXGroup;
+			children = (
+				BB4B4E4C1B356BBF0001EDCA /* TickTackToe.swift */,
+				BB4B4E381B356AE70001EDCA /* Supporting Files */,
+			);
+			path = TickTackToe;
+			sourceTree = "<group>";
+		};
+		BB4B4E381B356AE70001EDCA /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BB4B4E391B356AE70001EDCA /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BB4B4E421B356AFC0001EDCA /* NumberGuesser */ = {
+			isa = PBXGroup;
+			children = (
+				BB4B4E481B356B7D0001EDCA /* NumberGuesser.shtml */,
+				BB4B4E491B356B7D0001EDCA /* NumberGuesser.swift */,
+				BB4B4E431B356AFC0001EDCA /* Supporting Files */,
+			);
+			path = NumberGuesser;
+			sourceTree = "<group>";
+		};
+		BB4B4E431B356AFC0001EDCA /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BB4B4E441B356AFC0001EDCA /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BBA52EBD1B3556C3006F12AC = {
+			isa = PBXGroup;
+			children = (
+				BB7631C21B37003D00646A50 /* README.md */,
+				BBA52EC91B3556C3006F12AC /* Dynamo */,
+				BBA52ED61B3556C3006F12AC /* DynamoTests */,
+				BBA52F061B35576B006F12AC /* OSX */,
+				BBA52F171B35576B006F12AC /* OSXTests */,
+				BBA52F271B3557A2006F12AC /* iOS */,
+				BBA52F411B3557A3006F12AC /* iOSTests */,
+				BBA52F5A1B355A4C006F12AC /* Daemon */,
+				BBA52F601B355C10006F12AC /* Utilities */,
+				BB4B4E371B356AE70001EDCA /* TickTackToe */,
+				BB4B4E421B356AFC0001EDCA /* NumberGuesser */,
+				BB4B4E6D1B359B480001EDCA /* localhost:8080 */,
+				BBA52EC81B3556C3006F12AC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BBA52EC81B3556C3006F12AC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BBA52EC71B3556C3006F12AC /* Dynamo.framework */,
+				BBA52ED21B3556C3006F12AC /* DynamoTests.xctest */,
+				BBA52F051B35576B006F12AC /* DynamoApp.app */,
+				BBA52F141B35576B006F12AC /* OSXTests.xctest */,
+				BBA52F261B3557A2006F12AC /* Dynamo.app */,
+				BBA52F3E1B3557A3006F12AC /* iOSTests.xctest */,
+				BBA52F591B355A4C006F12AC /* dynamod */,
+				BB4B4E361B356AE70001EDCA /* TickTackToe.ssp */,
+				BB4B4E411B356AFC0001EDCA /* NumberGuesser.ssp */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BBA52EC91B3556C3006F12AC /* Dynamo */ = {
+			isa = PBXGroup;
+			children = (
+				BBA52ECC1B3556C3006F12AC /* Dynamo.h */,
+				BB4B4E181B355F0F0001EDCA /* Servers.swift */,
+				BB4B4E1A1B355F350001EDCA /* Proxies.swift */,
+				BB4B4E1C1B355F4C0001EDCA /* WebApps.swift */,
+				BB4B4E1E1B355F610001EDCA /* Generated.swift */,
+				BBA52ECA1B3556C3006F12AC /* Supporting Files */,
+			);
+			path = Dynamo;
+			sourceTree = "<group>";
+		};
+		BBA52ECA1B3556C3006F12AC /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BBA52ECB1B3556C3006F12AC /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BBA52ED61B3556C3006F12AC /* DynamoTests */ = {
+			isa = PBXGroup;
+			children = (
+				BBA52ED91B3556C3006F12AC /* DynamoTests.swift */,
+				BBA52ED71B3556C3006F12AC /* Supporting Files */,
+			);
+			path = DynamoTests;
+			sourceTree = "<group>";
+		};
+		BBA52ED71B3556C3006F12AC /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BBA52ED81B3556C3006F12AC /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BBA52F061B35576B006F12AC /* OSX */ = {
+			isa = PBXGroup;
+			children = (
+				BBA52F091B35576B006F12AC /* AppDelegate.swift */,
+				BBA52F0B1B35576B006F12AC /* Images.xcassets */,
+				BBA52F0D1B35576B006F12AC /* MainMenu.xib */,
+				BBA52F071B35576B006F12AC /* Supporting Files */,
+			);
+			path = OSX;
+			sourceTree = "<group>";
+		};
+		BBA52F071B35576B006F12AC /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BB4B4E2E1B3565CA0001EDCA /* OSX-Bridging-Header.h */,
+				BBA52F081B35576B006F12AC /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BBA52F171B35576B006F12AC /* OSXTests */ = {
+			isa = PBXGroup;
+			children = (
+				BBA52F1A1B35576B006F12AC /* OSXTests.swift */,
+				BBA52F181B35576B006F12AC /* Supporting Files */,
+			);
+			path = OSXTests;
+			sourceTree = "<group>";
+		};
+		BBA52F181B35576B006F12AC /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BBA52F191B35576B006F12AC /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BBA52F271B3557A2006F12AC /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				BBA52F2C1B3557A2006F12AC /* AppDelegate.h */,
+				BBA52F2D1B3557A2006F12AC /* AppDelegate.m */,
+				BBA52F2F1B3557A2006F12AC /* ViewController.h */,
+				BBA52F301B3557A2006F12AC /* ViewController.m */,
+				BBA52F321B3557A2006F12AC /* Main.storyboard */,
+				BBA52F351B3557A2006F12AC /* Images.xcassets */,
+				BBA52F371B3557A2006F12AC /* LaunchScreen.xib */,
+				BBA52F281B3557A2006F12AC /* Supporting Files */,
+			);
+			path = iOS;
+			sourceTree = "<group>";
+		};
+		BBA52F281B3557A2006F12AC /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BBA52F291B3557A2006F12AC /* Info.plist */,
+				BBA52F2A1B3557A2006F12AC /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BBA52F411B3557A3006F12AC /* iOSTests */ = {
+			isa = PBXGroup;
+			children = (
+				BBA52F441B3557A3006F12AC /* iOSTests.m */,
+				BBA52F421B3557A3006F12AC /* Supporting Files */,
+			);
+			path = iOSTests;
+			sourceTree = "<group>";
+		};
+		BBA52F421B3557A3006F12AC /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BBA52F431B3557A3006F12AC /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BBA52F5A1B355A4C006F12AC /* Daemon */ = {
+			isa = PBXGroup;
+			children = (
+				BB4B4E861B35BDA60001EDCA /* main.m */,
+			);
+			path = Daemon;
+			sourceTree = "<group>";
+		};
+		BBA52F601B355C10006F12AC /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				BB4B4E561B3576F40001EDCA /* sspcompiler.py */,
+				BB4B4E551B3576F40001EDCA /* AutoLoader.m */,
+				BB4B4E571B3576F40001EDCA /* DDKeychain.h */,
+				BB4B4E581B3576F40001EDCA /* DDKeychain.m */,
+			);
+			name = Utilities;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		BBA52EC41B3556C3006F12AC /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BBA52ECD1B3556C3006F12AC /* Dynamo.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		BB4B4E351B356AE70001EDCA /* TickTackToe */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB4B4E3A1B356AE70001EDCA /* Build configuration list for PBXNativeTarget "TickTackToe" */;
+			buildPhases = (
+				BB4B4E321B356AE70001EDCA /* Sources */,
+				BB4B4E331B356AE70001EDCA /* Frameworks */,
+				BB4B4E341B356AE70001EDCA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BB4B4E811B35AFA30001EDCA /* PBXTargetDependency */,
+			);
+			name = TickTackToe;
+			productName = TickTackToe;
+			productReference = BB4B4E361B356AE70001EDCA /* TickTackToe.ssp */;
+			productType = "com.apple.product-type.bundle";
+		};
+		BB4B4E401B356AFC0001EDCA /* NumberGuesser */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB4B4E451B356AFC0001EDCA /* Build configuration list for PBXNativeTarget "NumberGuesser" */;
+			buildPhases = (
+				BB4B4E541B3576440001EDCA /* ShellScript */,
+				BB4B4E3D1B356AFC0001EDCA /* Sources */,
+				BB4B4E3E1B356AFC0001EDCA /* Frameworks */,
+				BB4B4E3F1B356AFC0001EDCA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BB4B4E831B35AFA80001EDCA /* PBXTargetDependency */,
+			);
+			name = NumberGuesser;
+			productName = NumberGuesser;
+			productReference = BB4B4E411B356AFC0001EDCA /* NumberGuesser.ssp */;
+			productType = "com.apple.product-type.bundle";
+		};
+		BBA52EC61B3556C3006F12AC /* Dynamo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BBA52EDD1B3556C3006F12AC /* Build configuration list for PBXNativeTarget "Dynamo" */;
+			buildPhases = (
+				BBA52EC21B3556C3006F12AC /* Sources */,
+				BBA52EC31B3556C3006F12AC /* Frameworks */,
+				BBA52EC41B3556C3006F12AC /* Headers */,
+				BBA52EC51B3556C3006F12AC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Dynamo;
+			productName = Dynamo;
+			productReference = BBA52EC71B3556C3006F12AC /* Dynamo.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		BBA52ED11B3556C3006F12AC /* DynamoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BBA52EE01B3556C3006F12AC /* Build configuration list for PBXNativeTarget "DynamoTests" */;
+			buildPhases = (
+				BBA52ECE1B3556C3006F12AC /* Sources */,
+				BBA52ECF1B3556C3006F12AC /* Frameworks */,
+				BBA52ED01B3556C3006F12AC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BBA52ED51B3556C3006F12AC /* PBXTargetDependency */,
+			);
+			name = DynamoTests;
+			productName = DynamoTests;
+			productReference = BBA52ED21B3556C3006F12AC /* DynamoTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		BBA52F041B35576B006F12AC /* OSX */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BBA52F1C1B35576B006F12AC /* Build configuration list for PBXNativeTarget "OSX" */;
+			buildPhases = (
+				BBA52F011B35576B006F12AC /* Sources */,
+				BBA52F021B35576B006F12AC /* Frameworks */,
+				BBA52F031B35576B006F12AC /* Resources */,
+				BBA52F501B3559C8006F12AC /* Embed Frameworks */,
+				BB4B4E251B35645F0001EDCA /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BB4B4E8A1B35C5810001EDCA /* PBXTargetDependency */,
+				BBA52F4F1B3559C7006F12AC /* PBXTargetDependency */,
+				BB4B4E741B35A4960001EDCA /* PBXTargetDependency */,
+				BB4B4E761B35A4990001EDCA /* PBXTargetDependency */,
+			);
+			name = OSX;
+			productName = OSX;
+			productReference = BBA52F051B35576B006F12AC /* DynamoApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		BBA52F131B35576B006F12AC /* OSXTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BBA52F1F1B35576B006F12AC /* Build configuration list for PBXNativeTarget "OSXTests" */;
+			buildPhases = (
+				BBA52F101B35576B006F12AC /* Sources */,
+				BBA52F111B35576B006F12AC /* Frameworks */,
+				BBA52F121B35576B006F12AC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BBA52F161B35576B006F12AC /* PBXTargetDependency */,
+			);
+			name = OSXTests;
+			productName = OSXTests;
+			productReference = BBA52F141B35576B006F12AC /* OSXTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		BBA52F251B3557A2006F12AC /* iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BBA52F461B3557A3006F12AC /* Build configuration list for PBXNativeTarget "iOS" */;
+			buildPhases = (
+				BBA52F221B3557A2006F12AC /* Sources */,
+				BBA52F231B3557A2006F12AC /* Frameworks */,
+				BBA52F241B3557A2006F12AC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = iOS;
+			productName = iOS;
+			productReference = BBA52F261B3557A2006F12AC /* Dynamo.app */;
+			productType = "com.apple.product-type.application";
+		};
+		BBA52F3D1B3557A3006F12AC /* iOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BBA52F491B3557A3006F12AC /* Build configuration list for PBXNativeTarget "iOSTests" */;
+			buildPhases = (
+				BBA52F3A1B3557A3006F12AC /* Sources */,
+				BBA52F3B1B3557A3006F12AC /* Frameworks */,
+				BBA52F3C1B3557A3006F12AC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BBA52F401B3557A3006F12AC /* PBXTargetDependency */,
+			);
+			name = iOSTests;
+			productName = iOSTests;
+			productReference = BBA52F3E1B3557A3006F12AC /* iOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		BBA52F581B355A4C006F12AC /* Daemon */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BBA52F5D1B355A4C006F12AC /* Build configuration list for PBXNativeTarget "Daemon" */;
+			buildPhases = (
+				BBA52F551B355A4C006F12AC /* Sources */,
+				BBA52F561B355A4C006F12AC /* Frameworks */,
+				BBA52F571B355A4C006F12AC /* CopyFiles */,
+				BB4B4E701B35A2FB0001EDCA /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BB4B4E8C1B35C6450001EDCA /* PBXTargetDependency */,
+			);
+			name = Daemon;
+			productName = Daemon;
+			productReference = BBA52F591B355A4C006F12AC /* dynamod */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BBA52EBE1B3556C3006F12AC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0640;
+				ORGANIZATIONNAME = "John Holdsworth";
+				TargetAttributes = {
+					BB4B4E351B356AE70001EDCA = {
+						CreatedOnToolsVersion = 6.4;
+					};
+					BB4B4E401B356AFC0001EDCA = {
+						CreatedOnToolsVersion = 6.4;
+					};
+					BBA52EC61B3556C3006F12AC = {
+						CreatedOnToolsVersion = 6.4;
+					};
+					BBA52ED11B3556C3006F12AC = {
+						CreatedOnToolsVersion = 6.4;
+					};
+					BBA52F041B35576B006F12AC = {
+						CreatedOnToolsVersion = 6.4;
+					};
+					BBA52F131B35576B006F12AC = {
+						CreatedOnToolsVersion = 6.4;
+						TestTargetID = BBA52F041B35576B006F12AC;
+					};
+					BBA52F251B3557A2006F12AC = {
+						CreatedOnToolsVersion = 6.4;
+					};
+					BBA52F3D1B3557A3006F12AC = {
+						CreatedOnToolsVersion = 6.4;
+						TestTargetID = BBA52F251B3557A2006F12AC;
+					};
+					BBA52F581B355A4C006F12AC = {
+						CreatedOnToolsVersion = 6.4;
+					};
+				};
+			};
+			buildConfigurationList = BBA52EC11B3556C3006F12AC /* Build configuration list for PBXProject "Dynamo" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = BBA52EBD1B3556C3006F12AC;
+			productRefGroup = BBA52EC81B3556C3006F12AC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BBA52EC61B3556C3006F12AC /* Dynamo */,
+				BBA52ED11B3556C3006F12AC /* DynamoTests */,
+				BBA52F041B35576B006F12AC /* OSX */,
+				BBA52F131B35576B006F12AC /* OSXTests */,
+				BBA52F251B3557A2006F12AC /* iOS */,
+				BBA52F3D1B3557A3006F12AC /* iOSTests */,
+				BBA52F581B355A4C006F12AC /* Daemon */,
+				BB4B4E351B356AE70001EDCA /* TickTackToe */,
+				BB4B4E401B356AFC0001EDCA /* NumberGuesser */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BB4B4E341B356AE70001EDCA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB4B4E5A1B3576F40001EDCA /* sspcompiler.py in Resources */,
+				BB4B4E6E1B359B480001EDCA /* localhost:8080 in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB4B4E3F1B356AFC0001EDCA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB4B4E4A1B356B7D0001EDCA /* NumberGuesser.shtml in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52EC51B3556C3006F12AC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52ED01B3556C3006F12AC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52F031B35576B006F12AC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BBA52F0C1B35576B006F12AC /* Images.xcassets in Resources */,
+				BB4B4E5D1B357B9E0001EDCA /* TickTackToe.ssp in Resources */,
+				BBA52F0F1B35576B006F12AC /* MainMenu.xib in Resources */,
+				BB4B4E881B35C4AE0001EDCA /* dynamod in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52F121B35576B006F12AC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52F241B3557A2006F12AC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB4B4E6F1B359B650001EDCA /* localhost:8080 in Resources */,
+				BBA52F341B3557A2006F12AC /* Main.storyboard in Resources */,
+				BBA52F391B3557A2006F12AC /* LaunchScreen.xib in Resources */,
+				BBA52F361B3557A2006F12AC /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52F3C1B3557A3006F12AC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		BB4B4E251B35645F0001EDCA /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ ! -d ~/Sites ]; then mkdir -p ~/Sites; fi\ncp -rf \"$SRCROOT\"/localhost:8080 ~/Sites\ncp -rf \"$CONFIGURATION_BUILD_DIR\"/*.ssp ~/Sites/localhost:8080\nif [ ! -d ~/Sites/localhost:9090 ]; then\n    ln -s localhost:8080 ~/Sites/localhost:9090\nfi";
+		};
+		BB4B4E541B3576440001EDCA /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/NumberGuesser/NumberGuesser.shtml",
+			);
+			outputPaths = (
+				"$(SRCROOT)/NumberGuesser/NumberGuesser.swift",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "pwd\ncd $PRODUCT_NAME && ../Utilities/sspcompiler.py";
+		};
+		BB4B4E701B35A2FB0001EDCA /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BB4B4E321B356AE70001EDCA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB4B4E4D1B356BBF0001EDCA /* TickTackToe.swift in Sources */,
+				BB4B4E591B3576F40001EDCA /* AutoLoader.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB4B4E3D1B356AFC0001EDCA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB4B4E4B1B356B7D0001EDCA /* NumberGuesser.swift in Sources */,
+				BB03E7561B35E20C00025085 /* AutoLoader.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52EC21B3556C3006F12AC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB4B4E1B1B355F350001EDCA /* Proxies.swift in Sources */,
+				BB4B4E1F1B355F610001EDCA /* Generated.swift in Sources */,
+				BB4B4E191B355F0F0001EDCA /* Servers.swift in Sources */,
+				BB4B4E1D1B355F4C0001EDCA /* WebApps.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52ECE1B3556C3006F12AC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BBA52EDA1B3556C3006F12AC /* DynamoTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52F011B35576B006F12AC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BBA52F0A1B35576B006F12AC /* AppDelegate.swift in Sources */,
+				BB4B4E5C1B357A0A0001EDCA /* DDKeychain.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52F101B35576B006F12AC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BBA52F1B1B35576B006F12AC /* OSXTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52F221B3557A2006F12AC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB4B4E6C1B3599860001EDCA /* NumberGuesser.swift in Sources */,
+				BB4B4E6B1B35997E0001EDCA /* TickTackToe.swift in Sources */,
+				BB4B4E671B3599490001EDCA /* Servers.swift in Sources */,
+				BB4B4E681B3599490001EDCA /* Proxies.swift in Sources */,
+				BB4B4E691B3599490001EDCA /* WebApps.swift in Sources */,
+				BB4B4E6A1B3599490001EDCA /* Generated.swift in Sources */,
+				BBA52F311B3557A2006F12AC /* ViewController.m in Sources */,
+				BBA52F2E1B3557A2006F12AC /* AppDelegate.m in Sources */,
+				BBA52F2B1B3557A2006F12AC /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52F3A1B3557A3006F12AC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BBA52F451B3557A3006F12AC /* iOSTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBA52F551B355A4C006F12AC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB4B4E871B35BDA60001EDCA /* main.m in Sources */,
+				BB03E7571B35EA4A00025085 /* DDKeychain.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BB4B4E741B35A4960001EDCA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BB4B4E351B356AE70001EDCA /* TickTackToe */;
+			targetProxy = BB4B4E731B35A4960001EDCA /* PBXContainerItemProxy */;
+		};
+		BB4B4E761B35A4990001EDCA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BB4B4E401B356AFC0001EDCA /* NumberGuesser */;
+			targetProxy = BB4B4E751B35A4990001EDCA /* PBXContainerItemProxy */;
+		};
+		BB4B4E811B35AFA30001EDCA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BBA52EC61B3556C3006F12AC /* Dynamo */;
+			targetProxy = BB4B4E801B35AFA30001EDCA /* PBXContainerItemProxy */;
+		};
+		BB4B4E831B35AFA80001EDCA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BBA52EC61B3556C3006F12AC /* Dynamo */;
+			targetProxy = BB4B4E821B35AFA80001EDCA /* PBXContainerItemProxy */;
+		};
+		BB4B4E8A1B35C5810001EDCA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BBA52F581B355A4C006F12AC /* Daemon */;
+			targetProxy = BB4B4E891B35C5810001EDCA /* PBXContainerItemProxy */;
+		};
+		BB4B4E8C1B35C6450001EDCA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BBA52EC61B3556C3006F12AC /* Dynamo */;
+			targetProxy = BB4B4E8B1B35C6450001EDCA /* PBXContainerItemProxy */;
+		};
+		BBA52ED51B3556C3006F12AC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BBA52EC61B3556C3006F12AC /* Dynamo */;
+			targetProxy = BBA52ED41B3556C3006F12AC /* PBXContainerItemProxy */;
+		};
+		BBA52F161B35576B006F12AC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BBA52F041B35576B006F12AC /* OSX */;
+			targetProxy = BBA52F151B35576B006F12AC /* PBXContainerItemProxy */;
+		};
+		BBA52F401B3557A3006F12AC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BBA52F251B3557A2006F12AC /* iOS */;
+			targetProxy = BBA52F3F1B3557A3006F12AC /* PBXContainerItemProxy */;
+		};
+		BBA52F4F1B3559C7006F12AC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BBA52EC61B3556C3006F12AC /* Dynamo */;
+			targetProxy = BBA52F4E1B3559C7006F12AC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		BBA52F0D1B35576B006F12AC /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BBA52F0E1B35576B006F12AC /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		BBA52F321B3557A2006F12AC /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BBA52F331B3557A2006F12AC /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		BBA52F371B3557A2006F12AC /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BBA52F381B3557A2006F12AC /* Base */,
+			);
+			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		BB4B4E3B1B356AE70001EDCA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = TickTackToe/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				WRAPPER_EXTENSION = ssp;
+			};
+			name = Debug;
+		};
+		BB4B4E3C1B356AE70001EDCA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
+				INFOPLIST_FILE = TickTackToe/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = ssp;
+			};
+			name = Release;
+		};
+		BB4B4E461B356AFC0001EDCA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = NumberGuesser/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				WRAPPER_EXTENSION = ssp;
+			};
+			name = Debug;
+		};
+		BB4B4E471B356AFC0001EDCA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
+				INFOPLIST_FILE = NumberGuesser/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = ssp;
+			};
+			name = Release;
+		};
+		BBA52EDB1B3556C3006F12AC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		BBA52EDC1B3556C3006F12AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		BBA52EDE1B3556C3006F12AC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				FRAMEWORK_VERSION = A;
+				INFOPLIST_FILE = Dynamo/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		BBA52EDF1B3556C3006F12AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				FRAMEWORK_VERSION = A;
+				INFOPLIST_FILE = Dynamo/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		BBA52EE11B3556C3006F12AC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = DynamoTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		BBA52EE21B3556C3006F12AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = DynamoTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		BBA52F1D1B35576B006F12AC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = OSX/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = DynamoApp;
+				SWIFT_OBJC_BRIDGING_HEADER = "OSX/OSX-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		BBA52F1E1B35576B006F12AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = OSX/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = DynamoApp;
+				SWIFT_OBJC_BRIDGING_HEADER = "OSX/OSX-Bridging-Header.h";
+			};
+			name = Release;
+		};
+		BBA52F201B35576B006F12AC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = OSXTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DynamoApp.app/Contents/MacOS/DynamoApp";
+			};
+			name = Debug;
+		};
+		BBA52F211B35576B006F12AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = OSXTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DynamoApp.app/Contents/MacOS/DynamoApp";
+			};
+			name = Release;
+		};
+		BBA52F471B3557A3006F12AC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = iOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = Dynamo;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BBA52F481B3557A3006F12AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				INFOPLIST_FILE = iOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = Dynamo;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		BBA52F4A1B3557A3006F12AC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = iOSTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Dynamo.app/Dynamo";
+			};
+			name = Debug;
+		};
+		BBA52F4B1B3557A3006F12AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = iOSTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Dynamo.app/Dynamo";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		BBA52F5E1B355A4C006F12AC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = dynamod;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		BBA52F5F1B355A4C006F12AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = dynamod;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BB4B4E3A1B356AE70001EDCA /* Build configuration list for PBXNativeTarget "TickTackToe" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB4B4E3B1B356AE70001EDCA /* Debug */,
+				BB4B4E3C1B356AE70001EDCA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB4B4E451B356AFC0001EDCA /* Build configuration list for PBXNativeTarget "NumberGuesser" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB4B4E461B356AFC0001EDCA /* Debug */,
+				BB4B4E471B356AFC0001EDCA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BBA52EC11B3556C3006F12AC /* Build configuration list for PBXProject "Dynamo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BBA52EDB1B3556C3006F12AC /* Debug */,
+				BBA52EDC1B3556C3006F12AC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BBA52EDD1B3556C3006F12AC /* Build configuration list for PBXNativeTarget "Dynamo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BBA52EDE1B3556C3006F12AC /* Debug */,
+				BBA52EDF1B3556C3006F12AC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BBA52EE01B3556C3006F12AC /* Build configuration list for PBXNativeTarget "DynamoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BBA52EE11B3556C3006F12AC /* Debug */,
+				BBA52EE21B3556C3006F12AC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BBA52F1C1B35576B006F12AC /* Build configuration list for PBXNativeTarget "OSX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BBA52F1D1B35576B006F12AC /* Debug */,
+				BBA52F1E1B35576B006F12AC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BBA52F1F1B35576B006F12AC /* Build configuration list for PBXNativeTarget "OSXTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BBA52F201B35576B006F12AC /* Debug */,
+				BBA52F211B35576B006F12AC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BBA52F461B3557A3006F12AC /* Build configuration list for PBXNativeTarget "iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BBA52F471B3557A3006F12AC /* Debug */,
+				BBA52F481B3557A3006F12AC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BBA52F491B3557A3006F12AC /* Build configuration list for PBXNativeTarget "iOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BBA52F4A1B3557A3006F12AC /* Debug */,
+				BBA52F4B1B3557A3006F12AC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BBA52F5D1B355A4C006F12AC /* Build configuration list for PBXNativeTarget "Daemon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BBA52F5E1B355A4C006F12AC /* Debug */,
+				BBA52F5F1B355A4C006F12AC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BBA52EBE1B3556C3006F12AC /* Project object */;
+}

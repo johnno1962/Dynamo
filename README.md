@@ -1,72 +1,54 @@
-## Yaws - Yet another Swift Web Server
 
-Yaws is a minimal, 100% Swift, single file implementation of a Web server supporting SSL
-that can also be used from Objective-C. It can serve static or dynamic content and
-when used from the command line and includes "processors" for acting as a http and https
-proxy on your local host for debugging and tracing.
+## Dynamo - 100% Swift Dynamic Web Server
 
-Incorporating the YawsWebServer in your web server or application is simple. The initialiser
+Dynamo is a minimal, 100% Swift implementation of a Web server supporting SSL
+that can also be used from Objective-C. Dynamic content can be provided in what you could
+call "swiftlets" which are dynamically loadable bundles in your document root. These bundles
+hot-swap when modified using method Swizzling so the server does not have to be restarted.
+
+For further information about the classes and protools that make up Dynamo you consult the jazzy docs
+[here](http://johnholdsworth.com/dynamo/docs/).
+
+Incorporating the DynamoWebServer in your web server or application is simple. The initialiser
 takes a port number and a list of "processors" (applications or document processors)
 that will each be presented the incoming requests in the order specified and have the
 option of processing them. The basic code pattern for initialisation in your app delegate is:
 
 ```Swift
+    // create non-SSL server/proxy on 8080
     let serverPort: UInt16 = 8080
-    YawsWebServer( portNumber: serverPort, processors: [
-        YawsExampleAppProcessor( pathPrefix: "/example" ),
-        TickTackToe(),
-        YawsSSLProxyProcessor(),
-        YawsProxyProcessor(),
-        YawsDocumentProcessor( documentRoot: NSBundle.mainBundle().resourcePath! ),
+    DynamoWebServer( portNumber: serverPort, processors: [
+        DynamoLoggingProcessor( logger: dynamoTrace ),
+        exampleTableGeneratorApp,
+        tickTackToeGame,
+        DynamoSSLProxyProcessor( logger: logger ),
+        DynamoProxyProcessor( logger: logger ),
+        DynamoSwiftServerPagesProcessor( documentRoot: documentRoot ),
+        DynamoDocumentProcessor( documentRoot: documentRoot )
     ] )
 
     webView.mainFrame.loadRequest( NSURLRequest( URL: NSURL( string: "http://localhost:\(serverPort)" )! ) )
 ```
 
-See AppDelegate.swift in the example project for further details. 
-A processor runs in it's own thread and is an instance of subclass 
-of "YawsProcessor" that has the following signature:
+See OSX/AppDelegate.swift or iOS/AppDelegate.m in the example project for
+further details.  A processor runs in it's own thread and is an instance
+of implementing the "DynamoProcessor" protocol that has the following signature:
 
 ```Swift
-    @objc public enum YawsProcessed : Int {
+    @objc public enum DynamoProcessed : Int {
     case
         NotProcessed, // does not recognise the request
         Processed, // has processed the request
         ProcessedAndReusable // "" and connection may be reused
     }
 
-    public class YawsProcessor: NSObject {
+    @objc public protocol DynamoProcessor {
 
-        @objc func process( yawsClient: YawsHTTPConnection ) -> YawsProcessed {
-            fatalError( "YawsProcessor: Abstract method process() called" )
-        }
-
+        @objc func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed    
     }
 ```
 
-Other than this, once a YawsProcessor has recognised a request it can process it
-in any manner it pleases accessing the client through the YawsHTTPConnection class.
-It returns .ProcessedAndReusable if the connection can be reused (as can be done
-with HTTP/1.1) This requires a "Content-Length" HTTP header value to have been set.
-
-A user written subclass of one particular subclass of YawsProcessor, "YawsApplicationProcessor"
-receives the  query string, POST data and any Cookies preprocessed and is used for dynamic content.
-Application processors must provide a "pathPrefix" that will be matched against the
-first part of the URL to distinguish them from each other and the default document
-serving processor. After parsing the request processing is handed over to the user
-written implementation of the following function.
-
-```Swift
-    @objc public func processRequest( out: YawsHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
-        fatalError( "Application Subclass responsibility" )
-    }
-```
-
-Note: while the "YawsHTTPConnection" object representing the request is transient,
-the processor instance is persistent for the life of the server so you may want to
-look at the "YawsSessionProcessor" subclass.
-
-A further subclass of YawsApplicationProcessor, "YawsHTMLAppProcessor" provides
+A subclass of DynamoApplicationProcessor, "DynamoHTMLAppProcessor" provides
 functions to generate balanced HTML tags easily using functions. for example:
 
 ```Swift
@@ -87,27 +69,17 @@ functions to generate balanced HTML tags easily using functions. for example:
     }
 ```
 
-In these tag functions an optional dictionary of attributes for the tag can be supplied 
-and a contents of nil specifies not to close the tag.
-
-A final processor, the "YawsDocumentProcessor" generally takes the end of the chain
-serving documents from a document root (which can be your app’s resource directory.)
-A subclass of this, the "MultiHostProcessor" can be used to implement multiple
-sites on one server using the "Host:" http request header. In this case it's
-up to any dynamic content to make sure it runs on the right host.
-
 ### Design
 
-YawsWebServer has been implemented using BSD sockets rather than Apple's CFSocket as I wasn't convinced 
-it was any less low level and I didn't want to tangle with the main run loop. This also simplifies the
-parsing of the HTTP headers as they come in using the venerable "fgets". If you don't share this vision
-the classes YawsWebServer and YawsHTTPConnection where all this code is concentrated can be re-implemented
-without affecting the basic architecture of the server or affecting any of the "processor" code.
+DynamoWebServer has been implemented using BSD sockets rather than Apple's CFSocket for simplicity and speed.
+If you don't share this vision the code is concentrated in the classes DynamoWebServer and DynamoHTTPConnection
+where all  can be re-implementedwithout affecting the basic architecture of the server or affecting any of 
+the "processor" code.
 
-One thing CFSocket/NSStreams does give however is support for an SSL server so a way had to be found
-to turn the "push" of CFSockets to the "pull" of the Yaws code. The solution was to run a separate
-CFSocket based SSL server as a proxy relaying decrypted data to a "surrogate" Yaws server on localhost
-satisfying both architectures. The code to generate the required certificates in DDKeychain.[nm] was taken from
+One thing CFSocket/NSStreams does provide however is support for an SSL connection so a way had to be found
+to turn the "push" of CFSockets to the "pull" of the Dynamo code. The solution was to run a separate CFSocket
+based SSL server as a proxy relaying decrypted data to a "surrogate" Dynamo server on localhost satisfying both 
+architectures. The code to generate the required certificates in DDKeychain.[nm], slightly modified from
 robbiehanson's [CocoaHTTPServer](https://github.com/robbiehanson/CocoaHTTPServer) under the following license:
 
     Software License Agreement (BSD License)
@@ -129,16 +101,12 @@ robbiehanson's [CocoaHTTPServer](https://github.com/robbiehanson/CocoaHTTPServer
 
     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-YawsHTMLAppProcessor borrows it's design from the original Perl CGI module the grand-daddy of all dynamic web
-content. This is my third and by far the cleanest Web server I've implemented in various languages 
-and combines the experience but thankfully none of the code from the "PSP" and "jhttpd" servers.
-
 Dynamic content can be coded entirely in Swift and one interesting use case is that it
 can be used inside an iOS or OS X app. This allows you to write a "lag free" portable web 
 interface connecting to the embedded server on the local device rather than a remote server. 
 This is shown in the two examples included in the release.
 
-![Icon](http://injectionforxcode.johnholdsworth.com/yaws2.png)
+![Icon](http://injectionforxcode.johnholdsworth.com/Dynamo2.png)
 
 As ever, announcements of major commits to the repo will be made on twitter 
 [@Injection4Xcode](https://twitter.com/#!/@Injection4Xcode).
