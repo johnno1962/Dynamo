@@ -1,8 +1,8 @@
 
-## Dynamo - 100% Swift Dynamic Web Server
+## Dynamo - Dynamic Swift Web Server
 
-Dynamo is a minimal, 100% Swift implementation of a Web server supporting SSL
-that can also be used from Objective-C. Dynamic content can be provided in what you could
+Dynamo is a minimal, Swift implementation of a Web server supporting SSL that can also be used
+in Objective-C applications. Dynamic content can be provided in what you could
 call "swiftlets" which are dynamically loadable bundles in your document root. These bundles
 hot-swap when modified using method Swizzling so the server does not have to be restarted.
 
@@ -31,8 +31,8 @@ option of processing them. The basic code pattern for initialisation in your app
 ```
 
 See OSX/AppDelegate.swift or iOS/AppDelegate.m in the example project for
-further details.  A processor runs in it's own thread and is an instance
-of implementing the "DynamoProcessor" protocol that has the following signature:
+further details.  A processor runs in it's own thread and 
+implements the "DynamoProcessor" protocol that has the following signature:
 
 ```Swift
     @objc public enum DynamoProcessed : Int {
