@@ -1,5 +1,5 @@
 
-## Dynamo - Dynamic Swift Web Server
+# ![Icon](http://johnholdsworth.com/dynamo/dynamo.jpg) Dynamo - Dynamic Swift Web Server
 
 Dynamo is a minimal, Swift implementation of a Web server supporting SSL that can also be used
 in Objective-C applications. Dynamic content can be provided in what you could
@@ -106,7 +106,7 @@ can be used inside an iOS or OS X app. This allows you to write a "lag free" por
 interface connecting to the embedded server on the local device rather than a remote server. 
 This is shown in the two examples included in the release.
 
-![Icon](http://injectionforxcode.johnholdsworth.com/Dynamo2.png)
+![Icon](http://johnholdsworth.com/dynamo/dynamo.png)
 
 As ever, announcements of major commits to the repo will be made on twitter 
 [@Injection4Xcode](https://twitter.com/#!/@Injection4Xcode).
