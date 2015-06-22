@@ -106,7 +106,7 @@ can be used inside an iOS or OS X app. This allows you to write a "lag free" por
 interface connecting to the embedded server on the local device rather than a remote server. 
 This is shown in the two examples included in the release.
 
-![Icon](http://johnholdsworth.com/dynamo/dynamo.png)
+![Icon](http://johnholdsworth.com/dynamo/dynamo2.png)
 
 As ever, announcements of major commits to the repo will be made on twitter 
 [@Injection4Xcode](https://twitter.com/#!/@Injection4Xcode).
