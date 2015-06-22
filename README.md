@@ -6,6 +6,11 @@ in Objective-C applications. Dynamic content can be provided in what you could
 call "swiftlets" which are dynamically loadable bundles in your document root. These bundles
 hot-swap when modified using method Swizzling so the server does not have to be restarted.
 
+To see dynamic loading in action, run the DynamoApp target and browse to http://localhost:8080
+and select either the Simple Game TickTackToe or the Number Guesser example. Modify the
+souces in their bundle projects and build the project. The changes should take effect without
+having to restart the server or affecting the object's state.
+
 For further information about the classes and protools that make up Dynamo you consult the jazzy docs
 [here](http://johnholdsworth.com/dynamo/docs/).
 
@@ -72,9 +77,9 @@ functions to generate balanced HTML tags easily using functions. for example:
 ### Design
 
 DynamoWebServer has been implemented using BSD sockets rather than Apple's CFSocket for simplicity and speed.
-If you don't share this vision the code is concentrated in the classes DynamoWebServer and DynamoHTTPConnection
-where all  can be re-implementedwithout affecting the basic architecture of the server or affecting any of 
-the "processor" code.
+This should also help in any eventual port to Linux. There is an alternate NSStream based version of 
+DynamoHTTPConnection but it didn't seem to cope at all well with many simultaneous connections. 
+Besides, it is heavily dependant on the foundation NSRunLoop unlikely to prove portable.
 
 One thing CFSocket/NSStreams does provide however is support for an SSL connection so a way had to be found
 to turn the "push" of CFSockets to the "pull" of the Dynamo code. The solution was to run a separate CFSocket
