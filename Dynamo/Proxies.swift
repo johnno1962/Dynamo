@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Proxies.swift#15 $
+//  $Id: //depot/Dynamo/Dynamo/Proxies.swift#17 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -36,6 +36,9 @@ public class DynamoProxyProcessor : NSObject, DynamoProcessor {
         if let host = httpClient.url.host, remoteConnection = dynamoConnectionClass( url: httpClient.url ) {
 
             var remotePath = httpClient.url.path ?? "/"
+            if !remotePath.hasSuffix( "/" ) && httpClient.uri.hasSuffix( "/" ) {
+                remotePath += "/"
+            }
             if let query = httpClient.url.query {
                 remotePath += "?"+query
             }
