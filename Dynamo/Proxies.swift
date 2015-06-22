@@ -5,176 +5,13 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
+//  $Id: //depot/Dynamo/Dynamo/Proxies.swift#15 $
+//
+//  Repo: https://github.com/johnno1962/Dynamo
+//
 
 import Foundation
 
-private let DynamoSSLQueue = dispatch_queue_create( "DynamoSSLThread", DISPATCH_QUEUE_CONCURRENT )
-
-// MARK: SSL https: Web Server
-
-/**
- Subclass of DynamoWebServer for accepting https: SSL encoded requests. Create a proxy on the provided
- port to a surrogate DynamoWebServer on a random port on the localhost to actually process the requests.
- */
-
-public class DynamoSSLWebServer : DynamoWebServer, NSStreamDelegate {
-
-    private var relayMap = [NSStream:DynamoSSLRelay]()
-
-    public init?( portNumber: UInt16, pocessors: [DynamoProcessor], certs: [AnyObject]? ) {
-
-        var nonSSLPortOnLocalhost = portNumber-1
-
-        // port number 0 uses any available port
-        if let surrogateServer = DynamoWebServer( portNumber: 0, processors: pocessors, localhostOnly: true ) {
-            nonSSLPortOnLocalhost = surrogateServer.serverPort
-            dynamoLog( "Surrogate server on port \(nonSSLPortOnLocalhost)" )
-        }
-
-        super.init( portNumber, localhostOnly: false )
-
-        if serverPort != 0 {
-
-            var ip4addr = sockaddr_in(sin_len: UInt8(sizeof(sockaddr_in)),
-                sin_family: sa_family_t(AF_INET),
-                sin_port: htons( nonSSLPortOnLocalhost ), sin_addr: in_addr(s_addr:INADDR_ANY),
-                sin_zero: (Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0)))
-
-            let localhost = "127.0.0.1"
-            inet_aton( localhost, &ip4addr.sin_addr )
-
-            runConnectionHandler( {
-                (clientSocket: Int32) in
-
-                let localSocket = socket( Int32(ip4addr.sin_family), SOCK_STREAM, 0 )
-                if localSocket < 0 {
-                    Strerror( "Could not obtain socket" )
-                }
-                else if connect( localSocket, sockaddr_cast(&ip4addr), socklen_t(ip4addr.sin_len) ) < 0 {
-                    Strerror( "Could not connect to: \(localhost):\(nonSSLPortOnLocalhost)" )
-                }
-                else {
-                    setupSocket( localSocket )
-
-                    let outputStream = DynamoSSLRelay( clientSocket, localSocket, server: self, certs: certs ).outputStream
-
-                    dispatch_async( DynamoSSLQueue, {
-                        var buffer = [UInt8](count: 8192, repeatedValue: 0)
-                        while true {
-                            let bytesRead = recv( localSocket, &buffer, buffer.count, 0 )
-                            if bytesRead <= 0 {
-                                self.close( outputStream )
-                                return
-                            }
-                            else {
-                                var ptr = 0
-                                while ptr < bytesRead {
-                                    let remaining = UnsafePointer<UInt8>(buffer)+ptr
-                                    let bytesWritten = outputStream.write( remaining, maxLength: bytesRead-ptr )
-                                    if bytesWritten <= 0 {
-                                        dynamoLog( "Short write on SSL relay" )
-                                        self.close( outputStream )
-                                        return
-                                    }
-                                    ptr += bytesWritten
-                                }
-                            }
-                        }
-                    } )
-                }
-            } )
-        }
-        else {
-            return nil
-        }
-    }
-
-    public func stream( aStream: NSStream, handleEvent eventCode: NSStreamEvent ) {
-        switch eventCode {
-        case NSStreamEvent.HasBytesAvailable:
-            var buffer = [UInt8](count: 8192, repeatedValue: 0)
-            let bytesRead = (aStream as! NSInputStream).read( &buffer, maxLength: buffer.count )
-            if bytesRead < 0 {
-                close( aStream )
-            }
-            else if let relay = relayMap[aStream] {
-                if send( relay.localSocket, &buffer, bytesRead, 0 ) != bytesRead {
-                    dynamoLog( "Short write to surrogate" )
-                }
-            }
-        case NSStreamEvent.ErrorOccurred:
-            println( "ErrorOccurred: \(aStream) \(eventCode)" )
-            fallthrough
-        case NSStreamEvent.EndEncountered:
-            close( aStream )
-        default:
-            break
-        }
-    }
-
-    func close( aStream: NSStream ) {
-        if let relay = relayMap[aStream] {
-            relayMap.removeValueForKey( relay.inputStream )
-            relayMap.removeValueForKey( relay.outputStream )
-//            relay.closer()
-        }
-    }
-}
-
-private class DynamoSSLRelay {
-
-    let clientSocket: Int32
-    let localSocket: Int32
-    let inputStream: NSInputStream
-    let outputStream: NSOutputStream
-
-    init( _ clientSocket: Int32, _ localSocket: Int32, server: DynamoSSLWebServer, certs: [AnyObject]? ) {
-
-        self.clientSocket = clientSocket
-        self.localSocket = localSocket
-
-        var readStream:  Unmanaged<CFReadStream>?
-        var writeStream: Unmanaged<CFWriteStream>?
-
-        CFStreamCreatePairWithSocket( nil, clientSocket, &readStream, &writeStream )
-
-        inputStream = readStream!.takeRetainedValue()
-        outputStream = writeStream!.takeRetainedValue()
-
-        server.relayMap[outputStream] = self
-        server.relayMap[inputStream] = self
-
-        outputStream.delegate = server
-        inputStream.delegate = server
-
-        inputStream.scheduleInRunLoop( NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode )
-        outputStream.scheduleInRunLoop( NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode )
-
-        inputStream.open()
-        outputStream.open()
-
-        if certs != nil {
-            let sslSettings: [NSString:AnyObject] = [
-                kCFStreamSSLIsServer: NSNumber( bool: true ),
-                kCFStreamSSLLevel: kCFStreamSSLLevel,
-                kCFStreamSSLCertificates: certs!
-            ]
-
-            CFReadStreamSetProperty( inputStream, kCFStreamPropertySSLSettings, sslSettings )
-            CFWriteStreamSetProperty( outputStream, kCFStreamPropertySSLSettings, sslSettings )
-        }
-    }
-
-    deinit {
-        outputStream.removeFromRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
-        inputStream.removeFromRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
-        outputStream.close()
-        inputStream.close()
-        close( clientSocket )
-        close( localSocket )
-    }
-    
-}
 
 // MARK: Proxy Processors
 
@@ -196,25 +33,27 @@ public class DynamoProxyProcessor : NSObject, DynamoProcessor {
             return .NotProcessed
         }
 
-        if let host = httpClient.url.host, remoteConnection = DynamoHTTPConnection( url: httpClient.url ) {
+        if let host = httpClient.url.host, remoteConnection = dynamoConnectionClass( url: httpClient.url ) {
 
             var remotePath = httpClient.url.path ?? "/"
             if let query = httpClient.url.query {
                 remotePath += "?"+query
             }
 
-            remoteConnection.rawPrint( "\(httpClient.method) \(remotePath) HTTP/1.0\r\n" )
+            //println( "\(httpClient.method) \(remotePath) \(httpClient.httpVersion)" )
+            remoteConnection.rawPrint( "\(httpClient.method) \(remotePath) \(httpClient.httpVersion)\r\n" )
             for (name, value) in httpClient.requestHeaders {
                 //if name != "Connection" {
-                    remoteConnection.rawPrint( "\(name): \(value)\r\n" )
+                //println( "\(name): \(value)" )
+                remoteConnection.rawPrint( "\(name): \(value)\r\n" )
                 //}
             }
             //remoteConnection.rawPrint( "Connection: close\r\n" )
             remoteConnection.rawPrint( "\r\n" )
             remoteConnection.flush()
 
-            remoteConnection.relay( "<- \(host)", to: httpClient, logger )
-            httpClient.relay( "-> \(host)", to: remoteConnection, logger )
+            dynamoRelayImplementation.relay( "<- \(host)", from: remoteConnection, to: httpClient, logger )
+            dynamoRelayImplementation.relay( "-> \(host)", from: httpClient, to: remoteConnection, logger )
         }
         
         return .Processed
@@ -235,11 +74,11 @@ public class DynamoSSLProxyProcessor : DynamoProxyProcessor {
         }
 
         if let urlForDestination = NSURL( string: "https://\(httpClient.uri)" ),
-            remoteConnection = DynamoHTTPConnection( url: urlForDestination ) {
+            remoteConnection = dynamoConnectionClass( url: urlForDestination ) {
                 httpClient.rawPrint( "HTTP/1.0 200 Connection established\r\nProxy-agent: Dynamo/1.0\r\n\r\n" )
                 httpClient.flush()
-                remoteConnection.relay( "<- \(httpClient.uri)", to: httpClient, logger )
-                httpClient.relay( "-> \(httpClient.uri)", to: remoteConnection, logger )
+                dynamoRelayImplementation.relay( "<- \(httpClient.uri)", from: remoteConnection, to: httpClient, logger )
+                dynamoRelayImplementation.relay( "-> \(httpClient.uri)", from: httpClient, to: remoteConnection, logger )
         }
 
         return .Processed
@@ -247,3 +86,186 @@ public class DynamoSSLProxyProcessor : DynamoProxyProcessor {
     
 }
 
+// MARK: "select()" based fd switching
+
+private var dynamoSelector: DynamoSelector?
+private var dynamorMapLock : OSSpinLock = OS_SPINLOCK_INIT
+
+/**
+    More efficient than relying on operating system to handle many reads on different threads when proxying
+*/
+
+final class DynamoSelector {
+
+    var readMap = [Int32:DynamoHTTPConnection]()
+    var writeMap = [Int32:DynamoHTTPConnection]()
+
+    var timeout = timeval()
+    let bitsPerFlag: Int32 = 32
+
+    func FD_ZERO( flags: UnsafeMutablePointer<Int32> ) {
+        memset( flags, 0, sizeof(fd_set) )
+    }
+
+    func FD_CLR( fd: Int32, _ flags: UnsafeMutablePointer<Int32> ) {
+        let set = flags + Int( fd/bitsPerFlag )
+        set.memory = set.memory & ~(1<<(fd%bitsPerFlag))
+    }
+
+    func FD_SET( fd: Int32, _ flags: UnsafeMutablePointer<Int32> ) {
+        let set = flags + Int( fd/bitsPerFlag )
+        set.memory = set.memory | (1<<(fd%bitsPerFlag))
+    }
+
+    func FD_ISSET( fd: Int32, _ flags: UnsafeMutablePointer<Int32> ) -> Bool {
+        let set = flags + Int( fd/bitsPerFlag )
+        return (set.memory & (1<<(fd%bitsPerFlag))) != 0
+    }
+
+
+    class func relay( label: String, from: DynamoHTTPConnection, to: DynamoHTTPConnection, _ logger: ((String) -> ())? ) {
+        OSSpinLockLock( &dynamorMapLock )
+
+        if dynamoSelector == nil {
+            dynamoSelector = DynamoSelector()
+            dispatch_async( dynamoSSLQueue, {
+                dynamoSelector!.selectLoop( logger )
+            } )
+        }
+
+        from.label = label
+        dynamoSelector!.readMap[from.clientSocket] = to
+
+        OSSpinLockUnlock( &dynamorMapLock )
+    }
+
+    func selectLoop( _ logger: ((String) -> Void)? = nil ) {
+        var buffer = [Int8](count: 32*1024, repeatedValue: 0)
+        var readFlags = UnsafeMutablePointer<Int32>( malloc( sizeof(fd_set) ) )
+        var writeFlags = UnsafeMutablePointer<Int32>( malloc( sizeof(fd_set) ) )
+        var errorFlags = UnsafeMutablePointer<Int32>( malloc( sizeof(fd_set) ) )
+
+        while true {
+            FD_ZERO( readFlags )
+            FD_ZERO( writeFlags )
+            FD_ZERO( errorFlags )
+
+            var maxfd: Int32 = -1
+            for (fd,connection) in readMap {
+                if let writer = readMap[fd],
+                    reader = readMap[writer.clientSocket] {
+                    if reader.readEOF || reader.clientSocket != fd {
+                        continue
+                    }
+                }
+
+                FD_SET( fd, readFlags )
+                FD_SET( fd, errorFlags )
+                if maxfd < fd {
+                    maxfd = fd
+                }
+            }
+
+            var hasWrite = false
+            for (fd,connection) in writeMap {
+                if connection.writeBuffer.length > 0 {
+                    FD_SET( fd, writeFlags )
+                    FD_SET( fd, errorFlags )
+                    if maxfd < fd {
+                        maxfd = fd
+                    }
+                    hasWrite = true
+                }
+            }
+
+            timeout.tv_sec = 0
+            timeout.tv_usec = 100*1000
+
+            if select( maxfd+1,
+                UnsafeMutablePointer<fd_set>( readFlags ),
+                hasWrite ? UnsafeMutablePointer<fd_set>( writeFlags ) : nil,
+                UnsafeMutablePointer<fd_set>( errorFlags ), &timeout ) < 0  {
+                    Strerror( "Select error \(readMap)" )
+                    readMap = [Int32:DynamoHTTPConnection]()
+                    continue
+            }
+
+            if maxfd < 0 {
+                continue
+            }
+
+            for readFD in 0..<maxfd {
+                if FD_ISSET( readFD, readFlags ) {
+                    let bytesRead = recv( readFD, &buffer, buffer.count, 0 )
+
+                    if let writer = readMap[readFD] {
+
+                        if logger != nil {
+                            logger!( "\(writer.label) \(bytesRead) bytes (\(readFD))" )
+                        }
+
+                        if bytesRead <= 0 {
+                            if writer.writeBuffer.length == 0 || writer.readEOF {
+                                close( readFD )
+                            }
+                            else if let reader = readMap[writer.clientSocket] {
+                                reader.readEOF = true
+                            }
+                        }
+                        else {
+                            writer.writeBuffer.appendBytes( buffer, length: bytesRead )
+                            writeMap[writer.clientSocket] = writer
+                        }
+                    }
+                    else {
+                        dynamoLog( "NO WRITER" )
+                    }
+                }
+            }
+
+            for writeFD in 0..<maxfd {
+                if FD_ISSET( writeFD, writeFlags ) {
+                    if let writer = writeMap[writeFD] {
+
+                        let bytesWritten = send( writeFD,
+                            writer.writeBuffer.bytes,
+                            writer.writeBuffer.length, 0 )
+
+                        if bytesWritten <= 0 {
+                            dynamoLog( "Short write on relay" )
+                            close( writeFD )
+                        }
+                        else {
+                            writer.writeBuffer.replaceBytesInRange( NSMakeRange( 0, bytesWritten ), withBytes: nil, length: 0 )
+                            if writer.writeBuffer.length == 0 {
+                                writeMap.removeValueForKey( writer.clientSocket )
+                            }
+                            if let reader = readMap[writeFD] {
+                                if reader.readEOF {
+                                    close( writeFD )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            for errorFD in 0..<maxfd {
+                if FD_ISSET( errorFD, errorFlags ) {
+                    dynamoLog( "ERROR on relay" )
+                    close( errorFD )
+                }
+            }
+        }
+    }
+
+    func close( fd: Int32 ) {
+        if let writer = readMap[fd] {
+            readMap.removeValueForKey( writer.clientSocket )
+            writeMap.removeValueForKey( writer.clientSocket )
+        }
+        readMap.removeValueForKey( fd )
+        writeMap.removeValueForKey( fd )
+    }
+    
+}
