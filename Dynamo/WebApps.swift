@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/WebApps.swift#10 $
+//  $Id: //depot/Dynamo/Dynamo/WebApps.swift#18 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -106,14 +106,14 @@ public class DynamoApplicationProcessor : NSObject, DynamoApplicationProtoccol {
             if pathInfo.hasPrefix( pathPrefix ) {
                 var parameters = [String:String]()
 
-                if httpClient.method == "POST" {
-                    if let postData = httpClient.readPost() {
-                        addParameters( &parameters, from: postData )
-                    }
-                }
-
                 if let queryString = httpClient.url.query {
                     addParameters( &parameters, from: queryString )
+                }
+
+                if httpClient.method == "POST" {
+                    if let postData = httpClient.readContent() {
+                        addParameters( &parameters, from: postData )
+                    }
                 }
 
                 var cookies = [String:String]()
@@ -132,8 +132,12 @@ public class DynamoApplicationProcessor : NSObject, DynamoApplicationProtoccol {
 
     private func addParameters(  inout parameters: [String:String], from queryString: String, delimeter: String = "&" ) {
         for nameValue in queryString.componentsSeparatedByString( delimeter ) {
-            let nameValue = split( nameValue, maxSplit: 2, allowEmptySlices: true, isSeparator: { $0 == "=" } )
-            parameters[nameValue[0]] = nameValue.count > 1 ? nameValue[1].stringByRemovingPercentEncoding! : ""
+            if let divider = nameValue.rangeOfString( "=" )?.startIndex {
+                parameters[nameValue.substringToIndex( divider )] = nameValue.substringFromIndex( advance( divider, 1 ) )
+            }
+            else {
+                parameters[nameValue] = "1"
+            }
         }
     }
 
@@ -158,7 +162,7 @@ public class DynamoLoggingProcessor : NSObject, DynamoProcessor {
     }
 
     @objc public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
-        logger( "\(httpClient.method) \(httpClient.uri) \(httpClient.httpVersion) - \(httpClient.remoteAddr())" )
+        logger( "\(httpClient.method) \(httpClient.path) \(httpClient.httpVersion) - \(httpClient.remoteAddr())" )
         return .NotProcessed
     }
 
@@ -170,7 +174,8 @@ public class DynamoLoggingProcessor : NSObject, DynamoProcessor {
  Default session expiry time in seconds
  */
 
-public var dynanmoDefaultSessionExpiry = NSTimeInterval( 15*60 )
+public var sessionExpiryCheckInterval: NSTimeInterval = 5
+public var dynanmoDefaultSessionExpiry: NSTimeInterval = 1*60
 
 /**
  Processor that creates now instancews of the application class per user session.
@@ -181,30 +186,40 @@ public class DynamoSessionProcessor : DynamoApplicationProcessor {
 
     var appClass: DynamoSessionBasedApplication.Type
     var sessions = [String:DynamoApplicationProtoccol]()
+    private var lastCheck = NSDate().timeIntervalSinceReferenceDate
+    private var sessionLock: OSSpinLock = OS_SPINLOCK_INIT
+    private let cookieName: String
 
-    public init( pathPrefix: String, appClass: DynamoSessionBasedApplication.Type ) {
+    public init( pathPrefix: String, appClass: DynamoSessionBasedApplication.Type, cookieName: String = "DynamoSession" ) {
         self.appClass = appClass
+        self.cookieName = cookieName
         super.init( pathPrefix: pathPrefix )
     }
 
     public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
 
-        for (key, session) in sessions {
-            if let session = session as? DynamoSessionBasedApplication {
-                if session.expiry < NSDate.timeIntervalSinceReferenceDate() {
-                    sessions.removeValueForKey( key )
+        if lastCheck + sessionExpiryCheckInterval < NSDate().timeIntervalSinceReferenceDate {
+            for (key, session) in sessions {
+                if let session = session as? DynamoSessionBasedApplication {
+                    if session.expiry < NSDate.timeIntervalSinceReferenceDate() {
+                        OSSpinLockLock( &sessionLock )
+                        sessions.removeValueForKey( key )
+                        OSSpinLockUnlock( &sessionLock )
+                    }
                 }
             }
+            lastCheck = NSDate().timeIntervalSinceReferenceDate
         }
 
-        let sessionCookieName = "DynamoSession"
-        var sessionKey = cookies[sessionCookieName]
+        OSSpinLockLock( &sessionLock )
+        var sessionKey = cookies[cookieName]
         if sessionKey == nil || sessions[sessionKey!] == nil {
             sessionKey = NSUUID().UUIDString
             sessions[sessionKey!] = appClass( manager: self, sessionKey: sessionKey! ) as DynamoApplicationProtoccol
             out.addHeader( "Content-Type", value: dynamoHtmlMimeType )
-            out.setCookie( sessionCookieName, value: sessionKey!, path: pathPrefix )
+            out.setCookie( cookieName, value: sessionKey!, path: pathPrefix )
         }
+        OSSpinLockUnlock( &sessionLock )
 
         if let sessionApp = sessions[sessionKey!] {
             sessionApp.processRequest( out, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
@@ -241,6 +256,126 @@ public class DynamoSessionBasedApplication : DynamoHTMLAppProcessor {
         dynamoLog( "DynamoSessionBsedApplcation.processRequest(): Subclass responsibility" )
     }
 
+}
+
+// MARK: Bundle based, reloading processors
+
+/**
+This processor is sessoin based and also loads it's application code from a code bundle with a ".ssp" extension.
+If the module includes the Utilities/AutoLoader.m code it will reload and swizzle it'a new implementation when
+the bundle is rebuilt/re-deployed for hot-swapping in the code. Existing instances/sessions receive the new code
+but retain their state. This does not work for changes to the layout or number of properties in the class.
+*/
+
+public class DynamoReloadingProcessor : DynamoSessionProcessor {
+
+    var bundleName: String
+    var loaded: NSTimeInterval
+    let bundlePath: String
+    let binaryPath: String
+    let fileManager = NSFileManager.defaultManager()
+    let mainBundle = NSBundle.mainBundle()
+    var loadNumber = 0
+
+    public convenience init( pathPrefix: String, bundleName: String ) {
+        let bundlePath = NSBundle.mainBundle().pathForResource( bundleName, ofType: "ssp" )!
+        self.init( pathPrefix: pathPrefix, bundleName: bundleName, bundlePath: bundlePath )
+    }
+
+    public init( pathPrefix: String, bundleName: String, bundlePath: String ) {
+        self.bundlePath = bundlePath
+        let bundle = NSBundle( path: bundlePath )!
+        bundle.load()
+        self.bundleName = bundleName
+        self.loaded = NSDate().timeIntervalSinceReferenceDate
+        self.binaryPath = "\(bundlePath)/Contents/MacOS/\(bundleName)"
+        let appClass = bundle.classNamed( "\(bundleName)Processor" ) as! DynamoSessionBasedApplication.Type
+        super.init( pathPrefix: pathPrefix, appClass: appClass )
+    }
+
+    public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
+
+        if let attrs = fileManager.attributesOfItemAtPath( binaryPath, error: nil ),
+            lastModified = (attrs[NSFileModificationDate] as? NSDate)?.timeIntervalSinceReferenceDate {
+                if lastModified > loaded {
+                    let nextPath = "/tmp/\(bundleName)V\(loadNumber++).ssp"
+
+                    fileManager.removeItemAtPath( nextPath, error: nil )
+                    fileManager.copyItemAtPath( bundlePath, toPath: nextPath, error: nil )
+
+                    if let bundle = NSBundle( path: nextPath ) {
+                        bundle.load() // AutoLoader.m Swizzles new implementation
+                        self.loaded = lastModified
+                    }
+                    else {
+                        dynamoLog( "Could not load bundle \(nextPath)" )
+                    }
+                }
+        }
+
+        super.processRequest(out, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
+    }
+
+}
+
+// MARK: Reloading processor based in bundle inside documentRoot
+
+/**
+A specialisation of a bundle reloading, session based processor where the bundle is loaded
+from the web document directory. As before it reloads and hot-swaps in the new code if the
+bundle is updated.
+*/
+
+public class DynamoSwiftServerPagesProcessor : DynamoApplicationProcessor {
+
+    let documentRoot: String
+    var reloaders = [String:DynamoReloadingProcessor]()
+    let fileManager = NSFileManager.defaultManager()
+
+    public init( documentRoot: String ) {
+        self.documentRoot = documentRoot
+        super.init( pathPrefix: "/**.ssp" )
+    }
+
+    override public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+
+        let path = httpClient.path
+
+        if let host = httpClient.requestHeaders["Host"] {
+
+            if let sspMatch = path.rangeOfString( ".ssp" )?.endIndex {
+                let sspPath = path.substringToIndex( sspMatch )
+
+                if sspPath != path && fileManager.fileExistsAtPath( "\(documentRoot)/\(host)\(path)") {
+                    return .NotProcessed
+                }
+
+                let sspFullPath = "\(documentRoot)/\(host)\(sspPath)"
+                var reloader = reloaders[sspPath]
+
+                if reloader == nil && fileManager.fileExistsAtPath( sspFullPath ) {
+                    if let nameStart = sspPath.rangeOfString( "/", options: NSStringCompareOptions.BackwardsSearch )?.endIndex {
+                        let bundleName = sspPath.substringWithRange( Range( start: nameStart, end: advance( sspPath.endIndex, -4 ) ) )
+                        reloaders[sspPath] = DynamoReloadingProcessor( pathPrefix: sspPath,
+                            bundleName: bundleName, bundlePath: sspFullPath )
+                    }
+                    else {
+                        dynamoLog( "Unable to parse .ssp path: \(sspPath)" )
+                        return .NotProcessed
+                    }
+                }
+
+                if let reloader = reloaders[sspPath] {
+                    return reloader.process( httpClient )
+                }
+                else {
+                    dynamoLog( "Missing .ssp bundle for path \(path)" )
+                }
+            }
+        }
+        
+        return .NotProcessed
+    }
 }
 
 // MARK: Default document Processor
@@ -306,14 +441,16 @@ public class DynamoDocumentProcessor : NSObject, DynamoProcessor {
     let fileManager = NSFileManager.defaultManager()
     let webDateFormatter = NSDateFormatter()
     let documentRoot: String
+    let report404: Bool
 
     convenience override init() {
         let appResources = NSBundle.mainBundle().resourcePath!
         self.init( documentRoot: appResources )
     }
 
-    public init( documentRoot: String ) {
+    public init( documentRoot: String, report404: Bool = true ) {
         self.documentRoot = documentRoot
+        self.report404 = report404
         webDateFormatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
     }
 
@@ -322,53 +459,55 @@ public class DynamoDocumentProcessor : NSObject, DynamoProcessor {
     }
 
     @objc public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
-        if httpClient.method != "GET" {
-            return .NotProcessed
-        }
 
-        let hostHeader = httpClient.requestHeaders["Host"] ?? "localhost"
-        var fullPath = "\(documentRoot)/\(hostHeader)\(httpClient.uri)"
-        if fileManager.contentsOfDirectoryAtPath( fullPath, error: nil ) != nil {
-            fullPath = fullPath.stringByAppendingPathComponent( "index.html" )
-        }
+        if httpClient.method == "GET" {
 
-        let fileExt = fullPath.pathExtension
-        let mimeType = dynamoMimeTypeMapping[fileExt] ?? dynamoHtmlMimeType
+            let hostHeader = httpClient.requestHeaders["Host"] ?? "localhost"
+            var fullPath = "\(documentRoot)/\(hostHeader)\(httpClient.path)"
+            if fileManager.contentsOfDirectoryAtPath( fullPath, error: nil ) != nil {
+                fullPath = fullPath.stringByAppendingPathComponent( "index.html" )
+            }
 
-        httpClient.addHeader( "Date", value: webDate( NSDate() ) )
-        httpClient.addHeader( "Content-Type", value: mimeType )
+            let fileExt = fullPath.pathExtension
+            let mimeType = dynamoMimeTypeMapping[fileExt] ?? dynamoHtmlMimeType
 
-        let zippedPath = fullPath+".gz"
-        if fileManager.fileExistsAtPath( zippedPath ) {
-            httpClient.addHeader( "Content-Encoding", value: "gzip" )
-            fullPath = zippedPath
-        }
+            httpClient.addHeader( "Date", value: webDate( NSDate() ) )
+            httpClient.addHeader( "Content-Type", value: mimeType )
 
-        var lastModified = fileManager.attributesOfItemAtPath( fullPath,
-            error: nil )?[NSFileModificationDate] as? NSDate
+            let zippedPath = fullPath+".gz"
+            if fileManager.fileExistsAtPath( zippedPath ) {
+                httpClient.addHeader( "Content-Encoding", value: "gzip" )
+                fullPath = zippedPath
+            }
 
-        if let since = httpClient.requestHeaders["If-Modified-Since"] {
-            if lastModified != nil && webDate( lastModified! ) == since {
-                httpClient.status = 304
-                httpClient.addHeader( "Content-Length", value: "0" ) // ???
-                httpClient.print( "" )
+            var lastModified = fileManager.attributesOfItemAtPath( fullPath,
+                error: nil )?[NSFileModificationDate] as? NSDate
+
+            if let since = httpClient.requestHeaders["If-Modified-Since"] {
+                if lastModified != nil && webDate( lastModified! ) == since {
+                    httpClient.status = 304
+                    httpClient.addHeader( "Content-Length", value: "0" ) // ???
+                    httpClient.print( "" )
+                    return .ProcessedAndReusable
+                }
+            }
+
+            if let data = NSData( contentsOfFile: fullPath ) {
+                httpClient.status = 200
+                httpClient.addHeader( "Content-Length", value: "\(data.length)" )
+                httpClient.addHeader( "Last-Modified", value: "\(webDate( lastModified! ))" )
+                httpClient.write( data )
                 return .ProcessedAndReusable
+            }
+            else if report404 {
+                httpClient.status = 404
+                httpClient.print( "<b>File not found:</b> \(fullPath)" )
+                dynamoLog( "404 File not Found: \(fullPath)" )
+                return .Processed
             }
         }
 
-        if let data = NSData( contentsOfFile: fullPath ) {
-            httpClient.status = 200
-            httpClient.addHeader( "Content-Length", value: "\(data.length)" )
-            httpClient.addHeader( "Last-Modified", value: "\(webDate( lastModified! ))" )
-            httpClient.write( data )
-            return .ProcessedAndReusable
-        }
-        else {
-            httpClient.status = 404
-            httpClient.print( "<b>File not found:</b> \(fullPath)" )
-            dynamoLog( "404 File not Found: \(fullPath)" )
-            return .Processed
-        }
+        return .NotProcessed
     }
 
 }

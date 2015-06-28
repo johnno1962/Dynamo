@@ -30,7 +30,6 @@
 		BB4B4E6F1B359B650001EDCA /* localhost:8080 in Resources */ = {isa = PBXBuildFile; fileRef = BB4B4E6D1B359B480001EDCA /* localhost:8080 */; };
 		BB4B4E871B35BDA60001EDCA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E861B35BDA60001EDCA /* main.m */; };
 		BB4B4E881B35C4AE0001EDCA /* dynamod in Resources */ = {isa = PBXBuildFile; fileRef = BBA52F591B355A4C006F12AC /* dynamod */; };
-		BB81640D1B38A9BD00E737AE /* OSDependant.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB81640C1B38A9BD00E737AE /* OSDependant.swift */; };
 		BB81640F1B38ADDB00E737AE /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB81640E1B38ADDB00E737AE /* Connection.swift */; };
 		BB8164101B38AEF600E737AE /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB81640E1B38ADDB00E737AE /* Connection.swift */; };
 		BBA52ECD1B3556C3006F12AC /* Dynamo.h in Headers */ = {isa = PBXBuildFile; fileRef = BBA52ECC1B3556C3006F12AC /* Dynamo.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -167,7 +166,6 @@
 		BB4B4E6D1B359B480001EDCA /* localhost:8080 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "localhost:8080"; sourceTree = "<group>"; };
 		BB4B4E861B35BDA60001EDCA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		BB7631C21B37003D00646A50 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		BB81640C1B38A9BD00E737AE /* OSDependant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OSDependant.swift; sourceTree = "<group>"; };
 		BB81640E1B38ADDB00E737AE /* Connection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
 		BBA52EC71B3556C3006F12AC /* Dynamo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Dynamo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBA52ECB1B3556C3006F12AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -347,7 +345,6 @@
 				BB4B4E1A1B355F350001EDCA /* Proxies.swift */,
 				BB4B4E1C1B355F4C0001EDCA /* WebApps.swift */,
 				BB4B4E1E1B355F610001EDCA /* Generated.swift */,
-				BB81640C1B38A9BD00E737AE /* OSDependant.swift */,
 				BBA52ECA1B3556C3006F12AC /* Supporting Files */,
 			);
 			path = Dynamo;
@@ -865,7 +862,6 @@
 				BB4B4E1B1B355F350001EDCA /* Proxies.swift in Sources */,
 				BB4B4E1D1B355F4C0001EDCA /* WebApps.swift in Sources */,
 				BB4B4E1F1B355F610001EDCA /* Generated.swift in Sources */,
-				BB81640D1B38A9BD00E737AE /* OSDependant.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

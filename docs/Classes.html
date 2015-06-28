@@ -88,6 +88,9 @@
               <li class="nav-group-task">
                 <a href="Global Variables.html#/s:v6Dynamo27dynanmoDefaultSessionExpirySd">dynanmoDefaultSessionExpiry</a>
               </li>
+              <li class="nav-group-task">
+                <a href="Global Variables.html#/s:v6Dynamo26sessionExpiryCheckIntervalSd">sessionExpiryCheckInterval</a>
+              </li>
             </ul>
           </li>
           <li class="nav-group-name">
@@ -102,7 +105,7 @@
           <a href="Functions.html">Functions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Functions.html#/s:F6Dynamo14addressForHostFTCSo8NSStringVSs6UInt16_GSqVSC8sockaddr_">addressForHost(_:_:)</a>
+                <a href="Functions.html#/s:F6Dynamo14addressForHostFTSSVSs6UInt16_GSqVSC8sockaddr_">addressForHost(_:_:)</a>
               </li>
               <li class="nav-group-task">
                 <a href="Functions.html#/s:F6Dynamo11dynamoTraceU__FQ_T_">dynamoTrace(_:)</a>
@@ -130,6 +133,86 @@
 
           </section>
           <section class="section task-group-section">
+            <div class="task-group">
+                <div class="task-name-container">
+                  <a name="/HTTP%20request%20parser"></a>
+                  <a name="//apple_ref/swift/Section/HTTP request parser" class="dashAnchor"></a>
+                  <a href="#/HTTP%20request%20parser">
+                    <h3 class="section-name">HTTP request parser</h3>
+                  </a>
+                </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:C6Dynamo20DynamoHTTPConnection"></a>
+                    <a name="//apple_ref/swift/Class/DynamoHTTPConnection" class="dashAnchor"></a>
+                    <a class="token" href="#/s:C6Dynamo20DynamoHTTPConnection">DynamoHTTPConnection</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Class representing a connection to a client web browser. One is created each time the server
+connects to read the standard HTTP headers ready to present to each of the processors of the server.</p>
+
+                        <a href="Classes/DynamoHTTPConnection.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="k">@objc</span> <span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoHTTPConnection</span> <span class="p">:</span> <span class="kt">NSObject</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+                <div class="task-name-container">
+                  <a name="/Basic%20http:%20Web%20server"></a>
+                  <a name="//apple_ref/swift/Section/Basic http: Web server" class="dashAnchor"></a>
+                  <a href="#/Basic%20http:%20Web%20server">
+                    <h3 class="section-name">Basic http: Web server</h3>
+                  </a>
+                </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:C6Dynamo15DynamoWebServer"></a>
+                    <a name="//apple_ref/swift/Class/DynamoWebServer" class="dashAnchor"></a>
+                    <a class="token" href="#/s:C6Dynamo15DynamoWebServer">DynamoWebServer</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Basic http protocol web server running on the specified port. Requests are presented to each of a set
+of proessors provided in a connecton thread until one is encountered that can process the request.</p>
+
+                        <a href="Classes/DynamoWebServer.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoWebServer</span> <span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">NSStreamDelegate</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
             <div class="task-group">
                 <div class="task-name-container">
                   <a name="/SSL%20https:%20Web%20Server"></a>
@@ -161,7 +244,7 @@ port to a surrogate DynamoWebServer on a random port on the localhost to actuall
                         <h4>Declaration</h4>
                         <div class="Swift">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoSSLWebServer</span> <span class="p">:</span> <span class="kt">DynamoWebServer</span><span class="p">,</span> <span class="kt">NSStreamDelegate</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoSSLWebServer</span> <span class="p">:</span> <span class="kt">DynamoWebServer</span></code></pre>
 
                         </div>
                       </div>
@@ -230,128 +313,6 @@ This must be come before the DynamoProxyProcessor in the list of processors for 
                         <div class="Swift">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoSSLProxyProcessor</span> <span class="p">:</span> <span class="kt">DynamoProxyProcessor</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-                <div class="task-name-container">
-                  <a name="/HTML%20Generator"></a>
-                  <a name="//apple_ref/swift/Section/HTML Generator" class="dashAnchor"></a>
-                  <a href="#/HTML%20Generator">
-                    <h3 class="section-name">HTML Generator</h3>
-                  </a>
-                </div>
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:C6Dynamo22DynamoHTMLAppProcessor"></a>
-                    <a name="//apple_ref/swift/Class/DynamoHTMLAppProcessor" class="dashAnchor"></a>
-                    <a class="token" href="#/s:C6Dynamo22DynamoHTMLAppProcessor">DynamoHTMLAppProcessor</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Generated class to ease creation of text for common HTML tags. tr( td( <q>text</q> ) )
-is converted into <q><tr><td>text</td></tr></q>. By convention if the contents are nil
-the tag is not closed. A optional set of attributes acn be passed as a dictionary:
-a( [<q>href</q>=<q>htp://google.com</q>], <q>link text</q> ) becomes <q><a href='http//google.com'>link text</a></q>.</p>
-
-                        <a href="Classes/DynamoHTMLAppProcessor.html" class="slightly-smaller">See more</a>
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="Swift">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoHTMLAppProcessor</span> <span class="p">:</span> <span class="kt">DynamoApplicationProcessor</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-                <div class="task-name-container">
-                  <a name="/Basic%20http:%20Web%20server"></a>
-                  <a name="//apple_ref/swift/Section/Basic http: Web server" class="dashAnchor"></a>
-                  <a href="#/Basic%20http:%20Web%20server">
-                    <h3 class="section-name">Basic http: Web server</h3>
-                  </a>
-                </div>
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:C6Dynamo15DynamoWebServer"></a>
-                    <a name="//apple_ref/swift/Class/DynamoWebServer" class="dashAnchor"></a>
-                    <a class="token" href="#/s:C6Dynamo15DynamoWebServer">DynamoWebServer</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Basic http protocol web server running on the specified port. Requests are presented to each of a set
-of proessors provided in a connecton thread until one is encountered that can process the request.</p>
-
-                        <a href="Classes/DynamoWebServer.html" class="slightly-smaller">See more</a>
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="Swift">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoWebServer</span> <span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">NSStreamDelegate</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-                <div class="task-name-container">
-                  <a name="/HTTP%20request%20parser"></a>
-                  <a name="//apple_ref/swift/Section/HTTP request parser" class="dashAnchor"></a>
-                  <a href="#/HTTP%20request%20parser">
-                    <h3 class="section-name">HTTP request parser</h3>
-                  </a>
-                </div>
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:C6Dynamo20DynamoHTTPConnection"></a>
-                    <a name="//apple_ref/swift/Class/DynamoHTTPConnection" class="dashAnchor"></a>
-                    <a class="token" href="#/s:C6Dynamo20DynamoHTTPConnection">DynamoHTTPConnection</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Class representing a connection to a client web browser. One is created each time the server
-connects to read the standard HTTP headers ready to present to each of the processors of the server.</p>
-
-                        <a href="Classes/DynamoHTTPConnection.html" class="slightly-smaller">See more</a>
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="Swift">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="k">@objc</span> <span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoHTTPConnection</span></code></pre>
 
                         </div>
                       </div>
@@ -669,10 +630,52 @@ This is either from the app resources driectory for iOS apps or ~/Sites/hostname
                 </li>
               </ul>
             </div>
+            <div class="task-group">
+                <div class="task-name-container">
+                  <a name="/HTML%20Generator"></a>
+                  <a name="//apple_ref/swift/Section/HTML Generator" class="dashAnchor"></a>
+                  <a href="#/HTML%20Generator">
+                    <h3 class="section-name">HTML Generator</h3>
+                  </a>
+                </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:C6Dynamo22DynamoHTMLAppProcessor"></a>
+                    <a name="//apple_ref/swift/Class/DynamoHTMLAppProcessor" class="dashAnchor"></a>
+                    <a class="token" href="#/s:C6Dynamo22DynamoHTMLAppProcessor">DynamoHTMLAppProcessor</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Generated class to ease creation of text for common HTML tags. tr( td( <q>text</q> ) )
+is converted into <q><tr><td>text</td></tr></q>. By convention if the contents are nil
+the tag is not closed. A optional set of attributes acn be passed as a dictionary:
+a( [<q>href</q>=<q>htp://google.com</q>], <q>link text</q> ) becomes <q><a href='http//google.com'>link text</a></q>.</p>
+
+                        <a href="Classes/DynamoHTMLAppProcessor.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoHTMLAppProcessor</span> <span class="p">:</span> <span class="kt">DynamoApplicationProcessor</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2015 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2015-06-22)</p>
+          <p>&copy; 2015 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2015-06-28)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.2.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

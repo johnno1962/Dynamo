@@ -1,9 +1,51 @@
-Proxies.swift
+Connection.swift
+	public var method = "GET", path = "/", httpVersion = "HTTP/1.1"
+	public var url = dummyBase
+	public var status = 200
+	public var requestHeaders = [String:String]()
+	public init?( clientSocket: Int32 )
+	public convenience init?( url: NSURL )
+	public func readContent() -> String?
+	public func contentLength() -> Int?
+	public func addHeader( name: String, value: String )
+	public func setCookie( name: String, value: String, domain: String? = nil, path: String? = nil, expires: Int? = nil )
+	public func rawPrint( output: String )
+	public func print( output: String )
+	public func write( data: NSData )
+	public func flush()
+	public func remoteAddr() -> String
+Servers.swift
+	@objc public protocol DynamoProcessor
+	@objc func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
+	public var serverPort: UInt16 = 0
+	public convenience init?( portNumber: UInt16, processors: [DynamoProcessor], localhostOnly: Bool = false )
 	public init?( portNumber: UInt16, pocessors: [DynamoProcessor], certs: [AnyObject]? )
-	public func stream( aStream: NSStream, handleEvent eventCode: NSStreamEvent )
+	public func dynamoTrace<T>( msg: T )
+Proxies.swift
 	public init( logger: ((String) -> ())? = nil )
 	@objc public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
 	public override func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
+WebApps.swift
+	override public func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] )
+	@objc func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
+	public init( pathPrefix: String )
+	@objc public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
+	@objc public func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] )
+	public init( logger: (String) -> Void )
+	@objc public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
+	public var dynanmoDefaultSessionExpiry: NSTimeInterval = 1*60
+	public init( pathPrefix: String, appClass: DynamoSessionBasedApplication.Type, cookieName: String = "DynamoSession" )
+	public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
+	public func clearSession()
+	required public init( manager: DynamoSessionProcessor, sessionKey: String )
+	public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
+	public convenience init( pathPrefix: String, bundleName: String )
+	public init( pathPrefix: String, bundleName: String, bundlePath: String )
+	public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
+	public init( documentRoot: String )
+	override public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
+	public init( documentRoot: String, report404: Bool = true )
+	@objc public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
 Generated.swift
 	public func tag( name: String, attributes: [String: String]?, content: String? ) -> String
 	public func backButton() -> String
@@ -369,39 +411,3 @@ Generated.swift
 	public func wbr( _ content: String? = "" ) -> String
 	public func wbr( attributes: [String: String], _ content: String? = "" ) -> String
 	public func _wbr() -> String
-Servers.swift
-	public func dynamoTrace<T>( msg: T )
-	@objc public protocol DynamoProcessor
-	@objc func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
-	public var serverPort: UInt16 = 0
-	public convenience init?( portNumber: UInt16, processors: [DynamoProcessor], localhostOnly: Bool = false )
-	public var method = "GET", uri = "/", httpVersion = "HTTP/1.1"
-	public var url = dummyBase
-	public var status = 200
-	public func addHeader( name: String, value: String )
-	public func setCookie( name: String, value: String, domain: String? = nil, path: String? = nil, expires: Int? = nil )
-	public func rawPrint( output: String )
-	public func print( output: String )
-	public func write( data: NSData )
-	public func flush()
-	public func remoteAddr() -> String
-WebApps.swift
-	override public func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] )
-	@objc func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
-	public init( pathPrefix: String )
-	@objc public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
-	@objc public func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] )
-	public init( logger: (String) -> Void )
-	@objc public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
-	public init( pathPrefix: String, appClass: DynamoSessionBasedApplication.Type )
-	public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
-	public func clearSession()
-	required public init( manager: DynamoSessionProcessor, sessionKey: String )
-	public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
-	public convenience init( pathPrefix: String, bundleName: String )
-	public init( pathPrefix: String, bundleName: String, bundlePath: String )
-	public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
-	public init( documentRoot: String )
-	override public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
-	public init( documentRoot: String )
-	@objc public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed

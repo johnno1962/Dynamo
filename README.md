@@ -1,8 +1,8 @@
 
 # Dynamo - Dynamic Swift Web Server
 
-Dynamo is a minimal, Swift implementation of a Web server supporting SSL that can also be used
-in Objective-C applications. Dynamic content can be provided in what you could
+Dynamo is a high performance, minimal, Swift implementation of a  Web server supporting SSL that 
+can also be used in Objective-C applications. Dynamic content can be provided in what you could
 call "swiftlets" which are dynamically loadable bundles in your document root. These bundles
 hot-swap when modified using method Swizzling so the server does not have to be restarted.
 
@@ -11,8 +11,9 @@ and select either the Simple Game TickTackToe or the Number Guesser example. Mod
 souces in their bundle projects and build the project. The changes should take effect without
 having to restart the server or affecting the object's state.
 
-For further information about the classes and protools that make up Dynamo you consult the jazzy docs
-[here](http://johnholdsworth.com/dynamo/docs/).
+Testing with [JMeter](http://jmeter.apache.org/) as shown Dynamo can serve 12,000 requests per minute
+and 6,000 requests per minute for an SSL server. For further information about the classes and protools
+that make up Dynamo you consult the jazzy docs [here](http://johnholdsworth.com/dynamo/docs/).
 
 Incorporating the DynamoWebServer in your web server or application is simple. The initialiser
 takes a port number and a list of "processors" (applications or document processors)

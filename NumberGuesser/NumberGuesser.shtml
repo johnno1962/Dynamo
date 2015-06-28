@@ -5,7 +5,7 @@
     private var history = [String]()
 %>
 <body>
-    <form method="POST" action="\(out.uri)">
+    <form method="POST" action="\(out.path)">
     <% if let guess = parameters["guess"]?.toInt() {
         if guess == number {
             clearSession() %>

@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Connection.swift#5 $
+//  $Id: //depot/Dynamo/Dynamo/Connection.swift#12 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -37,20 +37,21 @@ connects to read the standard HTTP headers ready to present to each of the proce
     private let readFILE: UnsafeMutablePointer<FILE>, writeFILE: UnsafeMutablePointer<FILE>
     let clientSocket: Int32
 
-    // data for DynamoSelector
-    let writeBuffer = NSMutableData()
-    var readEOF = false
-    var label = ""
-
-    public var method = "GET", uri = "/", httpVersion = "HTTP/1.1"
+    public var method = "GET", path = "/", httpVersion = "HTTP/1.1"
     public var url = dummyBase
     public var status = 200
 
-    var requestHeaders = [String:String]()
-    var responseHeaders = ""
-    var sentHeaders = false
+    public var requestHeaders = [String:String]()
+    private var responseHeaders = ""
+    private var sentHeaders = false
 
-    required public init?( clientSocket: Int32 ) {
+    // data for DynamoSelector
+    let writeBuffer = NSMutableData()
+    var writeCounter = 0
+    var readEOF = false
+    var label = ""
+
+    public init?( clientSocket: Int32 ) {
         self.clientSocket = clientSocket
         readFILE = fdopen( clientSocket, "r" )
         writeFILE = fdopen( clientSocket, "w" )
@@ -61,7 +62,7 @@ connects to read the standard HTTP headers ready to present to each of the proce
         }
     }
 
-    required public convenience init?( url: NSURL ) {
+    public convenience init?( url: NSURL ) {
         if let host = url.host {
             let port = UInt16(url.port?.intValue ?? 80)
 
@@ -74,12 +75,14 @@ connects to read the standard HTTP headers ready to present to each of the proce
                 else if connect( remoteSocket, &addr, socklen_t(addr.sa_len) ) < 0 {
                     Strerror( "Could not connect to: \(host):\(port)" )
                 }
-                else {
-                    setupSocket( remoteSocket )
+                else if setupSocket( remoteSocket ) {
                     self.init( clientSocket: remoteSocket )
                     return
                 }
             }
+
+            self.init( clientSocket: -1 )
+            return nil
         }
 
         self.init( clientSocket: -1 )
@@ -97,30 +100,26 @@ connects to read the standard HTTP headers ready to present to each of the proce
     func readHeaders() -> Bool {
         if let request = readLine() {
 
-            let components = split( request, maxSplit: 2, allowEmptySlices: true, isSeparator: { $0 == " " } )
-            if components.count < 3 {
-                return false
-            }
+            let components = request.componentsSeparatedByString( " " )
+            if components.count == 3 {
 
-            method = components[0]
-            uri = components[1]
-            httpVersion = components[2]
+                method = components[0]
+                path = components[1]
+                httpVersion = components[2]
 
-            url = NSURL( string: uri, relativeToURL: dummyBase ) ?? dummyBase
-            requestHeaders = [String: String]()
-            responseHeaders = ""
-            sentHeaders = false
-            status = 200
+                url = NSURL( string: path, relativeToURL: dummyBase ) ?? dummyBase
+                requestHeaders = [String: String]()
+                responseHeaders = ""
+                sentHeaders = false
+                status = 200
 
-            while let line = readLine() {
-                //dynamoTrace( line )
-                let nameValue = split( line, maxSplit: 1, allowEmptySlices: true, isSeparator: { $0 == ":" } )
-                if nameValue.count < 2 {
-                    return true
-                }
-                else {
-                    let value = nameValue[1].substringFromIndex( advance(nameValue[1].startIndex,1) )
-                    requestHeaders[nameValue[0]] = value
+                while let line = readLine() {
+                    if let divider = line.rangeOfString( ": " )?.startIndex {
+                        requestHeaders[line.substringToIndex( divider )] = line.substringFromIndex( advance( divider, 2 ) )
+                    }
+                    else {
+                        return true
+                    }
                 }
             }
         }
@@ -141,28 +140,7 @@ connects to read the standard HTTP headers ready to present to each of the proce
         }
     }
 
-    let cr = Int8(("\r" as NSString).characterAtIndex(0)), nl = Int8(("\n" as NSString).characterAtIndex(0))
-
-    func readLine2() -> String? {
-        var ptr = 0
-        while ptr < buffer.count-1 {
-            if recv( clientSocket, &buffer[ptr], 1, 0 ) != 1 {
-                return nil
-            }
-            if buffer[ptr] == cr {
-                continue
-            }
-            if buffer[ptr] == nl {
-                break
-            }
-            ptr++
-        }
-        buffer[ptr] = 0
-        return String( UTF8String: buffer )?
-            .stringByTrimmingCharactersInSet( NSCharacterSet.whitespaceAndNewlineCharacterSet() )
-    }
-
-    func readPost() -> String? {
+    public func readContent() -> String? {
         if let postLength = contentLength() {
             var buffer = [Int8](count: postLength+1, repeatedValue: 0)
             if read( &buffer, count: postLength ) == postLength {
@@ -247,6 +225,14 @@ connects to read the standard HTTP headers ready to present to each of the proce
         }
     }
 
+    func receive( buffer: UnsafeMutablePointer<Void>, count: Int ) -> Int? {
+        return recv( clientSocket, buffer, count, 0 )
+    }
+
+    func forward( buffer: UnsafePointer<Void>, count: Int ) -> Int? {
+        return send( clientSocket, buffer, count, 0 )
+    }
+
     public func remoteAddr() -> String {
         var addr = sockaddr()
         var addrLen = socklen_t(sizeof(addr.dynamicType))
@@ -257,44 +243,9 @@ connects to read the standard HTTP headers ready to present to each of the proce
             }
         }
 
-        return "UNKNOWN"
+        return "address unknown"
     }
-
-    class func relay( label: String, from: DynamoHTTPConnection, to: DynamoHTTPConnection, _ logger: ((String) -> ())? ) {
-        dynamoRelayThreads++
-        dispatch_async( dynamoQueue, {
-            var buffer = [Int8](count: 32*1024, repeatedValue: 0)
-            var writeError = false
-
-            while !writeError {
-                let bytesRead = recv( from.clientSocket, &buffer, buffer.count, 0 )
-                if logger != nil {
-                    logger!( "\(label) \(bytesRead) bytes (\(dynamoRelayThreads)/\(to.clientSocket))" )
-                }
-                if bytesRead <= 0 {
-                    break
-                }
-                else {
-                    var ptr = 0
-                    while ptr < bytesRead {
-                        let remaining = UnsafePointer<UInt8>(buffer)+ptr
-                        let bytesWritten = send( to.clientSocket, remaining, bytesRead-ptr, 0 )
-                        if bytesWritten <= 0 {
-                            dynamoLog( "Short write on relay" )
-                            writeError = true
-                            break
-                        }
-                        ptr += bytesWritten
-                    }
-                }
-            }
-
-            dynamoRelayThreads--
-            close( from.clientSocket )
-            close( to.clientSocket )
-        } )
-    }
-
+    
     deinit {
         fclose( writeFILE )
         fclose( readFILE )
@@ -308,7 +259,7 @@ connects to read the standard HTTP headers ready to present to each of the proce
 private var hostAddressCache = [String:UnsafeMutablePointer<sockaddr>]()
 
 /**
-Caching version of gethostbyname returning a sockaddr to use in a connect() call
+    Caching version of gethostbyname returning a sockaddr to use in a connect() call
 */
 public func addressForHost( hostname: String, port: UInt16 ) -> sockaddr? {
     var addr: UnsafeMutablePointer<hostent> = nil
@@ -325,6 +276,7 @@ public func addressForHost( hostname: String, port: UInt16 ) -> sockaddr? {
         let addrList = addr.memory.h_addr_list
         let sockaddrPtr = UnsafeMutablePointer<sockaddr>(malloc(sizeof(sockaddr.self)))
         switch addr.memory.h_addrtype {
+
         case AF_INET:
             let addr0 = UnsafePointer<in_addr>(addrList.memory)
             var ip4addr = sockaddr_in(sin_len: UInt8(sizeof(sockaddr_in)),
@@ -332,6 +284,7 @@ public func addressForHost( hostname: String, port: UInt16 ) -> sockaddr? {
                 sin_port: htons( port ), sin_addr: addr0.memory,
                 sin_zero: (Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0)))
             sockaddrPtr.memory = sockaddr_cast(&ip4addr).memory
+
         case AF_INET6: // TODO... completely untested
             let addr0 = UnsafePointer<in6_addr>(addrList.memory)
             var ip6addr = sockaddr_in6(sin6_len: UInt8(sizeof(sockaddr_in6)),
@@ -339,6 +292,7 @@ public func addressForHost( hostname: String, port: UInt16 ) -> sockaddr? {
                 sin6_port: htons( port ), sin6_flowinfo: 0, sin6_addr: addr0.memory,
                 sin6_scope_id: 0)
             sockaddrPtr.memory = sockaddr_cast6(&ip6addr).memory
+
         default:
             dynamoLog( "Unknown address family: \(addr.memory.h_addrtype)" )
             return nil

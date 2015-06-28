@@ -32,7 +32,7 @@ int main( int argc, char *argv[] ) {
         NSLog( @"%@", request );
     }]];
     [processors addObject:[[DynamoSwiftServerPagesProcessor alloc] initWithDocumentRoot:documentRoot]];
-    [processors addObject:[[DynamoDocumentProcessor alloc] initWithDocumentRoot:documentRoot]];
+    [processors addObject:[[DynamoDocumentProcessor alloc] initWithDocumentRoot:documentRoot report404:TRUE]];
 
     if ( keyChainName ) {
         NSArray *certs = [DDKeychain SSLIdentityAndCertificates:keyChainName]; // could be generalised for key name

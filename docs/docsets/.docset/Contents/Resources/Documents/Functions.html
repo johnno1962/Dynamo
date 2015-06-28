@@ -88,6 +88,9 @@
               <li class="nav-group-task">
                 <a href="Global Variables.html#/s:v6Dynamo27dynanmoDefaultSessionExpirySd">dynanmoDefaultSessionExpiry</a>
               </li>
+              <li class="nav-group-task">
+                <a href="Global Variables.html#/s:v6Dynamo26sessionExpiryCheckIntervalSd">sessionExpiryCheckInterval</a>
+              </li>
             </ul>
           </li>
           <li class="nav-group-name">
@@ -102,7 +105,7 @@
           <a href="Functions.html">Functions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Functions.html#/s:F6Dynamo14addressForHostFTCSo8NSStringVSs6UInt16_GSqVSC8sockaddr_">addressForHost(_:_:)</a>
+                <a href="Functions.html#/s:F6Dynamo14addressForHostFTSSVSs6UInt16_GSqVSC8sockaddr_">addressForHost(_:_:)</a>
               </li>
               <li class="nav-group-task">
                 <a href="Functions.html#/s:F6Dynamo11dynamoTraceU__FQ_T_">dynamoTrace(_:)</a>
@@ -132,10 +135,48 @@
           <section class="section task-group-section">
             <div class="task-group">
                 <div class="task-name-container">
-                  <a name="/Private%20functions"></a>
-                  <a name="//apple_ref/swift/Section/Private functions" class="dashAnchor"></a>
-                  <a href="#/Private%20functions">
-                    <h3 class="section-name">Private functions</h3>
+                  <a name="/Cached%20gethostbyname()"></a>
+                  <a name="//apple_ref/swift/Section/Cached gethostbyname()" class="dashAnchor"></a>
+                  <a href="#/Cached%20gethostbyname()">
+                    <h3 class="section-name">Cached gethostbyname()</h3>
+                  </a>
+                </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:F6Dynamo14addressForHostFTSSVSs6UInt16_GSqVSC8sockaddr_"></a>
+                    <a name="//apple_ref/swift/Function/addressForHost(_:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:F6Dynamo14addressForHostFTSSVSs6UInt16_GSqVSC8sockaddr_">addressForHost(_:_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Caching version of gethostbyname returning a sockaddr to use in a connect() call</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">addressForHost</span><span class="p">(</span> <span class="nv">hostname</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">port</span><span class="p">:</span> <span class="kt">UInt16</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sockaddr</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+                <div class="task-name-container">
+                  <a name="/Functions"></a>
+                  <a name="//apple_ref/swift/Section/Functions" class="dashAnchor"></a>
+                  <a href="#/Functions">
+                    <h3 class="section-name">Functions</h3>
                   </a>
                 </div>
               <ul>
@@ -160,48 +201,10 @@
                 </li>
               </ul>
             </div>
-            <div class="task-group">
-                <div class="task-name-container">
-                  <a name="/Cached%20gethostbyname()"></a>
-                  <a name="//apple_ref/swift/Section/Cached gethostbyname()" class="dashAnchor"></a>
-                  <a href="#/Cached%20gethostbyname()">
-                    <h3 class="section-name">Cached gethostbyname()</h3>
-                  </a>
-                </div>
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:F6Dynamo14addressForHostFTCSo8NSStringVSs6UInt16_GSqVSC8sockaddr_"></a>
-                    <a name="//apple_ref/swift/Function/addressForHost(_:_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:F6Dynamo14addressForHostFTCSo8NSStringVSs6UInt16_GSqVSC8sockaddr_">addressForHost(_:_:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Caching version of gethostbyname returning a sockaddr to use in a connect() call</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="Swift">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">addressForHost</span><span class="p">(</span> <span class="nv">hostname</span><span class="p">:</span> <span class="kt">NSString</span><span class="p">,</span> <span class="nv">port</span><span class="p">:</span> <span class="kt">UInt16</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sockaddr</span><span class="p">?</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2015 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2015-06-22)</p>
+          <p>&copy; 2015 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2015-06-28)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.2.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

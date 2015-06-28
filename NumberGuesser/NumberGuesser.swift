@@ -18,7 +18,7 @@ public class NumberGuesserProcessor: DynamoSessionBasedApplication {
 
     override public func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
 
-        out.print( "<html>\n<body>\n    <form method=\"POST\" action=\"\(out.uri)\">\n    " )
+        out.print( "<html>\n<body>\n    <form method=\"POST\" action=\"\(out.path)\">\n    " )
  if let guess = parameters["guess"]?.toInt() {
         if guess == number {
             clearSession() 
