@@ -13,7 +13,7 @@ having to restart the server or affecting the object's state.
 
 Testing with [JMeter](http://jmeter.apache.org/) as shown Dynamo can serve 12,000 requests per minute
 and 6,000 requests per minute for an SSL server. For further information about the classes and protools
-that make up Dynamo you consult the jazzy docs [here](http://johnholdsworth.com/dynamo/docs/).
+that make up Dynamo please consult the jazzy docs [here](http://johnholdsworth.com/dynamo/docs/).
 
 Incorporating the DynamoWebServer in your web server or application is simple. The initialiser
 takes a port number and a list of "processors" (applications or document processors)
@@ -78,15 +78,12 @@ functions to generate balanced HTML tags easily using functions. for example:
 ### Design
 
 DynamoWebServer has been implemented using BSD sockets rather than Apple's CFSocket for simplicity and speed.
-This should also help in any eventual port to Linux. There is an alternate NSStream based version of 
-DynamoHTTPConnection but it didn't seem to cope at all well with many simultaneous connections. 
-Besides, it is heavily dependant on the foundation NSRunLoop unlikely to prove portable.
-
-One thing CFSocket/NSStreams does provide however is support for an SSL connection so a way had to be found
-to turn the "push" of CFSockets to the "pull" of the Dynamo code. The solution was to run a separate CFSocket
-based SSL server as a proxy relaying decrypted data to a "surrogate" Dynamo server on localhost satisfying both 
-architectures. The code to generate the required certificates in DDKeychain.[nm], slightly modified from
-robbiehanson's [CocoaHTTPServer](https://github.com/robbiehanson/CocoaHTTPServer) under the following license:
+This should also help in any eventual port to Linux. One thing CFSocket/NSStreams does provide however is support
+for an SSL connection so a way had to be found to turn the "push" of CFSockets to the "pull" of the Dynamo code.
+The solution was to run a separate CFSocket based SSL server as a proxy relaying decrypted data to a "surrogate" 
+Dynamo server on localhost thus satisfying both architectures. The code to generate the required certificates in
+DDKeychain.[nm], slightly modified from robbiehanson's [CocoaHTTPServer](https://github.com/robbiehanson/CocoaHTTPServer)
+under the following license:
 
     Software License Agreement (BSD License)
 
@@ -107,8 +104,8 @@ robbiehanson's [CocoaHTTPServer](https://github.com/robbiehanson/CocoaHTTPServer
 
     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-Dynamic content can be coded entirely in Swift and one interesting use case is that it
-can be used inside an iOS or OS X app. This allows you to write a "lag free" portable web 
+Dynamic content can be coded entirely in Swift and perhaps the most interesting use case is that
+it can be used inside an iOS or OS X app. This allows you to write a "lag free" portable web 
 interface connecting to the embedded server on the local device rather than a remote server. 
 This is shown in the two examples included in the release.
 
