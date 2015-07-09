@@ -11,7 +11,7 @@ import Dynamo
 import WebKit
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate {//, WebFrameLoadDelegate, WebUIDelegate {
 
     @IBOutlet weak var window: NSWindow!
     @IBOutlet weak var webView: WebView!
@@ -75,7 +75,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(aNotification: NSNotification) {
         // Insert code here to tear down your application
     }
-
 
 }
 

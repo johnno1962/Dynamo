@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/WebApps.swift#18 $
+//  $Id: //depot/Dynamo/Dynamo/WebApps.swift#22 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -111,7 +111,7 @@ public class DynamoApplicationProcessor : NSObject, DynamoApplicationProtoccol {
                 }
 
                 if httpClient.method == "POST" {
-                    if let postData = httpClient.readContent() {
+                    if let postData = httpClient.readPost() {
                         addParameters( &parameters, from: postData )
                     }
                 }
@@ -123,7 +123,7 @@ public class DynamoApplicationProcessor : NSObject, DynamoApplicationProtoccol {
 
                 processRequest( httpClient, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
 
-                return .Processed
+                return httpClient.knowsLength ? .ProcessedAndReusable : .Processed
             }
         }
 
@@ -133,10 +133,15 @@ public class DynamoApplicationProcessor : NSObject, DynamoApplicationProtoccol {
     private func addParameters(  inout parameters: [String:String], from queryString: String, delimeter: String = "&" ) {
         for nameValue in queryString.componentsSeparatedByString( delimeter ) {
             if let divider = nameValue.rangeOfString( "=" )?.startIndex {
-                parameters[nameValue.substringToIndex( divider )] = nameValue.substringFromIndex( advance( divider, 1 ) )
+                let value = nameValue.substringFromIndex( advance( divider, 1 ) )
+                if let value = value
+                    .stringByReplacingOccurrencesOfString( "+", withString: " " )
+                    .stringByRemovingPercentEncoding {
+                        parameters[nameValue.substringToIndex( divider )] = value
+                }
             }
             else {
-                parameters[nameValue] = "1"
+                parameters[nameValue] = ""
             }
         }
     }
@@ -157,7 +162,7 @@ public class DynamoLoggingProcessor : NSObject, DynamoProcessor {
 
     let logger: (String) -> Void
 
-    public init( logger: (String) -> Void ) {
+    public init( logger: ((String) -> Void) = dynamoTrace ) {
         self.logger = logger
     }
 
@@ -187,7 +192,7 @@ public class DynamoSessionProcessor : DynamoApplicationProcessor {
     var appClass: DynamoSessionBasedApplication.Type
     var sessions = [String:DynamoApplicationProtoccol]()
     private var lastCheck = NSDate().timeIntervalSinceReferenceDate
-    private var sessionLock: OSSpinLock = OS_SPINLOCK_INIT
+    private var sessionLock = OS_SPINLOCK_INIT
     private let cookieName: String
 
     public init( pathPrefix: String, appClass: DynamoSessionBasedApplication.Type, cookieName: String = "DynamoSession" ) {
@@ -198,7 +203,9 @@ public class DynamoSessionProcessor : DynamoApplicationProcessor {
 
     public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
 
-        if lastCheck + sessionExpiryCheckInterval < NSDate().timeIntervalSinceReferenceDate {
+        let now = NSDate.timeIntervalSinceReferenceDate()
+        if lastCheck + sessionExpiryCheckInterval < now {
+            lastCheck = now
             for (key, session) in sessions {
                 if let session = session as? DynamoSessionBasedApplication {
                     if session.expiry < NSDate.timeIntervalSinceReferenceDate() {
@@ -208,7 +215,6 @@ public class DynamoSessionProcessor : DynamoApplicationProcessor {
                     }
                 }
             }
-            lastCheck = NSDate().timeIntervalSinceReferenceDate
         }
 
         OSSpinLockLock( &sessionLock )
@@ -463,7 +469,7 @@ public class DynamoDocumentProcessor : NSObject, DynamoProcessor {
         if httpClient.method == "GET" {
 
             let hostHeader = httpClient.requestHeaders["Host"] ?? "localhost"
-            var fullPath = "\(documentRoot)/\(hostHeader)\(httpClient.path)"
+            var fullPath = "\(documentRoot)/\(hostHeader)"+(httpClient.url.path ?? "/")
             if fileManager.contentsOfDirectoryAtPath( fullPath, error: nil ) != nil {
                 fullPath = fullPath.stringByAppendingPathComponent( "index.html" )
             }
@@ -486,17 +492,14 @@ public class DynamoDocumentProcessor : NSObject, DynamoProcessor {
             if let since = httpClient.requestHeaders["If-Modified-Since"] {
                 if lastModified != nil && webDate( lastModified! ) == since {
                     httpClient.status = 304
-                    httpClient.addHeader( "Content-Length", value: "0" ) // ???
-                    httpClient.print( "" )
+                    httpClient.response( "" )
                     return .ProcessedAndReusable
                 }
             }
 
             if let data = NSData( contentsOfFile: fullPath ) {
-                httpClient.status = 200
-                httpClient.addHeader( "Content-Length", value: "\(data.length)" )
                 httpClient.addHeader( "Last-Modified", value: "\(webDate( lastModified! ))" )
-                httpClient.write( data )
+                httpClient.dataResponse( data )
                 return .ProcessedAndReusable
             }
             else if report404 {

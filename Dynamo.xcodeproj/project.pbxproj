@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BB01566E1B4ED93B007044A7 /* Dynamo.podspec in Resources */ = {isa = PBXBuildFile; fileRef = BB01566D1B4ED93B007044A7 /* Dynamo.podspec */; };
 		BB03E7561B35E20C00025085 /* AutoLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E551B3576F40001EDCA /* AutoLoader.m */; };
 		BB03E7571B35EA4A00025085 /* DDKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E581B3576F40001EDCA /* DDKeychain.m */; };
 		BB4B4E191B355F0F0001EDCA /* Servers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E181B355F0F0001EDCA /* Servers.swift */; };
@@ -147,6 +148,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BB01566D1B4ED93B007044A7 /* Dynamo.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Dynamo.podspec; sourceTree = "<group>"; };
 		BB4B4E181B355F0F0001EDCA /* Servers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Servers.swift; sourceTree = "<group>"; };
 		BB4B4E1A1B355F350001EDCA /* Proxies.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Proxies.swift; sourceTree = "<group>"; };
 		BB4B4E1C1B355F4C0001EDCA /* WebApps.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebApps.swift; sourceTree = "<group>"; };
@@ -305,6 +307,7 @@
 			isa = PBXGroup;
 			children = (
 				BB7631C21B37003D00646A50 /* README.md */,
+				BB01566D1B4ED93B007044A7 /* Dynamo.podspec */,
 				BBA52EC91B3556C3006F12AC /* Dynamo */,
 				BBA52ED61B3556C3006F12AC /* DynamoTests */,
 				BBA52F061B35576B006F12AC /* OSX */,
@@ -742,6 +745,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB01566E1B4ED93B007044A7 /* Dynamo.podspec in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

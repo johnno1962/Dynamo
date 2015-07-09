@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Servers.swift#28 $
+//  $Id: //depot/Dynamo/Dynamo/Servers.swift#31 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -114,7 +114,7 @@ public class DynamoWebServer : NSObject, NSStreamDelegate {
         var yes: u_int = 1, yeslen = socklen_t(sizeof(yes.dynamicType))
 
         if serverSocket < 0 {
-            Strerror( "Could not get mutlicast socket" )
+            Strerror( "Could not get server socket" )
         }
         else if setsockopt( serverSocket, SOL_SOCKET, SO_REUSEADDR, &yes, yeslen ) < 0 {
             Strerror( "Could not set SO_REUSEADDR" )
@@ -123,7 +123,7 @@ public class DynamoWebServer : NSObject, NSStreamDelegate {
             Strerror( "Could not bind service socket on port \(portNumber)" )
         }
         else if listen( serverSocket, 100 ) < 0 {
-            Strerror( "Service socket would not listen" )
+            Strerror( "Server socket would not listen" )
         }
         else {
             var addrLen = socklen_t(sizeof(ip4addr.dynamicType))
@@ -227,6 +227,10 @@ private class DynamoSSLConnection: DynamoHTTPConnection, NSStreamDelegate {
         }
     }
 
+    override var hasBytesAvailable: Bool {
+        return inputStream.hasBytesAvailable
+    }
+
     override func receive( buffer: UnsafeMutablePointer<Void>, count: Int ) -> Int? {
         return inputStream.hasBytesAvailable ? inputStream.read( UnsafeMutablePointer<UInt8>(buffer), maxLength: count ) :  nil
     }
@@ -244,11 +248,7 @@ private class DynamoSSLConnection: DynamoHTTPConnection, NSStreamDelegate {
 
 // MARK: Functions
 
-func sockaddr_cast(p: UnsafeMutablePointer<sockaddr_in>) -> UnsafeMutablePointer<sockaddr> {
-    return UnsafeMutablePointer<sockaddr>(p)
-}
-
-func sockaddr_cast6(p: UnsafeMutablePointer<sockaddr_in6>) -> UnsafeMutablePointer<sockaddr> {
+func sockaddr_cast(p: UnsafeMutablePointer<Void>) -> UnsafeMutablePointer<sockaddr> {
     return UnsafeMutablePointer<sockaddr>(p)
 }
 

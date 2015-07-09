@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Connection.swift#12 $
+//  $Id: //depot/Dynamo/Dynamo/Connection.swift#16 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -44,6 +44,7 @@ connects to read the standard HTTP headers ready to present to each of the proce
     public var requestHeaders = [String:String]()
     private var responseHeaders = ""
     private var sentHeaders = false
+    var knowsLength = false
 
     // data for DynamoSelector
     let writeBuffer = NSMutableData()
@@ -56,7 +57,7 @@ connects to read the standard HTTP headers ready to present to each of the proce
         readFILE = fdopen( clientSocket, "r" )
         writeFILE = fdopen( clientSocket, "w" )
         super.init()
-        if (readFILE == nil || writeFILE == nil) && clientSocket >= 0 {
+        if clientSocket >= 0 && (readFILE == nil || writeFILE == nil) {
             Strerror( "FILE open error on fd #\(clientSocket)" )
             return nil;
         }
@@ -80,21 +81,54 @@ connects to read the standard HTTP headers ready to present to each of the proce
                     return
                 }
             }
-
-            self.init( clientSocket: -1 )
-            return nil
         }
 
         self.init( clientSocket: -1 )
         return nil
     }
 
-    func read( buffer: UnsafeMutablePointer<Void>, count: Int ) -> Int {
-        return readFILE != nil ? fread( buffer, 1, count, readFILE ) : -1
+    public func remoteAddr() -> String {
+        var addr = sockaddr()
+        var addrLen = socklen_t(sizeof(addr.dynamicType))
+
+        if getpeername( clientSocket, &addr, &addrLen ) == 0 {
+            if addr.sa_family == sa_family_t(AF_INET) {
+                return String( UTF8String: inet_ntoa( sockaddr_cast_in(&addr).memory.sin_addr ) )!
+            }
+        }
+
+        return "address unknown"
+    }
+    
+    public func read( buffer: UnsafeMutablePointer<Void>, count: Int ) -> Int {
+        return readFILE == nil ? -1 : fread( buffer, 1, count, readFILE )
     }
 
-    func write( buffer: UnsafePointer<Void>, count: Int ) -> Int {
-        return writeFILE != nil ? fwrite( buffer, 1, count, writeFILE ) : -1
+    public func write( buffer: UnsafePointer<Void>, count: Int ) -> Int {
+        return writeFILE == nil ? -1 : fwrite( buffer, 1, count, writeFILE )
+    }
+
+    public func addHeader( name: String, value: String ) {
+        responseHeaders += "\(name): \(value)\r\n"
+    }
+
+    public var contentType: String {
+        get {
+            return requestHeaders["Content-Type"] ?? "text/plain"
+        }
+        set {
+            addHeader( "Content-Type", value: newValue )
+        }
+    }
+
+    public var contentLength: Int? {
+        get {
+            return (requestHeaders["Content-Length"] ?? requestHeaders["Content-length"])?.toInt()
+        }
+        set {
+            addHeader( "Content-Length", value: String( newValue ?? 0 ) )
+            knowsLength = true
+        }
     }
 
     func readHeaders() -> Bool {
@@ -111,6 +145,7 @@ connects to read the standard HTTP headers ready to present to each of the proce
                 requestHeaders = [String: String]()
                 responseHeaders = ""
                 sentHeaders = false
+                knowsLength = false
                 status = 200
 
                 while let line = readLine() {
@@ -135,28 +170,17 @@ connects to read the standard HTTP headers ready to present to each of the proce
                 return String( UTF8String: buffer )?
                     .stringByTrimmingCharactersInSet( NSCharacterSet.whitespaceAndNewlineCharacterSet() )
         }
-        else {
-            return nil
-        }
-    }
-
-    public func readContent() -> String? {
-        if let postLength = contentLength() {
-            var buffer = [Int8](count: postLength+1, repeatedValue: 0)
-            if read( &buffer, count: postLength ) == postLength {
-                return String( UTF8String: buffer )?
-                    .stringByTrimmingCharactersInSet( NSCharacterSet.whitespaceAndNewlineCharacterSet() )
-            }
-        }
         return nil
     }
 
-    public func contentLength() -> Int? {
-        return  (requestHeaders["Content-Length"] ?? requestHeaders["Content-length"])?.toInt()
-    }
-
-    public func addHeader( name: String, value: String ) {
-        responseHeaders += "\(name): \(value)\r\n"
+    public func readPost() -> String? {
+        if let postLength = contentLength {
+            var buffer = [Int8](count: postLength+1, repeatedValue: 0)
+            if read( &buffer, count: postLength ) == postLength {
+                return String( UTF8String: buffer )
+            }
+        }
+        return nil
     }
 
     public func setCookie( name: String, value: String, domain: String? = nil, path: String? = nil, expires: Int? = nil ) {
@@ -182,7 +206,7 @@ connects to read the standard HTTP headers ready to present to each of the proce
             addHeader( "Set-Cookie", value: value )
         }
         else {
-            dynamoLog( "Cookies must be set before the first HTML is sent" )
+            dynamoLog( "Cookies must be set before the first HTML content is sent" )
         }
     }
 
@@ -212,10 +236,31 @@ connects to read the standard HTTP headers ready to present to each of the proce
         rawPrint( output )
     }
 
-    public func write( data: NSData ) {
-        if !sentHeaders {
-            writeHeaders()
+    public func response( output: String ) {
+        if var bytes = output.cStringUsingEncoding( NSUTF8StringEncoding ) {
+            dataResponse( NSData( bytesNoCopy: &bytes, length: Int(strlen(bytes)), freeWhenDone: false ) )
         }
+        else {
+            dynamoLog( "Could not encode: \(output)" )
+        }
+    }
+
+    public func jsonResponse( object: AnyObject ) {
+        var error: NSError?
+        if NSJSONSerialization.isValidJSONObject( object ) {
+            if let json = NSJSONSerialization.dataWithJSONObject( object,
+                    options: NSJSONWritingOptions.PrettyPrinted, error: &error ) {
+                contentType = dynamoMimeTypeMapping["json"] ?? "application/json"
+                dataResponse( json )
+                return
+            }
+        }
+        dynamoLog( "Could not encode: \(object) \(error)" )
+    }
+
+    public func dataResponse( data: NSData ) {
+        contentLength = data.length
+        writeHeaders()
         write( data.bytes, count: data.length )
     }
 
@@ -223,6 +268,10 @@ connects to read the standard HTTP headers ready to present to each of the proce
         if writeFILE != nil {
             fflush( writeFILE )
         }
+    }
+
+    var hasBytesAvailable: Bool {
+        return false
     }
 
     func receive( buffer: UnsafeMutablePointer<Void>, count: Int ) -> Int? {
@@ -233,19 +282,6 @@ connects to read the standard HTTP headers ready to present to each of the proce
         return send( clientSocket, buffer, count, 0 )
     }
 
-    public func remoteAddr() -> String {
-        var addr = sockaddr()
-        var addrLen = socklen_t(sizeof(addr.dynamicType))
-
-        if getpeername( clientSocket, &addr, &addrLen ) == 0 {
-            if addr.sa_family == sa_family_t(AF_INET) {
-                return String( UTF8String: inet_ntoa( sockaddr_cast_in(&addr).memory.sin_addr ) )!
-            }
-        }
-
-        return "address unknown"
-    }
-    
     deinit {
         fclose( writeFILE )
         fclose( readFILE )
@@ -265,7 +301,9 @@ public func addressForHost( hostname: String, port: UInt16 ) -> sockaddr? {
     var addr: UnsafeMutablePointer<hostent> = nil
     var sockaddrTmp = hostAddressCache[hostname]?.memory
     if sockaddrTmp == nil {
-        addr = gethostbyname( hostname.cStringUsingEncoding( NSUTF8StringEncoding )! )
+        if let hostString = hostname.cStringUsingEncoding( NSUTF8StringEncoding ) {
+            addr = gethostbyname( hostString )
+        }
         if addr == nil {
             dynamoLog( "Could not resolve \(hostname) - "+String( UTF8String: hstrerror(h_errno) )! )
             return nil
@@ -291,7 +329,7 @@ public func addressForHost( hostname: String, port: UInt16 ) -> sockaddr? {
                 sin6_family: sa_family_t(addr.memory.h_addrtype),
                 sin6_port: htons( port ), sin6_flowinfo: 0, sin6_addr: addr0.memory,
                 sin6_scope_id: 0)
-            sockaddrPtr.memory = sockaddr_cast6(&ip6addr).memory
+            sockaddrPtr.memory = sockaddr_cast(&ip6addr).memory
 
         default:
             dynamoLog( "Unknown address family: \(addr.memory.h_addrtype)" )

@@ -30,11 +30,11 @@ def replacer(m):
         props += content
     elif m.group(1) == '=':
         out = "__%d__" % match
-        code[out] = "\" )\nout.print( %s )\nout.print( \"" % content
+        code[out] = "\"\nresponse += %s\nresponse += \"" % content
         match = match + 1
     else:
         out = "__%d__" % match
-        code[out] = "\" )\n%s\nout.print( \"" % content
+        code[out] = "\"\n%s\nresponse += \"" % content
         match = match + 1
     return out;
 
@@ -63,8 +63,11 @@ public class %sProcessor: DynamoSessionBasedApplication {
 %s
 
     override public func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
+        var response = ""
 
-        out.print( "%s" )
+        response += "%s"
+        
+        out.response( response )
     }
 
 }
