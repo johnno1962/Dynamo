@@ -1,9 +1,10 @@
 Pod::Spec.new do |s|
     s.name        = "Dynamo"
-    s.version     = "1.0"
+    s.version     = "1.2"
     s.summary     = "High Performance 100% Swift Web server supporting dynamic content"
     s.homepage    = "https://github.com/johnno1962/Dynamo"
     s.social_media_url = "https://twitter.com/Injection4Xcode"
+    s.documentation_url = "http://johnholdsworth.com/dynamo/docs/"
     s.license     = { :type => "MIT" }
     s.authors     = { "johnno1962" => "dynamo@johnholdsworth.com" }
 
