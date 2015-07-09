@@ -36,6 +36,18 @@ option of processing them. The basic code pattern for initialisation in your app
     webView.mainFrame.loadRequest( NSURLRequest( URL: NSURL( string: "http://localhost:\(serverPort)" )! ) )
 ```
 
+Bring it into your project with a Podfile something like:
+
+```
+    use_frameworks!
+
+    target "<project>" do
+
+        pod 'Dynamo', :git => 'https://github.com/johnno1962/Dynamo.git'
+
+    end
+```
+
 See OSX/AppDelegate.swift or iOS/AppDelegate.m in the example project for
 further details.  A processor runs in it's own thread and 
 implements the "DynamoProcessor" protocol that has the following signature:
