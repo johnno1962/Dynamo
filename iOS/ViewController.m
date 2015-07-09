@@ -26,9 +26,9 @@
     NSMutableArray *processors = [NSMutableArray new];
     [processors addObject:[[DynamoExampleAppProcessor alloc] initWithPathPrefix:@"/example"]];
     [processors addObject:[[DynamoSessionProcessor alloc] initWithPathPrefix:@"/ticktacktoe"
-                                                                    appClass:[TickTackToeProcessor class]]];
+                                                                    appClass:[TickTackToeProcessor class] cookieName: @"TTT"]];
     [processors addObject:[[DynamoSessionProcessor alloc] initWithPathPrefix:@"/NumberGuesser.ssp"
-                                                                    appClass:[NumberGuesserProcessor class]]];
+                                                                    appClass:[NumberGuesserProcessor class] cookieName: @"NUM"]];
     [processors addObject:[[DynamoSSLProxyProcessor alloc] initWithLogger:logger]];
     [processors addObject:[[DynamoProxyProcessor alloc] initWithLogger:logger]];
     [processors addObject:[[DynamoDocumentProcessor alloc] init]];

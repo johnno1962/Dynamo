@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/WebApps.swift#22 $
+//  $Id: //depot/Dynamo/Dynamo/WebApps.swift#23 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -449,7 +449,7 @@ public class DynamoDocumentProcessor : NSObject, DynamoProcessor {
     let documentRoot: String
     let report404: Bool
 
-    convenience override init() {
+    public convenience override init() {
         let appResources = NSBundle.mainBundle().resourcePath!
         self.init( documentRoot: appResources )
     }
