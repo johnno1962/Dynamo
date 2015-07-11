@@ -12,7 +12,7 @@
     <a title="Classes  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html"> Docs</a> (4% documented)</p>
+        <p><a href="index.html"> Docs</a> (15% documented)</p>
         <p class="header-right"><a href=""><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -30,43 +30,43 @@
           <a href="Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Classes/DynamoApplicationProcessor.html">DynamoApplicationProcessor</a>
+                <a href="Classes/DynamoApplicationSwiftlet.html">DynamoApplicationSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoDocumentProcessor.html">DynamoDocumentProcessor</a>
+                <a href="Classes/DynamoBundleSwiftlet.html">DynamoBundleSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoExampleAppProcessor.html">DynamoExampleAppProcessor</a>
+                <a href="Classes/DynamoDocumentSwiftlet.html">DynamoDocumentSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoHTMLAppProcessor.html">DynamoHTMLAppProcessor</a>
+                <a href="Classes/DynamoExampleAppSwiftlet.html">DynamoExampleAppSwiftlet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DynamoHTMLAppSwiftlet.html">DynamoHTMLAppSwiftlet</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/DynamoHTTPConnection.html">DynamoHTTPConnection</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoLoggingProcessor.html">DynamoLoggingProcessor</a>
+                <a href="Classes/DynamoLoggingSwiftlet.html">DynamoLoggingSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoProxyProcessor.html">DynamoProxyProcessor</a>
+                <a href="Classes/DynamoProxySwiftlet.html">DynamoProxySwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoReloadingProcessor.html">DynamoReloadingProcessor</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Classes/DynamoSSLProxyProcessor.html">DynamoSSLProxyProcessor</a>
+                <a href="Classes/DynamoSSLProxySwiftlet.html">DynamoSSLProxySwiftlet</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/DynamoSSLWebServer.html">DynamoSSLWebServer</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoSessionBasedApplication.html">DynamoSessionBasedApplication</a>
+                <a href="Classes/DynamoServerPagesSwiftlet.html">DynamoServerPagesSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoSessionProcessor.html">DynamoSessionProcessor</a>
+                <a href="Classes/DynamoSessionApplication.html">DynamoSessionApplication</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoSwiftServerPagesProcessor.html">DynamoSwiftServerPagesProcessor</a>
+                <a href="Classes/DynamoSessionSwiftlet.html">DynamoSessionSwiftlet</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/DynamoWebServer.html">DynamoWebServer</a>
@@ -87,9 +87,6 @@
               </li>
               <li class="nav-group-task">
                 <a href="Global Variables.html#/s:v6Dynamo27dynanmoDefaultSessionExpirySd">dynanmoDefaultSessionExpiry</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Global Variables.html#/s:v6Dynamo26sessionExpiryCheckIntervalSd">sessionExpiryCheckInterval</a>
               </li>
             </ul>
           </li>
@@ -116,10 +113,10 @@
           <a href="Protocols.html">Protocols</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Protocols/DynamoApplicationProtoccol.html">DynamoApplicationProtoccol</a>
+                <a href="Protocols/DynamoBrowserSwiftlet.html">DynamoBrowserSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="Protocols/DynamoProcessor.html">DynamoProcessor</a>
+                <a href="Protocols/DynamoSwiftlet.html">DynamoSwiftlet</a>
               </li>
             </ul>
           </li>
@@ -155,8 +152,8 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Class representing a connection to a client web browser. One is created each time the server
-connects to read the standard HTTP headers ready to present to each of the processors of the server.</p>
+                        <p>Class representing a connection to a client web browser. One is created each time a browser
+connects to read the standard HTTP headers ready to present to each of the swiftlets of the server.</p>
 
                         <a href="Classes/DynamoHTTPConnection.html" class="slightly-smaller">See more</a>
                       </div>
@@ -165,6 +162,45 @@ connects to read the standard HTTP headers ready to present to each of the proce
                         <div class="Swift">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight"><code><span class="k">@objc</span> <span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoHTTPConnection</span> <span class="p">:</span> <span class="kt">NSObject</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+                <div class="task-name-container">
+                  <a name="/Example%20web%20application"></a>
+                  <a name="//apple_ref/swift/Section/Example web application" class="dashAnchor"></a>
+                  <a href="#/Example%20web%20application">
+                    <h3 class="section-name">Example web application</h3>
+                  </a>
+                </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:C6Dynamo24DynamoExampleAppSwiftlet"></a>
+                    <a name="//apple_ref/swift/Class/DynamoExampleAppSwiftlet" class="dashAnchor"></a>
+                    <a class="token" href="#/s:C6Dynamo24DynamoExampleAppSwiftlet">DynamoExampleAppSwiftlet</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Example web application or <q>swiftlet</q> testing form sbumission.</p>
+
+                        <a href="Classes/DynamoExampleAppSwiftlet.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoExampleAppSwiftlet</span> <span class="p">:</span> <span class="kt">DynamoHTMLAppSwiftlet</span></code></pre>
 
                         </div>
                       </div>
@@ -196,7 +232,7 @@ connects to read the standard HTTP headers ready to present to each of the proce
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Basic http protocol web server running on the specified port. Requests are presented to each of a set
-of proessors provided in a connecton thread until one is encountered that can process the request.</p>
+of swiftlets provided in a connecton thread until one is encountered that has processed the request.</p>
 
                         <a href="Classes/DynamoWebServer.html" class="slightly-smaller">See more</a>
                       </div>
@@ -255,19 +291,19 @@ port to a surrogate DynamoWebServer on a random port on the localhost to actuall
             </div>
             <div class="task-group">
                 <div class="task-name-container">
-                  <a name="/Proxy%20Processors"></a>
-                  <a name="//apple_ref/swift/Section/Proxy Processors" class="dashAnchor"></a>
-                  <a href="#/Proxy%20Processors">
-                    <h3 class="section-name">Proxy Processors</h3>
+                  <a name="/Swiftlets%20for%20dynamic%20content"></a>
+                  <a name="//apple_ref/swift/Section/Swiftlets for dynamic content" class="dashAnchor"></a>
+                  <a href="#/Swiftlets%20for%20dynamic%20content">
+                    <h3 class="section-name">Swiftlets for dynamic content</h3>
                   </a>
                 </div>
               <ul>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:C6Dynamo20DynamoProxyProcessor"></a>
-                    <a name="//apple_ref/swift/Class/DynamoProxyProcessor" class="dashAnchor"></a>
-                    <a class="token" href="#/s:C6Dynamo20DynamoProxyProcessor">DynamoProxyProcessor</a>
+                    <a name="/s:C6Dynamo25DynamoApplicationSwiftlet"></a>
+                    <a name="//apple_ref/swift/Class/DynamoApplicationSwiftlet" class="dashAnchor"></a>
+                    <a class="token" href="#/s:C6Dynamo25DynamoApplicationSwiftlet">DynamoApplicationSwiftlet</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -275,123 +311,16 @@ port to a surrogate DynamoWebServer on a random port on the localhost to actuall
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Processor to allow a DynamoWebServer to act as a http: protocol proxy on the same port.</p>
-
-                        <a href="Classes/DynamoProxyProcessor.html" class="slightly-smaller">See more</a>
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="Swift">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoProxyProcessor</span> <span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">DynamoProcessor</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:C6Dynamo23DynamoSSLProxyProcessor"></a>
-                    <a name="//apple_ref/swift/Class/DynamoSSLProxyProcessor" class="dashAnchor"></a>
-                    <a class="token" href="#/s:C6Dynamo23DynamoSSLProxyProcessor">DynamoSSLProxyProcessor</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Processor to allow a DynamoWebServer to act as a https: SSL connection protocol proxy on the same port.
-This must be come before the DynamoProxyProcessor in the list of processors for the server for both to work.</p>
-
-                        <a href="Classes/DynamoSSLProxyProcessor.html" class="slightly-smaller">See more</a>
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="Swift">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoSSLProxyProcessor</span> <span class="p">:</span> <span class="kt">DynamoProxyProcessor</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-                <div class="task-name-container">
-                  <a name="/Example%20web%20application"></a>
-                  <a name="//apple_ref/swift/Section/Example web application" class="dashAnchor"></a>
-                  <a href="#/Example%20web%20application">
-                    <h3 class="section-name">Example web application</h3>
-                  </a>
-                </div>
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:C6Dynamo25DynamoExampleAppProcessor"></a>
-                    <a name="//apple_ref/swift/Class/DynamoExampleAppProcessor" class="dashAnchor"></a>
-                    <a class="token" href="#/s:C6Dynamo25DynamoExampleAppProcessor">DynamoExampleAppProcessor</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Example web application or <q>swiftlet</q> testing form sbumission.</p>
-
-                        <a href="Classes/DynamoExampleAppProcessor.html" class="slightly-smaller">See more</a>
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="Swift">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoExampleAppProcessor</span> <span class="p">:</span> <span class="kt">DynamoHTMLAppProcessor</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-                <div class="task-name-container">
-                  <a name="/Processors%20for%20dynamic%20content"></a>
-                  <a name="//apple_ref/swift/Section/Processors for dynamic content" class="dashAnchor"></a>
-                  <a href="#/Processors%20for%20dynamic%20content">
-                    <h3 class="section-name">Processors for dynamic content</h3>
-                  </a>
-                </div>
-              <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:C6Dynamo26DynamoApplicationProcessor"></a>
-                    <a name="//apple_ref/swift/Class/DynamoApplicationProcessor" class="dashAnchor"></a>
-                    <a class="token" href="#/s:C6Dynamo26DynamoApplicationProcessor">DynamoApplicationProcessor</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Original application processor testing to see if the URL path matches against a prefix to decide if it should
+                        <p>Base application swiftlet testing to see if the URL path matches against a prefix to decide if it should
 process it. Handles parsing of HTTP headers to present to web application code.</p>
 
-                        <a href="Classes/DynamoApplicationProcessor.html" class="slightly-smaller">See more</a>
+                        <a href="Classes/DynamoApplicationSwiftlet.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="Swift">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoApplicationProcessor</span> <span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">DynamoApplicationProtoccol</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoApplicationSwiftlet</span> <span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">DynamoBrowserSwiftlet</span></code></pre>
 
                         </div>
                       </div>
@@ -402,19 +331,19 @@ process it. Handles parsing of HTTP headers to present to web application code.<
             </div>
             <div class="task-group">
                 <div class="task-name-container">
-                  <a name="/Logging%20Processor"></a>
-                  <a name="//apple_ref/swift/Section/Logging Processor" class="dashAnchor"></a>
-                  <a href="#/Logging%20Processor">
-                    <h3 class="section-name">Logging Processor</h3>
+                  <a name="/Logging%20Swiftlet"></a>
+                  <a name="//apple_ref/swift/Section/Logging Swiftlet" class="dashAnchor"></a>
+                  <a href="#/Logging%20Swiftlet">
+                    <h3 class="section-name">Logging Swiftlet</h3>
                   </a>
                 </div>
               <ul>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:C6Dynamo22DynamoLoggingProcessor"></a>
-                    <a name="//apple_ref/swift/Class/DynamoLoggingProcessor" class="dashAnchor"></a>
-                    <a class="token" href="#/s:C6Dynamo22DynamoLoggingProcessor">DynamoLoggingProcessor</a>
+                    <a name="/s:C6Dynamo21DynamoLoggingSwiftlet"></a>
+                    <a name="//apple_ref/swift/Class/DynamoLoggingSwiftlet" class="dashAnchor"></a>
+                    <a class="token" href="#/s:C6Dynamo21DynamoLoggingSwiftlet">DynamoLoggingSwiftlet</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -422,15 +351,15 @@ process it. Handles parsing of HTTP headers to present to web application code.<
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Null processor to log each request as it is presented to the processing chain.</p>
+                        <p>Null swiftlet to log each request as it is presented to the processing chain.</p>
 
-                        <a href="Classes/DynamoLoggingProcessor.html" class="slightly-smaller">See more</a>
+                        <a href="Classes/DynamoLoggingSwiftlet.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="Swift">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoLoggingProcessor</span> <span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">DynamoProcessor</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoLoggingSwiftlet</span> <span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">DynamoSwiftlet</span></code></pre>
 
                         </div>
                       </div>
@@ -451,9 +380,9 @@ process it. Handles parsing of HTTP headers to present to web application code.<
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:C6Dynamo22DynamoSessionProcessor"></a>
-                    <a name="//apple_ref/swift/Class/DynamoSessionProcessor" class="dashAnchor"></a>
-                    <a class="token" href="#/s:C6Dynamo22DynamoSessionProcessor">DynamoSessionProcessor</a>
+                    <a name="/s:C6Dynamo21DynamoSessionSwiftlet"></a>
+                    <a name="//apple_ref/swift/Class/DynamoSessionSwiftlet" class="dashAnchor"></a>
+                    <a class="token" href="#/s:C6Dynamo21DynamoSessionSwiftlet">DynamoSessionSwiftlet</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -461,16 +390,16 @@ process it. Handles parsing of HTTP headers to present to web application code.<
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Processor that creates now instancews of the application class per user session.
+                        <p>Swiftlet that creates now instancews of the application class per user session.
 Sessions are identified by a UUID in a <q>DynamoSession</q> Coookie.</p>
 
-                        <a href="Classes/DynamoSessionProcessor.html" class="slightly-smaller">See more</a>
+                        <a href="Classes/DynamoSessionSwiftlet.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="Swift">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoSessionProcessor</span> <span class="p">:</span> <span class="kt">DynamoApplicationProcessor</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoSessionSwiftlet</span> <span class="p">:</span> <span class="kt">DynamoApplicationSwiftlet</span></code></pre>
 
                         </div>
                       </div>
@@ -480,9 +409,9 @@ Sessions are identified by a UUID in a <q>DynamoSession</q> Coookie.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:C6Dynamo29DynamoSessionBasedApplication"></a>
-                    <a name="//apple_ref/swift/Class/DynamoSessionBasedApplication" class="dashAnchor"></a>
-                    <a class="token" href="#/s:C6Dynamo29DynamoSessionBasedApplication">DynamoSessionBasedApplication</a>
+                    <a name="/s:C6Dynamo24DynamoSessionApplication"></a>
+                    <a name="//apple_ref/swift/Class/DynamoSessionApplication" class="dashAnchor"></a>
+                    <a class="token" href="#/s:C6Dynamo24DynamoSessionApplication">DynamoSessionApplication</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -492,13 +421,13 @@ Sessions are identified by a UUID in a <q>DynamoSession</q> Coookie.</p>
                       <div class="abstract">
                         <p>Class to be subclassed for the application code when writing session based applications</p>
 
-                        <a href="Classes/DynamoSessionBasedApplication.html" class="slightly-smaller">See more</a>
+                        <a href="Classes/DynamoSessionApplication.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="Swift">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoSessionBasedApplication</span> <span class="p">:</span> <span class="kt">DynamoHTMLAppProcessor</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoSessionApplication</span> <span class="p">:</span> <span class="kt">DynamoHTMLAppSwiftlet</span></code></pre>
 
                         </div>
                       </div>
@@ -509,19 +438,19 @@ Sessions are identified by a UUID in a <q>DynamoSession</q> Coookie.</p>
             </div>
             <div class="task-group">
                 <div class="task-name-container">
-                  <a name="/Bundle%20based,%20reloading%20processors"></a>
-                  <a name="//apple_ref/swift/Section/Bundle based, reloading processors" class="dashAnchor"></a>
-                  <a href="#/Bundle%20based,%20reloading%20processors">
-                    <h3 class="section-name">Bundle based, reloading processors</h3>
+                  <a name="/Bundle%20based,%20reloading%20swiftlets"></a>
+                  <a name="//apple_ref/swift/Section/Bundle based, reloading swiftlets" class="dashAnchor"></a>
+                  <a href="#/Bundle%20based,%20reloading%20swiftlets">
+                    <h3 class="section-name">Bundle based, reloading swiftlets</h3>
                   </a>
                 </div>
               <ul>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:C6Dynamo24DynamoReloadingProcessor"></a>
-                    <a name="//apple_ref/swift/Class/DynamoReloadingProcessor" class="dashAnchor"></a>
-                    <a class="token" href="#/s:C6Dynamo24DynamoReloadingProcessor">DynamoReloadingProcessor</a>
+                    <a name="/s:C6Dynamo20DynamoBundleSwiftlet"></a>
+                    <a name="//apple_ref/swift/Class/DynamoBundleSwiftlet" class="dashAnchor"></a>
+                    <a class="token" href="#/s:C6Dynamo20DynamoBundleSwiftlet">DynamoBundleSwiftlet</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -529,18 +458,18 @@ Sessions are identified by a UUID in a <q>DynamoSession</q> Coookie.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>This processor is sessoin based and also loads it&rsquo;s application code from a code bundle with a <q>.ssp</q> extension.
+                        <p>This Swiftlet is session based and also loads it&rsquo;s application code from a code bundle with a <q>.ssp</q> extension.
 If the module includes the Utilities/AutoLoader.m code it will reload and swizzle it&#39;a new implementation when
 the bundle is rebuilt/re-deployed for hot-swapping in the code. Existing instances/sessions receive the new code
 but retain their state. This does not work for changes to the layout or number of properties in the class.</p>
 
-                        <a href="Classes/DynamoReloadingProcessor.html" class="slightly-smaller">See more</a>
+                        <a href="Classes/DynamoBundleSwiftlet.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="Swift">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoReloadingProcessor</span> <span class="p">:</span> <span class="kt">DynamoSessionProcessor</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoBundleSwiftlet</span> <span class="p">:</span> <span class="kt">DynamoSessionSwiftlet</span></code></pre>
 
                         </div>
                       </div>
@@ -551,19 +480,19 @@ but retain their state. This does not work for changes to the layout or number o
             </div>
             <div class="task-group">
                 <div class="task-name-container">
-                  <a name="/Reloading%20processor%20based%20in%20bundle%20inside%20documentRoot"></a>
-                  <a name="//apple_ref/swift/Section/Reloading processor based in bundle inside documentRoot" class="dashAnchor"></a>
-                  <a href="#/Reloading%20processor%20based%20in%20bundle%20inside%20documentRoot">
-                    <h3 class="section-name">Reloading processor based in bundle inside documentRoot</h3>
+                  <a name="/Reloading%20swiftlet%20based%20in%20bundle%20inside%20documentRoot"></a>
+                  <a name="//apple_ref/swift/Section/Reloading swiftlet based in bundle inside documentRoot" class="dashAnchor"></a>
+                  <a href="#/Reloading%20swiftlet%20based%20in%20bundle%20inside%20documentRoot">
+                    <h3 class="section-name">Reloading swiftlet based in bundle inside documentRoot</h3>
                   </a>
                 </div>
               <ul>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:C6Dynamo31DynamoSwiftServerPagesProcessor"></a>
-                    <a name="//apple_ref/swift/Class/DynamoSwiftServerPagesProcessor" class="dashAnchor"></a>
-                    <a class="token" href="#/s:C6Dynamo31DynamoSwiftServerPagesProcessor">DynamoSwiftServerPagesProcessor</a>
+                    <a name="/s:C6Dynamo25DynamoServerPagesSwiftlet"></a>
+                    <a name="//apple_ref/swift/Class/DynamoServerPagesSwiftlet" class="dashAnchor"></a>
+                    <a class="token" href="#/s:C6Dynamo25DynamoServerPagesSwiftlet">DynamoServerPagesSwiftlet</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -571,17 +500,17 @@ but retain their state. This does not work for changes to the layout or number o
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>A specialisation of a bundle reloading, session based processor where the bundle is loaded
+                        <p>A specialisation of a bundle reloading, session based swiftlet where the bundle is loaded
 from the web document directory. As before it reloads and hot-swaps in the new code if the
 bundle is updated.</p>
 
-                        <a href="Classes/DynamoSwiftServerPagesProcessor.html" class="slightly-smaller">See more</a>
+                        <a href="Classes/DynamoServerPagesSwiftlet.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="Swift">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoSwiftServerPagesProcessor</span> <span class="p">:</span> <span class="kt">DynamoApplicationProcessor</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoServerPagesSwiftlet</span> <span class="p">:</span> <span class="kt">DynamoApplicationSwiftlet</span></code></pre>
 
                         </div>
                       </div>
@@ -592,19 +521,19 @@ bundle is updated.</p>
             </div>
             <div class="task-group">
                 <div class="task-name-container">
-                  <a name="/Default%20document%20Processor"></a>
-                  <a name="//apple_ref/swift/Section/Default document Processor" class="dashAnchor"></a>
-                  <a href="#/Default%20document%20Processor">
-                    <h3 class="section-name">Default document Processor</h3>
+                  <a name="/Proxy%20Swiftlets"></a>
+                  <a name="//apple_ref/swift/Section/Proxy Swiftlets" class="dashAnchor"></a>
+                  <a href="#/Proxy%20Swiftlets">
+                    <h3 class="section-name">Proxy Swiftlets</h3>
                   </a>
                 </div>
               <ul>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:C6Dynamo23DynamoDocumentProcessor"></a>
-                    <a name="//apple_ref/swift/Class/DynamoDocumentProcessor" class="dashAnchor"></a>
-                    <a class="token" href="#/s:C6Dynamo23DynamoDocumentProcessor">DynamoDocumentProcessor</a>
+                    <a name="/s:C6Dynamo19DynamoProxySwiftlet"></a>
+                    <a name="//apple_ref/swift/Class/DynamoProxySwiftlet" class="dashAnchor"></a>
+                    <a class="token" href="#/s:C6Dynamo19DynamoProxySwiftlet">DynamoProxySwiftlet</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -612,16 +541,84 @@ bundle is updated.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Default processor, generally last in the processor chain to serve static documents of the file system.
-This is either from the app resources driectory for iOS apps or ~/Sites/hostname:port/&hellip; on OSX.</p>
+                        <p>Swiftlet to allow a DynamoWebServer to act as a http: protocol proxy on the same port.</p>
 
-                        <a href="Classes/DynamoDocumentProcessor.html" class="slightly-smaller">See more</a>
+                        <a href="Classes/DynamoProxySwiftlet.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="Swift">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoDocumentProcessor</span> <span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">DynamoProcessor</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoProxySwiftlet</span> <span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">DynamoSwiftlet</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:C6Dynamo22DynamoSSLProxySwiftlet"></a>
+                    <a name="//apple_ref/swift/Class/DynamoSSLProxySwiftlet" class="dashAnchor"></a>
+                    <a class="token" href="#/s:C6Dynamo22DynamoSSLProxySwiftlet">DynamoSSLProxySwiftlet</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Swiftlet to allow a DynamoWebServer to act as a https: SSL connection protocol proxy on the same port.
+This must be come before the DynamoProxySwiftlet in the list of swiftlets for the server for both to work.</p>
+
+                        <a href="Classes/DynamoSSLProxySwiftlet.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoSSLProxySwiftlet</span> <span class="p">:</span> <span class="kt">DynamoProxySwiftlet</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+                <div class="task-name-container">
+                  <a name="/Default%20document%20Swiftlet"></a>
+                  <a name="//apple_ref/swift/Section/Default document Swiftlet" class="dashAnchor"></a>
+                  <a href="#/Default%20document%20Swiftlet">
+                    <h3 class="section-name">Default document Swiftlet</h3>
+                  </a>
+                </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:C6Dynamo22DynamoDocumentSwiftlet"></a>
+                    <a name="//apple_ref/swift/Class/DynamoDocumentSwiftlet" class="dashAnchor"></a>
+                    <a class="token" href="#/s:C6Dynamo22DynamoDocumentSwiftlet">DynamoDocumentSwiftlet</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Default swiftlet, generally last in the swiftlet chain to serve static documents from the file system.
+This is either from the app resources directory for iOS apps or ~/Sites/hostname:port/&hellip; on OSX.</p>
+
+                        <a href="Classes/DynamoDocumentSwiftlet.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoDocumentSwiftlet</span> <span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">DynamoSwiftlet</span></code></pre>
 
                         </div>
                       </div>
@@ -642,9 +639,9 @@ This is either from the app resources driectory for iOS apps or ~/Sites/hostname
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:C6Dynamo22DynamoHTMLAppProcessor"></a>
-                    <a name="//apple_ref/swift/Class/DynamoHTMLAppProcessor" class="dashAnchor"></a>
-                    <a class="token" href="#/s:C6Dynamo22DynamoHTMLAppProcessor">DynamoHTMLAppProcessor</a>
+                    <a name="/s:C6Dynamo21DynamoHTMLAppSwiftlet"></a>
+                    <a name="//apple_ref/swift/Class/DynamoHTMLAppSwiftlet" class="dashAnchor"></a>
+                    <a class="token" href="#/s:C6Dynamo21DynamoHTMLAppSwiftlet">DynamoHTMLAppSwiftlet</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -657,13 +654,13 @@ is converted into <q><tr><td>text</td></tr></q>. By convention if the contents a
 the tag is not closed. A optional set of attributes acn be passed as a dictionary:
 a( [<q>href</q>=<q>htp://google.com</q>], <q>link text</q> ) becomes <q><a href='http//google.com'>link text</a></q>.</p>
 
-                        <a href="Classes/DynamoHTMLAppProcessor.html" class="slightly-smaller">See more</a>
+                        <a href="Classes/DynamoHTMLAppSwiftlet.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="Swift">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoHTMLAppProcessor</span> <span class="p">:</span> <span class="kt">DynamoApplicationProcessor</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">DynamoHTMLAppSwiftlet</span> <span class="p">:</span> <span class="kt">DynamoApplicationSwiftlet</span></code></pre>
 
                         </div>
                       </div>
@@ -675,8 +672,8 @@ a( [<q>href</q>=<q>htp://google.com</q>], <q>link text</q> ) becomes <q><a href=
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2015 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2015-06-28)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.2.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>&copy; 2015 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2015-07-11)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.2.2</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>

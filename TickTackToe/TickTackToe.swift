@@ -45,17 +45,13 @@ private class TickTackGameEngine: NSObject {
 
 }
 
-@objc (TickTackToeProcessor)
-public class TickTackToeProcessor: DynamoSessionBasedApplication {
+@objc (TickTackToeSwiftlet)
+public class TickTackToeSwiftlet: DynamoSessionApplication {
 
     private var engine = TickTackGameEngine()
 
     @objc override public func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
         var cookies = cookies
-
-        let webDateFormatter = NSDateFormatter()
-        webDateFormatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
-        out.addHeader( "Date", value: webDateFormatter.stringFromDate( NSDate() ) )
 
         // reset board and keep scores
         if let whoWon = parameters["reset"] {

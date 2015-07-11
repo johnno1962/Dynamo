@@ -9,11 +9,16 @@
 /* Begin PBXBuildFile section */
 		BB01566E1B4ED93B007044A7 /* Dynamo.podspec in Resources */ = {isa = PBXBuildFile; fileRef = BB01566D1B4ED93B007044A7 /* Dynamo.podspec */; };
 		BB01569E1B4EE576007044A7 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = BB01569D1B4EE576007044A7 /* LICENSE */; };
+		BB0156A01B50562E007044A7 /* Swiftlets.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB01569F1B50562E007044A7 /* Swiftlets.swift */; };
+		BB0156A11B50569C007044A7 /* Swiftlets.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB01569F1B50562E007044A7 /* Swiftlets.swift */; };
+		BB0156A31B508C8A007044A7 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0156A21B508C8A007044A7 /* Document.swift */; };
+		BB0156A41B508D33007044A7 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0156A21B508C8A007044A7 /* Document.swift */; };
+		BB0156A61B508E21007044A7 /* Example.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0156A51B508E21007044A7 /* Example.swift */; };
+		BB0156A71B508F04007044A7 /* Example.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0156A51B508E21007044A7 /* Example.swift */; };
 		BB03E7561B35E20C00025085 /* AutoLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E551B3576F40001EDCA /* AutoLoader.m */; };
 		BB03E7571B35EA4A00025085 /* DDKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E581B3576F40001EDCA /* DDKeychain.m */; };
 		BB4B4E191B355F0F0001EDCA /* Servers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E181B355F0F0001EDCA /* Servers.swift */; };
 		BB4B4E1B1B355F350001EDCA /* Proxies.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E1A1B355F350001EDCA /* Proxies.swift */; };
-		BB4B4E1D1B355F4C0001EDCA /* WebApps.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E1C1B355F4C0001EDCA /* WebApps.swift */; };
 		BB4B4E1F1B355F610001EDCA /* Generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E1E1B355F610001EDCA /* Generated.swift */; };
 		BB4B4E4A1B356B7D0001EDCA /* NumberGuesser.shtml in Resources */ = {isa = PBXBuildFile; fileRef = BB4B4E481B356B7D0001EDCA /* NumberGuesser.shtml */; };
 		BB4B4E4B1B356B7D0001EDCA /* NumberGuesser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E491B356B7D0001EDCA /* NumberGuesser.swift */; };
@@ -24,7 +29,6 @@
 		BB4B4E5D1B357B9E0001EDCA /* TickTackToe.ssp in Resources */ = {isa = PBXBuildFile; fileRef = BB4B4E361B356AE70001EDCA /* TickTackToe.ssp */; };
 		BB4B4E671B3599490001EDCA /* Servers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E181B355F0F0001EDCA /* Servers.swift */; };
 		BB4B4E681B3599490001EDCA /* Proxies.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E1A1B355F350001EDCA /* Proxies.swift */; };
-		BB4B4E691B3599490001EDCA /* WebApps.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E1C1B355F4C0001EDCA /* WebApps.swift */; };
 		BB4B4E6A1B3599490001EDCA /* Generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E1E1B355F610001EDCA /* Generated.swift */; };
 		BB4B4E6B1B35997E0001EDCA /* TickTackToe.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E4C1B356BBF0001EDCA /* TickTackToe.swift */; };
 		BB4B4E6C1B3599860001EDCA /* NumberGuesser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E491B356B7D0001EDCA /* NumberGuesser.swift */; };
@@ -151,9 +155,11 @@
 /* Begin PBXFileReference section */
 		BB01566D1B4ED93B007044A7 /* Dynamo.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Dynamo.podspec; sourceTree = "<group>"; };
 		BB01569D1B4EE576007044A7 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		BB01569F1B50562E007044A7 /* Swiftlets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Swiftlets.swift; sourceTree = "<group>"; };
+		BB0156A21B508C8A007044A7 /* Document.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
+		BB0156A51B508E21007044A7 /* Example.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Example.swift; sourceTree = "<group>"; };
 		BB4B4E181B355F0F0001EDCA /* Servers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Servers.swift; sourceTree = "<group>"; };
 		BB4B4E1A1B355F350001EDCA /* Proxies.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Proxies.swift; sourceTree = "<group>"; };
-		BB4B4E1C1B355F4C0001EDCA /* WebApps.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebApps.swift; sourceTree = "<group>"; };
 		BB4B4E1E1B355F610001EDCA /* Generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Generated.swift; sourceTree = "<group>"; };
 		BB4B4E2E1B3565CA0001EDCA /* OSX-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "OSX-Bridging-Header.h"; sourceTree = "<group>"; };
 		BB4B4E361B356AE70001EDCA /* TickTackToe.ssp */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TickTackToe.ssp; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -348,9 +354,11 @@
 				BBA52ECC1B3556C3006F12AC /* Dynamo.h */,
 				BB4B4E181B355F0F0001EDCA /* Servers.swift */,
 				BB81640E1B38ADDB00E737AE /* Connection.swift */,
-				BB4B4E1A1B355F350001EDCA /* Proxies.swift */,
-				BB4B4E1C1B355F4C0001EDCA /* WebApps.swift */,
+				BB01569F1B50562E007044A7 /* Swiftlets.swift */,
 				BB4B4E1E1B355F610001EDCA /* Generated.swift */,
+				BB0156A21B508C8A007044A7 /* Document.swift */,
+				BB0156A51B508E21007044A7 /* Example.swift */,
+				BB4B4E1A1B355F350001EDCA /* Proxies.swift */,
 				BBA52ECA1B3556C3006F12AC /* Supporting Files */,
 			);
 			path = Dynamo;
@@ -578,8 +586,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				BB4B4E8A1B35C5810001EDCA /* PBXTargetDependency */,
 				BBA52F4F1B3559C7006F12AC /* PBXTargetDependency */,
+				BB4B4E8A1B35C5810001EDCA /* PBXTargetDependency */,
 				BB4B4E741B35A4960001EDCA /* PBXTargetDependency */,
 				BB4B4E761B35A4990001EDCA /* PBXTargetDependency */,
 			);
@@ -866,9 +874,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				BB81640F1B38ADDB00E737AE /* Connection.swift in Sources */,
+				BB0156A61B508E21007044A7 /* Example.swift in Sources */,
 				BB4B4E191B355F0F0001EDCA /* Servers.swift in Sources */,
+				BB0156A01B50562E007044A7 /* Swiftlets.swift in Sources */,
 				BB4B4E1B1B355F350001EDCA /* Proxies.swift in Sources */,
-				BB4B4E1D1B355F4C0001EDCA /* WebApps.swift in Sources */,
+				BB0156A31B508C8A007044A7 /* Document.swift in Sources */,
 				BB4B4E1F1B355F610001EDCA /* Generated.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -902,13 +912,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB4B4E6C1B3599860001EDCA /* NumberGuesser.swift in Sources */,
-				BB4B4E6B1B35997E0001EDCA /* TickTackToe.swift in Sources */,
 				BB4B4E671B3599490001EDCA /* Servers.swift in Sources */,
 				BB8164101B38AEF600E737AE /* Connection.swift in Sources */,
 				BB4B4E681B3599490001EDCA /* Proxies.swift in Sources */,
-				BB4B4E691B3599490001EDCA /* WebApps.swift in Sources */,
+				BB0156A11B50569C007044A7 /* Swiftlets.swift in Sources */,
 				BB4B4E6A1B3599490001EDCA /* Generated.swift in Sources */,
+				BB0156A41B508D33007044A7 /* Document.swift in Sources */,
+				BB0156A71B508F04007044A7 /* Example.swift in Sources */,
+				BB4B4E6B1B35997E0001EDCA /* TickTackToe.swift in Sources */,
+				BB4B4E6C1B3599860001EDCA /* NumberGuesser.swift in Sources */,
 				BBA52F311B3557A2006F12AC /* ViewController.m in Sources */,
 				BBA52F2E1B3557A2006F12AC /* AppDelegate.m in Sources */,
 				BBA52F2B1B3557A2006F12AC /* main.m in Sources */,

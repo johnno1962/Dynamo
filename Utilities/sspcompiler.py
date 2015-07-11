@@ -57,8 +57,8 @@ import Dynamo
 
 %s
 
-@objc (%sProcessor)
-public class %sProcessor: DynamoSessionBasedApplication {
+@objc (%sSwiftlet)
+public class %sSwiftlet: DynamoSessionApplication {
 
 %s
 

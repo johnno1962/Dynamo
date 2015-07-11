@@ -23,17 +23,18 @@
         NSLog( @"%@", trace );
     };
 
-    NSMutableArray *processors = [NSMutableArray new];
-    [processors addObject:[[DynamoExampleAppProcessor alloc] initWithPathPrefix:@"/example"]];
-    [processors addObject:[[DynamoSessionProcessor alloc] initWithPathPrefix:@"/ticktacktoe"
-                                                                    appClass:[TickTackToeProcessor class] cookieName: @"TTT"]];
-    [processors addObject:[[DynamoSessionProcessor alloc] initWithPathPrefix:@"/NumberGuesser.ssp"
-                                                                    appClass:[NumberGuesserProcessor class] cookieName: @"NUM"]];
-    [processors addObject:[[DynamoSSLProxyProcessor alloc] initWithLogger:logger]];
-    [processors addObject:[[DynamoProxyProcessor alloc] initWithLogger:logger]];
-    [processors addObject:[[DynamoDocumentProcessor alloc] init]];
+    NSArray *swiftlets = @[
+        [[DynamoExampleAppSwiftlet alloc] initWithPathPrefix:@"/example"],
+        [[DynamoSessionSwiftlet alloc] initWithPathPrefix:@"/ticktacktoe"
+                                                 appClass:[TickTackToeSwiftlet class] cookieName: @"TTT"],
+        [[DynamoSessionSwiftlet alloc] initWithPathPrefix:@"/NumberGuesser.ssp"
+                                                 appClass:[NumberGuesserSwiftlet class] cookieName: @"NUM"],
+        [[DynamoSSLProxySwiftlet alloc] initWithLogger:logger],
+        [[DynamoProxySwiftlet alloc] initWithLogger:logger],
+        [[DynamoDocumentSwiftlet alloc] init]
+     ];
 
-    (void)[[DynamoWebServer alloc] initWithPortNumber:8080 processors:processors localhostOnly:YES];
+    (void)[[DynamoWebServer alloc] initWithPortNumber:8080 swiftlets:swiftlets localhostOnly:YES];
     [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://localhost:8080"]]];
 }
 

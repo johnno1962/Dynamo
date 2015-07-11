@@ -13,7 +13,7 @@
     <a title="DynamoHTTPConnection Class Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html"> Docs</a> (4% documented)</p>
+        <p><a href="../index.html"> Docs</a> (15% documented)</p>
         <p class="header-right"><a href=""><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -31,43 +31,43 @@
           <a href="../Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Classes/DynamoApplicationProcessor.html">DynamoApplicationProcessor</a>
+                <a href="../Classes/DynamoApplicationSwiftlet.html">DynamoApplicationSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/DynamoDocumentProcessor.html">DynamoDocumentProcessor</a>
+                <a href="../Classes/DynamoBundleSwiftlet.html">DynamoBundleSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/DynamoExampleAppProcessor.html">DynamoExampleAppProcessor</a>
+                <a href="../Classes/DynamoDocumentSwiftlet.html">DynamoDocumentSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/DynamoHTMLAppProcessor.html">DynamoHTMLAppProcessor</a>
+                <a href="../Classes/DynamoExampleAppSwiftlet.html">DynamoExampleAppSwiftlet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/DynamoHTMLAppSwiftlet.html">DynamoHTMLAppSwiftlet</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/DynamoHTTPConnection.html">DynamoHTTPConnection</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/DynamoLoggingProcessor.html">DynamoLoggingProcessor</a>
+                <a href="../Classes/DynamoLoggingSwiftlet.html">DynamoLoggingSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/DynamoProxyProcessor.html">DynamoProxyProcessor</a>
+                <a href="../Classes/DynamoProxySwiftlet.html">DynamoProxySwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/DynamoReloadingProcessor.html">DynamoReloadingProcessor</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/DynamoSSLProxyProcessor.html">DynamoSSLProxyProcessor</a>
+                <a href="../Classes/DynamoSSLProxySwiftlet.html">DynamoSSLProxySwiftlet</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/DynamoSSLWebServer.html">DynamoSSLWebServer</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/DynamoSessionBasedApplication.html">DynamoSessionBasedApplication</a>
+                <a href="../Classes/DynamoServerPagesSwiftlet.html">DynamoServerPagesSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/DynamoSessionProcessor.html">DynamoSessionProcessor</a>
+                <a href="../Classes/DynamoSessionApplication.html">DynamoSessionApplication</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/DynamoSwiftServerPagesProcessor.html">DynamoSwiftServerPagesProcessor</a>
+                <a href="../Classes/DynamoSessionSwiftlet.html">DynamoSessionSwiftlet</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/DynamoWebServer.html">DynamoWebServer</a>
@@ -88,9 +88,6 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Global Variables.html#/s:v6Dynamo27dynanmoDefaultSessionExpirySd">dynanmoDefaultSessionExpiry</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Global Variables.html#/s:v6Dynamo26sessionExpiryCheckIntervalSd">sessionExpiryCheckInterval</a>
               </li>
             </ul>
           </li>
@@ -117,10 +114,10 @@
           <a href="../Protocols.html">Protocols</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Protocols/DynamoApplicationProtoccol.html">DynamoApplicationProtoccol</a>
+                <a href="../Protocols/DynamoBrowserSwiftlet.html">DynamoBrowserSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Protocols/DynamoProcessor.html">DynamoProcessor</a>
+                <a href="../Protocols/DynamoSwiftlet.html">DynamoSwiftlet</a>
               </li>
             </ul>
           </li>
@@ -130,8 +127,8 @@
         <section>
           <section class="section">
             <h1>DynamoHTTPConnection</h1>
-            <p>Class representing a connection to a client web browser. One is created each time the server
-connects to read the standard HTTP headers ready to present to each of the processors of the server.</p>
+            <p>Class representing a connection to a client web browser. One is created each time a browser
+connects to read the standard HTTP headers ready to present to each of the swiftlets of the server.</p>
 
           </section>
           <section class="section task-group-section">
@@ -150,8 +147,70 @@ connects to read the standard HTTP headers ready to present to each of the proce
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>reeust method received frmo browser</p>
 
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">method</span> <span class="o">=</span> <span class="s">"GET"</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC6Dynamo20DynamoHTTPConnection4pathSS"></a>
+                    <a name="//apple_ref/swift/Property/path" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC6Dynamo20DynamoHTTPConnection4pathSS">path</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>path to document requests</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">path</span> <span class="o">=</span> <span class="s">"/"</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC6Dynamo20DynamoHTTPConnection7versionSS"></a>
+                    <a name="//apple_ref/swift/Property/version" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC6Dynamo20DynamoHTTPConnection7versionSS">version</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>HTTP version reported by browser</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">version</span> <span class="o">=</span> <span class="s">"HTTP/1.1"</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -169,8 +228,16 @@ connects to read the standard HTTP headers ready to present to each of the proce
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>request epressed as NSURL</p>
 
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">url</span> <span class="o">=</span> <span class="n">dummyBase</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -188,8 +255,16 @@ connects to read the standard HTTP headers ready to present to each of the proce
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>status to be returned in response</p>
 
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">status</span> <span class="o">=</span> <span class="mi">200</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -207,8 +282,16 @@ connects to read the standard HTTP headers ready to present to each of the proce
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>HTTP request headers received</p>
 
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">requestHeaders</span> <span class="o">=</span> <span class="p">[</span><span class="kt">String</span><span class="p">:</span><span class="kt">String</span><span class="p">]()</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -226,8 +309,16 @@ connects to read the standard HTTP headers ready to present to each of the proce
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>initialise connection to browser with socket</p>
 
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">?(</span> <span class="nv">clientSocket</span><span class="p">:</span> <span class="kt">Int32</span> <span class="p">)</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -245,8 +336,16 @@ connects to read the standard HTTP headers ready to present to each of the proce
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>initialise connection to reote host/port specified in URL</p>
 
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="n">convenience</span> <span class="nf">init</span><span class="p">?(</span> <span class="nv">url</span><span class="p">:</span> <span class="kt">NSURL</span> <span class="p">)</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -254,9 +353,9 @@ connects to read the standard HTTP headers ready to present to each of the proce
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FC6Dynamo20DynamoHTTPConnection11readContentFS0_FT_GSqSS_"></a>
-                    <a name="//apple_ref/swift/Method/readContent()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FC6Dynamo20DynamoHTTPConnection11readContentFS0_FT_GSqSS_">readContent()</a>
+                    <a name="/s:vC6Dynamo20DynamoHTTPConnection10remoteAddrSS"></a>
+                    <a name="//apple_ref/swift/Property/remoteAddr" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC6Dynamo20DynamoHTTPConnection10remoteAddrSS">remoteAddr</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -264,8 +363,16 @@ connects to read the standard HTTP headers ready to present to each of the proce
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>reports to IP address of remote user (if not proxied</p>
 
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">remoteAddr</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -273,9 +380,9 @@ connects to read the standard HTTP headers ready to present to each of the proce
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FC6Dynamo20DynamoHTTPConnection13contentLengthFS0_FT_GSqSi_"></a>
-                    <a name="//apple_ref/swift/Method/contentLength()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FC6Dynamo20DynamoHTTPConnection13contentLengthFS0_FT_GSqSi_">contentLength()</a>
+                    <a name="/s:FC6Dynamo20DynamoHTTPConnection4readFS0_FTGVSs20UnsafeMutablePointerT__5countSi_Si"></a>
+                    <a name="//apple_ref/swift/Method/read(_:count:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo20DynamoHTTPConnection4readFS0_FTGVSs20UnsafeMutablePointerT__5countSi_Si">read(_:count:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -283,8 +390,43 @@ connects to read the standard HTTP headers ready to present to each of the proce
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>read from browser/remote connection</p>
 
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">read</span><span class="p">(</span> <span class="nv">buffer</span><span class="p">:</span> <span class="kt">UnsafeMutablePointer</span><span class="o">&lt;</span><span class="kt">Void</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">count</span><span class="p">:</span> <span class="kt">Int</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC6Dynamo20DynamoHTTPConnection5writeFS0_FTGVSs13UnsafePointerT__5countSi_Si"></a>
+                    <a name="//apple_ref/swift/Method/write(_:count:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo20DynamoHTTPConnection5writeFS0_FTGVSs13UnsafePointerT__5countSi_Si">write(_:count:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>write to browser/remote connection</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">write</span><span class="p">(</span> <span class="nv">buffer</span><span class="p">:</span> <span class="kt">UnsafePointer</span><span class="o">&lt;</span><span class="kt">Void</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">count</span><span class="p">:</span> <span class="kt">Int</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -302,8 +444,151 @@ connects to read the standard HTTP headers ready to present to each of the proce
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>add a HTTP header value to the response</p>
 
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">addHeader</span><span class="p">(</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">value</span><span class="p">:</span> <span class="kt">String</span> <span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC6Dynamo20DynamoHTTPConnection11contentTypeSS"></a>
+                    <a name="//apple_ref/swift/Property/contentType" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC6Dynamo20DynamoHTTPConnection11contentTypeSS">contentType</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>getter(request)/setter(response) for content mime type</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">contentType</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC6Dynamo20DynamoHTTPConnection13contentLengthGSqSi_"></a>
+                    <a name="//apple_ref/swift/Property/contentLength" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC6Dynamo20DynamoHTTPConnection13contentLengthGSqSi_">contentLength</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>getter(rquest)/setter(response) for content length</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">contentLength</span><span class="p">:</span> <span class="kt">Int</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC6Dynamo20DynamoHTTPConnection10postStringFS0_FT_GSqSS_"></a>
+                    <a name="//apple_ref/swift/Method/postString()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo20DynamoHTTPConnection10postStringFS0_FT_GSqSS_">postString()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>POST data as String</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">postString</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">String</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC6Dynamo20DynamoHTTPConnection8postDataFS0_FT_GSqCSo6NSData_"></a>
+                    <a name="//apple_ref/swift/Method/postData()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo20DynamoHTTPConnection8postDataFS0_FT_GSqCSo6NSData_">postData()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>POST data as NSData</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">postData</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">NSData</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC6Dynamo20DynamoHTTPConnection8postJSONFS0_FT_GSqPSs9AnyObject__"></a>
+                    <a name="//apple_ref/swift/Method/postJSON()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo20DynamoHTTPConnection8postJSONFS0_FT_GSqPSs9AnyObject__">postJSON()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>POST data as JSON object</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">postJSON</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">AnyObject</span><span class="p">?</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -321,8 +606,16 @@ connects to read the standard HTTP headers ready to present to each of the proce
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>have broser set cookkie for this session/domain/path</p>
 
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">setCookie</span><span class="p">(</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">value</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">domain</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span> <span class="nv">path</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span> <span class="nv">expires</span><span class="p">:</span> <span class="kt">Int</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span> <span class="p">)</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -340,8 +633,16 @@ connects to read the standard HTTP headers ready to present to each of the proce
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>print a sring directly to browser</p>
 
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">rawPrint</span><span class="p">(</span> <span class="nv">output</span><span class="p">:</span> <span class="kt">String</span> <span class="p">)</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -359,8 +660,16 @@ connects to read the standard HTTP headers ready to present to each of the proce
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>print a string, sending HTTP headers if not already sent</p>
 
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">print</span><span class="p">(</span> <span class="nv">output</span><span class="p">:</span> <span class="kt">String</span> <span class="p">)</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -368,9 +677,9 @@ connects to read the standard HTTP headers ready to present to each of the proce
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FC6Dynamo20DynamoHTTPConnection5writeFS0_FCSo6NSDataT_"></a>
-                    <a name="//apple_ref/swift/Method/write(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FC6Dynamo20DynamoHTTPConnection5writeFS0_FCSo6NSDataT_">write(_:)</a>
+                    <a name="/s:FC6Dynamo20DynamoHTTPConnection8responseFS0_FSST_"></a>
+                    <a name="//apple_ref/swift/Method/response(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo20DynamoHTTPConnection8responseFS0_FSST_">response(_:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -378,8 +687,70 @@ connects to read the standard HTTP headers ready to present to each of the proce
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>set response as a whole from a String</p>
 
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">response</span><span class="p">(</span> <span class="nv">output</span><span class="p">:</span> <span class="kt">String</span> <span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC6Dynamo20DynamoHTTPConnection12responseJSONFS0_FPSs9AnyObject_T_"></a>
+                    <a name="//apple_ref/swift/Method/responseJSON(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo20DynamoHTTPConnection12responseJSONFS0_FPSs9AnyObject_T_">responseJSON(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>set response as a whole from JSON object</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">responseJSON</span><span class="p">(</span> <span class="nv">object</span><span class="p">:</span> <span class="kt">AnyObject</span> <span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC6Dynamo20DynamoHTTPConnection12responseDataFS0_FCSo6NSDataT_"></a>
+                    <a name="//apple_ref/swift/Method/responseData(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo20DynamoHTTPConnection12responseDataFS0_FCSo6NSDataT_">responseData(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>set response as a whole from NSData</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">responseData</span><span class="p">(</span> <span class="nv">data</span><span class="p">:</span> <span class="kt">NSData</span> <span class="p">)</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -397,27 +768,16 @@ connects to read the standard HTTP headers ready to present to each of the proce
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>flush any buttered print() output to browser</p>
 
                       </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:FC6Dynamo20DynamoHTTPConnection10remoteAddrFS0_FT_SS"></a>
-                    <a name="//apple_ref/swift/Method/remoteAddr()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FC6Dynamo20DynamoHTTPConnection10remoteAddrFS0_FT_SS">remoteAddr()</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Undocumented</p>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">flush</span><span class="p">()</span></code></pre>
 
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -427,8 +787,8 @@ connects to read the standard HTTP headers ready to present to each of the proce
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2015 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2015-06-28)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.2.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>&copy; 2015 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2015-07-11)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.2.2</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>

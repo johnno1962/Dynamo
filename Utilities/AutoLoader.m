@@ -1,9 +1,12 @@
 //
-//  aa.m
+//  AutoLoader.m
 //  Dynamo
 //
 //  Created by John Holdsworth on 16/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
+//
+//  Swizzles methods of new class versions loaded in a bundle onto original classes.
+//  Include in ".ssp" bundle projects.
 //
 
 #import <Foundation/Foundation.h>
@@ -66,10 +69,10 @@ struct _in_objc_class { Class meta, supr; void *cache, *vtable; struct _in_objc_
                     [self swizzle:'+' className:className onto:object_getClass(oldClass) from:object_getClass(newClass)];
                     [self swizzle:'-' className:className onto:oldClass from:newClass];
 
+                    struct _in_objc_class *newclass = (__bridge struct _in_objc_class *)newClass;
                     // if swift language class, copy across dispatch vtable
-                    struct _in_objc_class *newclass = (struct _in_objc_class *)(__bridge void *)newClass;
                     if ( (uintptr_t)newclass->internal & 0x1 ) {
-                        struct _in_objc_class *oldclass = (struct _in_objc_class *)(__bridge void *)oldClass;
+                        struct _in_objc_class *oldclass = (__bridge struct _in_objc_class *)oldClass;
                         size_t dispatchTableLength = oldclass->mdsize - offsetof(struct _in_objc_class, dispatch) - 2*sizeof(IMP);
                         memcpy( oldclass->dispatch, newclass->dispatch, dispatchTableLength );
                     }

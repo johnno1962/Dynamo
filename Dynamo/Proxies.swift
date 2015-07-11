@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Proxies.swift#28 $
+//  $Id: //depot/Dynamo/Dynamo/Proxies.swift#31 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -13,13 +13,13 @@
 import Foundation
 
 
-// MARK: Proxy Processors
+// MARK: Proxy Swiftlets
 
 /**
- Processor to allow a DynamoWebServer to act as a http: protocol proxy on the same port.
+     Swiftlet to allow a DynamoWebServer to act as a http: protocol proxy on the same port.
  */
 
-public class DynamoProxyProcessor : NSObject, DynamoProcessor {
+public class DynamoProxySwiftlet : NSObject, DynamoSwiftlet {
 
     var logger: ((String) -> ())?
 
@@ -43,19 +43,14 @@ public class DynamoProxyProcessor : NSObject, DynamoProcessor {
                 remotePath += "?"+query
             }
 
-            //println( "\(httpClient.method) \(remotePath) \(httpClient.httpVersion)" )
-            remoteConnection.rawPrint( "\(httpClient.method) \(remotePath) \(httpClient.httpVersion)\r\n" )
+            remoteConnection.rawPrint( "\(httpClient.method) \(remotePath) \(httpClient.version)\r\n" )
             for (name, value) in httpClient.requestHeaders {
-                //if name != "Connection" {
-                //println( "\(name): \(value)" )
                 remoteConnection.rawPrint( "\(name): \(value)\r\n" )
-                //}
             }
-            //remoteConnection.rawPrint( "Connection: close\r\n" )
             remoteConnection.rawPrint( "\r\n" )
             remoteConnection.flush()
 
-            DynamoSelector.relay( host, from: remoteConnection, to: httpClient, logger )
+            DynamoSelector.relay( host, from: httpClient, to: remoteConnection, logger )
         }
         
         return .Processed
@@ -64,27 +59,28 @@ public class DynamoProxyProcessor : NSObject, DynamoProcessor {
 }
 
 /**
-    Processor to allow a DynamoWebServer to act as a https: SSL connection protocol proxy on the same port.
-    This must be come before the DynamoProxyProcessor in the list of processors for the server for both to work.
+    Swiftlet to allow a DynamoWebServer to act as a https: SSL connection protocol proxy on the same port.
+    This must be come before the DynamoProxySwiftlet in the list of swiftlets for the server for both to work.
 */
 
-public class DynamoSSLProxyProcessor : DynamoProxyProcessor {
+public class DynamoSSLProxySwiftlet : DynamoProxySwiftlet {
 
     public override func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
-        if httpClient.method != "CONNECT" {
-            return .NotProcessed
+        if httpClient.method == "CONNECT" {
+
+            if let urlForDestination = NSURL( string: "https://\(httpClient.path)" ),
+                remoteConnection = DynamoHTTPConnection( url: urlForDestination ) {
+                    httpClient.rawPrint( "HTTP/1.0 200 Connection established\r\nProxy-agent: Dynamo/1.0\r\n\r\n" )
+                    httpClient.flush()
+                    DynamoSelector.relay( httpClient.path, from: httpClient, to: remoteConnection, logger )
+            }
+
+            return .Processed
         }
 
-        if let urlForDestination = NSURL( string: "https://\(httpClient.path)" ),
-            remoteConnection = DynamoHTTPConnection( url: urlForDestination ) {
-                httpClient.rawPrint( "HTTP/1.0 200 Connection established\r\nProxy-agent: Dynamo/1.0\r\n\r\n" )
-                httpClient.flush()
-                DynamoSelector.relay( httpClient.path, from: remoteConnection, to: httpClient, logger )
-        }
-
-        return .Processed
+        return .NotProcessed
     }
-    
+
 }
 
 // MARK: "select()" based fd switching
@@ -93,7 +89,7 @@ var dynamoSelector: DynamoSelector?
 private let selectBitsPerFlag: Int32 = 32
 private let selectShift: Int32 = 5
 private let selectBitMask: Int32 = (1<<selectShift)-1
-private var dynamoQueueLock: OSSpinLock = OS_SPINLOCK_INIT
+private var dynamoQueueLock = OS_SPINLOCK_INIT
 
 func FD_ZERO( flags: UnsafeMutablePointer<Int32> ) {
     memset( flags, 0, sizeof(fd_set) )
@@ -147,7 +143,7 @@ final class DynamoSelector {
         var writeFlags = UnsafeMutablePointer<Int32>( malloc( sizeof(fd_set) ) )
         var errorFlags = UnsafeMutablePointer<Int32>( malloc( sizeof(fd_set) ) )
 
-        var buffer = [Int8](count: 32*1024, repeatedValue: 0)
+        var buffer = [Int8](count: 2*1024, repeatedValue: 0)
         var timeout = timeval()
 
         while true {
@@ -155,12 +151,14 @@ final class DynamoSelector {
             OSSpinLockLock( &dynamoQueueLock )
             while queue.count != 0 {
                 let (label,from,to) = queue.removeAtIndex(0)
-                to.label = "<- \(label)"
-                from.label = "-> \(label)"
+                to.label = "-> \(label)"
+                from.label = "<- \(label)"
 
-                var flags = fcntl( to.clientSocket, F_GETFL, 0 )
-                flags |= O_NONBLOCK
-                fcntl( to.clientSocket, F_SETFL, flags )
+                if label == "surrogate" {
+                    var flags = fcntl( to.clientSocket, F_GETFL, 0 )
+                    flags |= O_NONBLOCK
+                    fcntl( to.clientSocket, F_SETFL, flags )
+                }
 
                 readMap[from.clientSocket] = to
                 readMap[to.clientSocket] = from
@@ -270,6 +268,7 @@ final class DynamoSelector {
                         else {
                             writer.writeBuffer.replaceBytesInRange( NSMakeRange( 0, bytesWritten ), withBytes: nil, length: 0 )
                         }
+
                         if writer.writeBuffer.length == 0 {
                             writeMap.removeValueForKey( writer.clientSocket )
                             if let reader = readMap[writeFD] {
@@ -292,11 +291,9 @@ final class DynamoSelector {
     }
     
     private func close( fd: Int32 ) {
-        let writer = readMap[fd]
-        let reader = writer != nil ? readMap[writer!.clientSocket] : nil
-        if writer != nil {
-            readMap.removeValueForKey( writer!.clientSocket )
-            writeMap.removeValueForKey( writer!.clientSocket )
+        if let writer = readMap[fd] {
+            readMap.removeValueForKey( writer.clientSocket )
+            writeMap.removeValueForKey( writer.clientSocket )
         }
         readMap.removeValueForKey( fd )
         writeMap.removeValueForKey( fd )

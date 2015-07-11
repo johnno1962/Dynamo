@@ -8,8 +8,8 @@ import Dynamo
 
  private let i = 99 
 
-@objc (NumberGuesserProcessor)
-public class NumberGuesserProcessor: DynamoSessionBasedApplication {
+@objc (NumberGuesserSwiftlet)
+public class NumberGuesserSwiftlet: DynamoSessionApplication {
 
 
     private let number = Int(arc4random()%100)+1
@@ -33,7 +33,7 @@ response += "        <h3>You're right!</h3>\n        <input type=\"submit\" valu
             history.append( "\(guess) is too high" )
         }
     } 
-response += "    <h3>I'm thinking of a number between 1 and 100</h3>\n    "
+response += "    <h3>Thinking of a number between 1 and 100..</h3>\n    "
  for try in history { 
 response += "        \(try)<br>\n    "
  } 

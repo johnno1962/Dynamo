@@ -21,7 +21,7 @@
             history.append( "\(guess) is too high" )
         }
     } %>
-    <h3>I'm thinking of a number between 1 and 100</h3>
+    <h3>Thinking of a number between 1 and 100..</h3>
     <% for try in history { %>
         \(try)<br>
     <% } %>

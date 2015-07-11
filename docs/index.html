@@ -12,7 +12,7 @@
     <a title="  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html"> Docs</a> (4% documented)</p>
+        <p><a href="index.html"> Docs</a> (15% documented)</p>
         <p class="header-right"><a href=""><img src="img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -30,43 +30,43 @@
           <a href="Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Classes/DynamoApplicationProcessor.html">DynamoApplicationProcessor</a>
+                <a href="Classes/DynamoApplicationSwiftlet.html">DynamoApplicationSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoDocumentProcessor.html">DynamoDocumentProcessor</a>
+                <a href="Classes/DynamoBundleSwiftlet.html">DynamoBundleSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoExampleAppProcessor.html">DynamoExampleAppProcessor</a>
+                <a href="Classes/DynamoDocumentSwiftlet.html">DynamoDocumentSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoHTMLAppProcessor.html">DynamoHTMLAppProcessor</a>
+                <a href="Classes/DynamoExampleAppSwiftlet.html">DynamoExampleAppSwiftlet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/DynamoHTMLAppSwiftlet.html">DynamoHTMLAppSwiftlet</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/DynamoHTTPConnection.html">DynamoHTTPConnection</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoLoggingProcessor.html">DynamoLoggingProcessor</a>
+                <a href="Classes/DynamoLoggingSwiftlet.html">DynamoLoggingSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoProxyProcessor.html">DynamoProxyProcessor</a>
+                <a href="Classes/DynamoProxySwiftlet.html">DynamoProxySwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoReloadingProcessor.html">DynamoReloadingProcessor</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Classes/DynamoSSLProxyProcessor.html">DynamoSSLProxyProcessor</a>
+                <a href="Classes/DynamoSSLProxySwiftlet.html">DynamoSSLProxySwiftlet</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/DynamoSSLWebServer.html">DynamoSSLWebServer</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoSessionBasedApplication.html">DynamoSessionBasedApplication</a>
+                <a href="Classes/DynamoServerPagesSwiftlet.html">DynamoServerPagesSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoSessionProcessor.html">DynamoSessionProcessor</a>
+                <a href="Classes/DynamoSessionApplication.html">DynamoSessionApplication</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoSwiftServerPagesProcessor.html">DynamoSwiftServerPagesProcessor</a>
+                <a href="Classes/DynamoSessionSwiftlet.html">DynamoSessionSwiftlet</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/DynamoWebServer.html">DynamoWebServer</a>
@@ -87,9 +87,6 @@
               </li>
               <li class="nav-group-task">
                 <a href="Global Variables.html#/s:v6Dynamo27dynanmoDefaultSessionExpirySd">dynanmoDefaultSessionExpiry</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Global Variables.html#/s:v6Dynamo26sessionExpiryCheckIntervalSd">sessionExpiryCheckInterval</a>
               </li>
             </ul>
           </li>
@@ -116,10 +113,10 @@
           <a href="Protocols.html">Protocols</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Protocols/DynamoApplicationProtoccol.html">DynamoApplicationProtoccol</a>
+                <a href="Protocols/DynamoBrowserSwiftlet.html">DynamoBrowserSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="Protocols/DynamoProcessor.html">DynamoProcessor</a>
+                <a href="Protocols/DynamoSwiftlet.html">DynamoSwiftlet</a>
               </li>
             </ul>
           </li>
@@ -141,9 +138,9 @@ and select either the Simple Game TickTackToe or the Number Guesser example. Mod
 souces in their bundle projects and build the project. The changes should take effect without
 having to restart the server or affecting the object&rsquo;s state.</p>
 
-<p>Testing with (JMeter)[<a href="http://jmeter.apache.org/">http://jmeter.apache.org/</a>] as shown Dynamo can serve 12,000 requests per minute
+<p>Testing with <a href="http://jmeter.apache.org/">JMeter</a> as shown Dynamo can serve 12,000 requests per minute
 and 6,000 requests per minute for an SSL server. For further information about the classes and protools
-that make up Dynamo you consult the jazzy docs <a href="http://johnholdsworth.com/dynamo/docs/">here</a>.</p>
+that make up Dynamo please consult the jazzy docs <a href="http://johnholdsworth.com/dynamo/docs/">here</a>.</p>
 
 <p>Incorporating the DynamoWebServer in your web server or application is simple. The initialiser
 takes a port number and a list of <q>processors</q> (applications or document processors)
@@ -162,6 +159,16 @@ option of processing them. The basic code pattern for initialisation in your app
     ] )
 
     webView.mainFrame.loadRequest( NSURLRequest( URL: NSURL( string: "http://localhost:\(serverPort)" )! ) )
+</code></pre>
+
+<p>Bring it into your project with a Podfile something like:</p>
+<pre class="highlight plaintext"><code>    use_frameworks!
+
+    target "&lt;project&gt;" do
+
+        pod 'Dynamo', :git =&gt; 'https://github.com/johnno1962/Dynamo.git'
+
+    end
 </code></pre>
 
 <p>See OSX/AppDelegate.swift or iOS/AppDelegate.m in the example project for
@@ -201,15 +208,12 @@ functions to generate balanced HTML tags easily using functions. for example:</p
 <a href='#design' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='design'>Design</h3>
 
 <p>DynamoWebServer has been implemented using BSD sockets rather than Apple&rsquo;s CFSocket for simplicity and speed.
-This should also help in any eventual port to Linux. There is an alternate NSStream based version of 
-DynamoHTTPConnection but it didn&rsquo;t seem to cope at all well with many simultaneous connections. 
-Besides, it is heavily dependant on the foundation NSRunLoop unlikely to prove portable.</p>
-
-<p>One thing CFSocket/NSStreams does provide however is support for an SSL connection so a way had to be found
-to turn the <q>push</q> of CFSockets to the <q>pull</q> of the Dynamo code. The solution was to run a separate CFSocket
-based SSL server as a proxy relaying decrypted data to a <q>surrogate</q> Dynamo server on localhost satisfying both 
-architectures. The code to generate the required certificates in DDKeychain.[nm], slightly modified from
-robbiehanson&rsquo;s <a href="https://github.com/robbiehanson/CocoaHTTPServer">CocoaHTTPServer</a> under the following license:</p>
+This should also help in any eventual port to Linux. One thing CFSocket/NSStreams does provide however is support
+for an SSL connection so a way had to be found to turn the <q>push</q> of CFSockets to the <q>pull</q> of the Dynamo code.
+The solution was to run a separate CFSocket based SSL server as a proxy relaying decrypted data to a <q>surrogate</q> 
+Dynamo server on localhost thus satisfying both architectures. The code to generate the required certificates in
+DDKeychain.[nm], slightly modified from robbiehanson&rsquo;s <a href="https://github.com/robbiehanson/CocoaHTTPServer">CocoaHTTPServer</a>
+under the following license:</p>
 <pre class="highlight plaintext"><code>Software License Agreement (BSD License)
 
 Copyright (c) 2011, Deusty, LLC
@@ -230,8 +234,8 @@ written permission of Deusty, LLC.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </code></pre>
 
-<p>Dynamic content can be coded entirely in Swift and one interesting use case is that it
-can be used inside an iOS or OS X app. This allows you to write a <q>lag free</q> portable web 
+<p>Dynamic content can be coded entirely in Swift and perhaps the most interesting use case is that
+it can be used inside an iOS or OS X app. This allows you to write a <q>lag free</q> portable web 
 interface connecting to the embedded server on the local device rather than a remote server. 
 This is shown in the two examples included in the release.</p>
 
@@ -262,8 +266,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2015 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2015-06-28)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.2.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>&copy; 2015 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2015-07-11)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.2.2</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>

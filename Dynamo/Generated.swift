@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Generated.swift#6 $
+//  $Id: //depot/Dynamo/Dynamo/Generated.swift#9 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -29,7 +29,11 @@ private func htmlEscape( attrValue: String ) -> String {
     a( ["href"="htp://google.com"], "link text" ) becomes "<a href='http//google.com'>link text</a>".
  */
 
-public class DynamoHTMLAppProcessor : DynamoApplicationProcessor {
+public class DynamoHTMLAppSwiftlet : DynamoApplicationSwiftlet {
+
+    /**
+        Opens and closes and HTHL tag with the specidied content. If the content is null the tag is only opened.
+     */
 
     public final func tag( name: String, attributes: [String: String]?, content: String? ) -> String {
         var html = "<"+name
@@ -916,10 +920,10 @@ public class DynamoHTMLAppProcessor : DynamoApplicationProcessor {
     public final func Select( _ content: String? = "" ) -> String {
         return tag( "select", attributes: nil, content: content )
     }
-    public final func Select( attributes: [String: String], _ content: String? = "" ) -> String {
+    public final func select( attributes: [String: String], _ content: String? = "" ) -> String {
         return tag( "select", attributes: attributes, content: content )
     }
-    public final func _Select() -> String {
+    public final func _select() -> String {
         return "</select>"
     }
     public final func small( _ content: String? = "" ) -> String {
