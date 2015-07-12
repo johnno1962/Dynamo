@@ -30,7 +30,8 @@ desired on server startup.
     }
 ```
 
-The Swiftlets included in the framework are as follows
+For further information about the classes and protools that make up Dynamo please consult the jazzy docs
+[here](http://johnholdsworth.com/dynamo/docs/). The Swiftlets included in the framework are as follows:
 
 ### DynamoDocumentSwiftlet
 
