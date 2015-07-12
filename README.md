@@ -1,42 +1,98 @@
 
 # Dynamo - Dynamic Swift Web Server
 
-Dynamo is a high performance, minimal, Swift implementation of a  Web server supporting SSL that 
-can also be used in Objective-C applications. Dynamic content can be provided in what you could
-call "swiftlets" which are dynamically loadable bundles in your document root. These bundles
-hot-swap when modified using method Swizzling so the server does not have to be restarted.
+Starting this project the intention was to code the simplest possible Web Server entirely
+in Swift. Unfortunately I got a bit carried away adding features and besides this spot has been
+capably occupied by the [swifter](https://github.com/glock45/swifter) server along with it's
+Swift syntactic sugar.
 
-To see dynamic loading in action, run the DynamoApp target and browse to http://localhost:8080
-and select either the Simple Game TickTackToe or the Number Guesser example. Modify the
-souces in their bundle projects and build the project. The changes should take effect without
-having to restart the server or affecting the object's state.
+So.. while Dynamo can be used in an iOS application as is demonstrated in this project, the focus
+has turned to the server side to set up a simple framework inside which it is possible to experiment
+with SSL, Proxies and what you could call "Swift Server Pages" which are loadable bundles of code
+placed in the document hierarchy.
 
-Testing with [JMeter](http://jmeter.apache.org/) as shown Dynamo can serve 12,000 requests per minute
-and 6,000 requests per minute for an SSL server. For further information about the classes and protools
-that make up Dynamo please consult the jazzy docs [here](http://johnholdsworth.com/dynamo/docs/).
-
-Incorporating the DynamoWebServer in your web server or application is simple. The initialiser
-takes a port number and a list of "swiftlets" (applications or document swiftlets)
-that will each be presented the incoming requests in the order specified and have the
-option of processing them. The basic code pattern for initialisation in your app delegate is:
+The Dynamo server core is based on "Swiftlets", instances implementing the DynamoSwiftlet which are
+presented with incoming HTTP requests from the browser and can choose to process it in any manner it
+chooses. The developer passes in an array of swiftlet instances combining the features and applications 
+desired on server startup.
 
 ```Swift
+    @objc public protocol DynamoSwiftlet {
+
+        @objc func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed    
+    }
+
+    @objc public enum DynamoProcessed : Int {
+        case
+            NotProcessed, // does not recognise the request
+            Processed, // has processed the request
+            ProcessedAndReusable // "" and connection may be reused in HTTP/1.1
+    }
+```
+
+The Swiftlets included in the framework are as follows
+
+### DynamoDocumentSwiftlet
+
+The default swiftlet to serve documents from ~/Sites/host:port or the applications resources directory for iOS.
+
+### DynamoProxySwiftlet, DynamoSSLProxySwiftlet
+
+Dynamo can act as a proxy server logging what can be a surprising about of traffic from your browser.
+
+### DynamoApplicationSwiftlet, DynamoHTMLAppSwiftlet, DynamoSessionSwiftlet
+
+DynamoApplicationSwiftlet is the abstract superclass of all "application" swiftlets parsing browser GET and POST
+parameters and any Cookies. DynamoHTMLAppSwiftlet adds methods for to generate balanced text for all known HTML
+tags so they can be generated easily. DynamoSessionSwiftlet adds the ability to have an application Swiftlet
+created separately for each unique web user using Cookies.
+
+### DynamoBundleSwiftlet, DynamoServerPagesSwiftlet
+
+DynamoBundleSwiftlet, loads a swiftlet from a bundle with extension ".ssp" in an OSX application's resources.
+A simple python script can generate the Swift source for the bundle from a ".shtml" mixing HTML and Swift
+language. The DynamoServerPagesSwiftlet takes this a step further where the bundle is loaded from the
+document root for the sever when used from the command line. If the bundle is updated for new functionality,
+provided it contains the "AutoLoader.m" stub the new code will be "swizzled" into operation.
+
+### DynamoExampleAppSwiftlet, TickTackToe, NumberGuesser
+
+The DynamoExampleAppSwiftlet is used in the tests for checking character encoding in GET and POST
+form submission. TickTackToe is an example .ssp application in a bundle target. NumberGuesser is 
+implemented as a .shtml template compiled into swift code by the Utilities/sspcompiler.py script.
+
+### DynamoWebServer, DynamoSSLWebServer severs.
+
+Consult OSX/AppDelegate.swift or iOS/AppDelegate.m of the OSX and iOS targets for how to create
+instances of these classes. 
+
+```Swift
+    // create shared swiftlet for server applications
+    let exampleTableGeneratorApp = DynamoExampleAppSwiftlet( pathPrefix: "/example" )
+    let tickTackToeGame = DynamoBundleSwiftlet( pathPrefix: "/ticktacktoe", bundleName: "TickTackToe" )!
+
+    let logger = {
+        (msg: String) in
+        println( msg )
+    }
+
     // create non-SSL server/proxy on 8080
-    let serverPort: UInt16 = 8080
     DynamoWebServer( portNumber: serverPort, swiftlets: [
         DynamoLoggingSwiftlet( logger: dynamoTrace ),
         exampleTableGeneratorApp,
         tickTackToeGame,
         DynamoSSLProxySwiftlet( logger: logger ),
         DynamoProxySwiftlet( logger: logger ),
-        DynamoSwiftServerPagesSwiftlet( documentRoot: documentRoot ),
+        DynamoServerPagesSwiftlet( documentRoot: documentRoot ),
         DynamoDocumentSwiftlet( documentRoot: documentRoot )
     ] )
-
-    webView.mainFrame.loadRequest( NSURLRequest( URL: NSURL( string: "http://localhost:\(serverPort)" )! ) )
 ```
 
-Bring it into your project with a Podfile something like:
+Creating the instance is sufficient for the server to start and run in it's own threads.
+There is an additional "Daemon" target creating a command line version of the sever which should
+be run from inside the DynamoApp.app's resources so it can find the Dynamo framework.
+
+The Dynamo framework has a .podspec file so it can be brought into your project with the following:
 
 ```
     use_frameworks!
@@ -48,86 +104,34 @@ Bring it into your project with a Podfile something like:
     end
 ```
 
-See OSX/AppDelegate.swift or iOS/AppDelegate.m in the example project for
-further details.  A swiftlet runs in it's own thread and 
-implements the "DynamoSwiftlet" protocol that has the following signature:
+Running an SSL server requires set of certificates which is generated using code slightly modified
+from robbiehanson's [CocoaHTTPServer](https://github.com/robbiehanson/CocoaHTTPServer) under a
+BSD license contained in the Utilities/DDKeyChain.[hm] source.
 
-```Swift
-    @objc public enum DynamoProcessed : Int {
-    case
-        NotProcessed, // does not recognise the request
-        Processed, // has processed the request
-        ProcessedAndReusable // "" and connection may be reused
-    }
+## Performance
 
-    @objc public protocol DynamoSwiftlet {
+Testing with [JMeter](http://jmeter.apache.org/) has shown Dynamo is capable of serving:
 
-        @objc func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed    
-    }
-```
+40,000 requests per minute for a static file in the documents directory (25 threads)
 
-A subclass of DynamoApplicationSwiftlet, "DynamoHTMLAppSwiftlet" provides
-functions to generate balanced HTML tags easily using functions. for example:
+40,000 requests per minute for the NumberGuesser which reuses connections (see below)
 
-```Swift
-    out.print( html( nil ) + head( title( "Table Example" ) +
-        style( "body, table { font: 10pt Arial" ) ) + body( nil ) )
+18,000 requests per minute for TickTckToe which does not reuse connections (see below)
 
-    if parameters["width"] == nil {
-        out.print( h3( "Quick table creation example" ) )
-        out.print(
-            form( ["method":"GET"],
-                table(
-                    tr( td( "Width: " ) + td( input( ["type":"textfield", "name":"width"] ) ) ) +
-                    tr( td( "Height: " ) + td( input( ["type":"textfield", "name":"height"] ) ) ) +
-                    tr( td( ["colspan":"2"], input( ["type": "submit"] )) )
-                )
-            )
-        )
-    }
-```
+12,000 requests per minute for NumberGuesser SSL
 
-### Design
+6,000 requests per minte TickTackToe SSL
 
-DynamoWebServer has been implemented using BSD sockets rather than Apple's CFSocket for simplicity and speed.
-This should also help in any eventual port to Linux. One thing CFSocket/NSStreams does provide however is support
-for an SSL connection so a way had to be found to turn the "push" of CFSockets to the "pull" of the Dynamo code.
-The solution was to run a separate CFSocket based SSL server as a proxy relaying decrypted data to a "surrogate" 
-Dynamo server on localhost thus satisfying both architectures. The code to generate the required certificates in
-DDKeychain.[nm], slightly modified from robbiehanson's [CocoaHTTPServer](https://github.com/robbiehanson/CocoaHTTPServer)
-under the following license:
-
-    Software License Agreement (BSD License)
-
-    Copyright (c) 2011, Deusty, LLC
-    All rights reserved.
-
-    Redistribution and use of this software in source and binary forms,
-    with or without modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above
-    copyright notice, this list of conditions and the
-    following disclaimer.
-
-    * Neither the name of Deusty nor the names of its
-    contributors may be used to endorse or promote products
-    derived from this software without specific prior
-    written permission of Deusty, LLC.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-Dynamic content can be coded entirely in Swift and perhaps the most interesting use case is that
-it can be used inside an iOS or OS X app. This allows you to write a "lag free" portable web 
-interface connecting to the embedded server on the local device rather than a remote server. 
-This is shown in the two examples included in the release.
-
-![Icon](http://johnholdsworth.com/dynamo/dynamo2.png)
+Reusing connections is important for large numbers of requests from the same client. The is
+achieved by using a single DynamoHTTPConnection.response( html ) method call rather than
+individual calls to DynamoHTTPConnection.print( html )'s. The slower numbers for SSL are due
+to architectural constraints. The SSL sever acts as a decrypting proxy to an internal non-SSL
+server so it has roughly a half the maximum throughput.
 
 As ever, announcements of major commits to the repo will be made on twitter 
 [@Injection4Xcode](https://twitter.com/#!/@Injection4Xcode).
 
-Enjoy!
-
+s
 ### MIT License
 
 Copyright (C) 2015 John Holdsworth
