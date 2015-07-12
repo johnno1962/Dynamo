@@ -1,5 +1,4 @@
 Servers.swift
-	@objc public protocol DynamoSwiftlet
 	public var serverPort: UInt16 = 0
 	public convenience init?( portNumber: UInt16, swiftlets: [DynamoSwiftlet], localhostOnly: Bool = false )
 	public func dynamoTrace<T>( msg: T )

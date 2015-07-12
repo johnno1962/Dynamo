@@ -40,11 +40,10 @@ The default swiftlet to serve documents from ~/Sites/host:port or the applicatio
 
 Dynamo can act as a proxy server logging what can be a surprising about of traffic from your browser.
 
-### DynamoApplicationSwiftlet, DynamoHTMLAppSwiftlet, DynamoSessionSwiftlet
+### DynamoApplicationSwiftlet, DynamoSessionSwiftlet
 
 DynamoApplicationSwiftlet is the abstract superclass of all "application" swiftlets parsing browser GET and POST
-parameters and any Cookies. DynamoHTMLAppSwiftlet adds methods for to generate balanced text for all known HTML
-tags so they can be generated easily. DynamoSessionSwiftlet adds the ability to have an application Swiftlet
+parameters and any Cookies. DynamoSessionSwiftlet adds the ability to have an application Swiftlet
 created separately for each unique web user using Cookies.
 
 ### DynamoBundleSwiftlet, DynamoServerPagesSwiftlet
@@ -131,7 +130,6 @@ server so it has roughly a half the maximum throughput.
 As ever, announcements of major commits to the repo will be made on twitter 
 [@Injection4Xcode](https://twitter.com/#!/@Injection4Xcode).
 
-s
 ### MIT License
 
 Copyright (C) 2015 John Holdsworth
