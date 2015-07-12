@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Connection.swift#23 $
+//  $Id: //depot/Dynamo/Dynamo/Connection.swift#26 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -64,6 +64,9 @@ var webDateFormatter: NSDateFormatter = {
 
     private var responseHeaders = ""
     private var sentResponseHeaders = false
+
+    /** "defalte" respose when possible - less bandwidth but slow */
+    public var compressResponse = false
 
     /** whether Content-Length has bee supplied */
     var knowsResponseLength = false
@@ -177,6 +180,7 @@ var webDateFormatter: NSDateFormatter = {
                 responseHeaders = ""
                 sentResponseHeaders = false
                 knowsResponseLength = false
+                compressResponse = false
                 status = 200
 
                 while let line = readLine() {
@@ -322,9 +326,16 @@ var webDateFormatter: NSDateFormatter = {
 
     /** set response as a whole from NSData */
     public func responseData( data: NSData ) {
-        contentLength = data.length
+        var dout = data
+#if os(OSX)
+        if compressResponse && requestHeaders["Accept-Encoding"] == "gzip, deflate" {
+            dout = dout.deflate()
+            addHeader( "Content-Encoding", value: "deflate" )
+        }
+#endif
+        contentLength = dout.length
         sendResponseHeaders()
-        write( data.bytes, count: data.length )
+        write( dout.bytes, count: dout.length )
     }
 
     /** flush any buttered print() output to browser */
@@ -407,4 +418,15 @@ public func addressForHost( hostname: String, port: UInt16 ) -> sockaddr? {
     }
     
     return sockaddrTmp
+}
+
+extension NSData {
+
+    /**
+        Swizzled/overridden by NSData+defalte.m
+     */
+    func deflate() -> NSData {
+        return self
+    }
+
 }

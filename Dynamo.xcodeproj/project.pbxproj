@@ -15,6 +15,8 @@
 		BB0156A41B508D33007044A7 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0156A21B508C8A007044A7 /* Document.swift */; };
 		BB0156A61B508E21007044A7 /* Example.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0156A51B508E21007044A7 /* Example.swift */; };
 		BB0156A71B508F04007044A7 /* Example.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0156A51B508E21007044A7 /* Example.swift */; };
+		BB0156AD1B51796E007044A7 /* NSData+deflate.m in Sources */ = {isa = PBXBuildFile; fileRef = BB0156AC1B51796E007044A7 /* NSData+deflate.m */; };
+		BB0156AF1B517E17007044A7 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BB0156AE1B517E17007044A7 /* libz.dylib */; };
 		BB03E7561B35E20C00025085 /* AutoLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E551B3576F40001EDCA /* AutoLoader.m */; };
 		BB03E7571B35EA4A00025085 /* DDKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E581B3576F40001EDCA /* DDKeychain.m */; };
 		BB4B4E191B355F0F0001EDCA /* Servers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4B4E181B355F0F0001EDCA /* Servers.swift */; };
@@ -158,6 +160,8 @@
 		BB01569F1B50562E007044A7 /* Swiftlets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Swiftlets.swift; sourceTree = "<group>"; };
 		BB0156A21B508C8A007044A7 /* Document.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
 		BB0156A51B508E21007044A7 /* Example.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Example.swift; sourceTree = "<group>"; };
+		BB0156AC1B51796E007044A7 /* NSData+deflate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+deflate.m"; sourceTree = "<group>"; };
+		BB0156AE1B517E17007044A7 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		BB4B4E181B355F0F0001EDCA /* Servers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Servers.swift; sourceTree = "<group>"; };
 		BB4B4E1A1B355F350001EDCA /* Proxies.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Proxies.swift; sourceTree = "<group>"; };
 		BB4B4E1E1B355F610001EDCA /* Generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Generated.swift; sourceTree = "<group>"; };
@@ -226,6 +230,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB0156AF1B517E17007044A7 /* libz.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -368,6 +373,8 @@
 			isa = PBXGroup;
 			children = (
 				BBA52ECB1B3556C3006F12AC /* Info.plist */,
+				BB0156AE1B517E17007044A7 /* libz.dylib */,
+				BB0156AC1B51796E007044A7 /* NSData+deflate.m */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -879,6 +886,7 @@
 				BB0156A01B50562E007044A7 /* Swiftlets.swift in Sources */,
 				BB4B4E1B1B355F350001EDCA /* Proxies.swift in Sources */,
 				BB0156A31B508C8A007044A7 /* Document.swift in Sources */,
+				BB0156AD1B51796E007044A7 /* NSData+deflate.m in Sources */,
 				BB4B4E1F1B355F610001EDCA /* Generated.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

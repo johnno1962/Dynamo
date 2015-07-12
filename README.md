@@ -16,21 +16,21 @@ and 6,000 requests per minute for an SSL server. For further information about t
 that make up Dynamo please consult the jazzy docs [here](http://johnholdsworth.com/dynamo/docs/).
 
 Incorporating the DynamoWebServer in your web server or application is simple. The initialiser
-takes a port number and a list of "processors" (applications or document processors)
+takes a port number and a list of "swiftlets" (applications or document swiftlets)
 that will each be presented the incoming requests in the order specified and have the
 option of processing them. The basic code pattern for initialisation in your app delegate is:
 
 ```Swift
     // create non-SSL server/proxy on 8080
     let serverPort: UInt16 = 8080
-    DynamoWebServer( portNumber: serverPort, processors: [
-        DynamoLoggingProcessor( logger: dynamoTrace ),
+    DynamoWebServer( portNumber: serverPort, swiftlets: [
+        DynamoLoggingSwiftlet( logger: dynamoTrace ),
         exampleTableGeneratorApp,
         tickTackToeGame,
-        DynamoSSLProxyProcessor( logger: logger ),
-        DynamoProxyProcessor( logger: logger ),
-        DynamoSwiftServerPagesProcessor( documentRoot: documentRoot ),
-        DynamoDocumentProcessor( documentRoot: documentRoot )
+        DynamoSSLProxySwiftlet( logger: logger ),
+        DynamoProxySwiftlet( logger: logger ),
+        DynamoSwiftServerPagesSwiftlet( documentRoot: documentRoot ),
+        DynamoDocumentSwiftlet( documentRoot: documentRoot )
     ] )
 
     webView.mainFrame.loadRequest( NSURLRequest( URL: NSURL( string: "http://localhost:\(serverPort)" )! ) )
@@ -49,8 +49,8 @@ Bring it into your project with a Podfile something like:
 ```
 
 See OSX/AppDelegate.swift or iOS/AppDelegate.m in the example project for
-further details.  A processor runs in it's own thread and 
-implements the "DynamoProcessor" protocol that has the following signature:
+further details.  A swiftlet runs in it's own thread and 
+implements the "DynamoSwiftlet" protocol that has the following signature:
 
 ```Swift
     @objc public enum DynamoProcessed : Int {
@@ -60,13 +60,13 @@ implements the "DynamoProcessor" protocol that has the following signature:
         ProcessedAndReusable // "" and connection may be reused
     }
 
-    @objc public protocol DynamoProcessor {
+    @objc public protocol DynamoSwiftlet {
 
         @objc func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed    
     }
 ```
 
-A subclass of DynamoApplicationProcessor, "DynamoHTMLAppProcessor" provides
+A subclass of DynamoApplicationSwiftlet, "DynamoHTMLAppSwiftlet" provides
 functions to generate balanced HTML tags easily using functions. for example:
 
 ```Swift

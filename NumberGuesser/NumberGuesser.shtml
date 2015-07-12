@@ -6,7 +6,11 @@
 %>
 <body>
     <form method="POST" action="\(out.path)">
-    <% if let guess = parameters["guess"]?.toInt() {
+    <%
+        // response will be "deflated" if possible
+        out.compressResponse = true
+
+        if let guess = parameters["guess"]?.toInt() {
         if guess == number {
             clearSession() %>
         <h3>You're right!</h3>

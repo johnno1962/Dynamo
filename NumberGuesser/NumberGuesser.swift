@@ -20,7 +20,11 @@ public class NumberGuesserSwiftlet: DynamoSessionApplication {
         var response = ""
 
         response += "<html>\n<body>\n    <form method=\"POST\" action=\"\(out.path)\">\n    "
- if let guess = parameters["guess"]?.toInt() {
+
+        // response will be "deflated" if possible
+        out.compressResponse = true
+
+        if let guess = parameters["guess"]?.toInt() {
         if guess == number {
             clearSession() 
 response += "        <h3>You're right!</h3>\n        <input type=\"submit\" value=\"Play again\">\n        <a href=\"/\">Back to menu</a>\n            "
