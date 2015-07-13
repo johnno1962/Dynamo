@@ -21,37 +21,43 @@ class DynamoAppTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
-    
+
+    func letWebKitDoItsThing() {
+        NSRunLoop.mainRunLoop().runUntilDate( NSDate( timeIntervalSinceNow: 0.5 ) )
+    }
+
+    func bodyContains( reference: String ) -> Bool {
+        if let html = evalJavaScript( "document.body.outerHTML" ) {
+            return html.rangeOfString( reference ) != nil
+        }
+        return false
+
+    }
+
     func testFormSubmission() {
         // This is an example of a functional test case.
         let problematicString = "Hello Test £ + & % ? 今日は"
         let reference = problematicString.stringByReplacingOccurrencesOfString( "&", withString: "&amp;" )
 
-        evalJavaScript( "document.location = 'http://localhost:8080/example'" )
+        letWebKitDoItsThing()
 
-        NSRunLoop.mainRunLoop().runUntilDate( NSDate( timeIntervalSinceNow: 0.5 ) )
+        evalJavaScript( "document.location = '/example'" )
+
+        letWebKitDoItsThing()
 
         evalJavaScript( "document.forms[0].title.value = '\(problematicString)'" )
         evalJavaScript( "document.forms[0].width.value = 10" )
         evalJavaScript( "document.forms[0].height.value = 10" )
         evalJavaScript( "document.forms[0].submit()" )
 
-        NSRunLoop.mainRunLoop().runUntilDate( NSDate( timeIntervalSinceNow: 0.5 ) )
-
-        let bodyContains: String -> Bool = {
-            (reference) in
-            if let html = evalJavaScript( "document.body.outerHTML" ) {
-                return html.rangeOfString( reference ) != nil
-            }
-            return false
-        }
+        letWebKitDoItsThing()
 
         XCTAssert( bodyContains( "<h2>\(reference)</h2>" ), "GET method submission" )
 
         evalJavaScript( "document.forms[0].x5y5.value = '\(problematicString)'" )
         evalJavaScript( "document.forms[0].submit()" )
 
-        NSRunLoop.mainRunLoop().runUntilDate( NSDate( timeIntervalSinceNow: 0.5 ) )
+        letWebKitDoItsThing()
 
         XCTAssert( bodyContains( "<td>\(reference)</td>" ), "POST method submission" )
     }

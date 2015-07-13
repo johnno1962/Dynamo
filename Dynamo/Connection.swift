@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Connection.swift#26 $
+//  $Id: //depot/Dynamo/Dynamo/Connection.swift#30 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -329,8 +329,10 @@ var webDateFormatter: NSDateFormatter = {
         var dout = data
 #if os(OSX)
         if compressResponse && requestHeaders["Accept-Encoding"] == "gzip, deflate" {
-            dout = dout.deflate()
-            addHeader( "Content-Encoding", value: "deflate" )
+            if let deflated = dout.deflate() {
+                dout = deflated
+                addHeader( "Content-Encoding", value: "deflate" )
+            }
         }
 #endif
         contentLength = dout.length
@@ -423,10 +425,10 @@ public func addressForHost( hostname: String, port: UInt16 ) -> sockaddr? {
 extension NSData {
 
     /**
-        Swizzled/overridden by NSData+defalte.m
+        Swizzled/overridden by NSData+deflate.m
      */
-    func deflate() -> NSData {
-        return self
+    func deflate() -> NSData? {
+        return nil
     }
 
 }

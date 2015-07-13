@@ -359,11 +359,11 @@
 				BBA52ECC1B3556C3006F12AC /* Dynamo.h */,
 				BB4B4E181B355F0F0001EDCA /* Servers.swift */,
 				BB81640E1B38ADDB00E737AE /* Connection.swift */,
+				BB4B4E1A1B355F350001EDCA /* Proxies.swift */,
 				BB01569F1B50562E007044A7 /* Swiftlets.swift */,
 				BB4B4E1E1B355F610001EDCA /* Generated.swift */,
 				BB0156A21B508C8A007044A7 /* Document.swift */,
 				BB0156A51B508E21007044A7 /* Example.swift */,
-				BB4B4E1A1B355F350001EDCA /* Proxies.swift */,
 				BBA52ECA1B3556C3006F12AC /* Supporting Files */,
 			);
 			path = Dynamo;
