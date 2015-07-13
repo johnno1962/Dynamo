@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Servers.swift#39 $
+//  $Id: //depot/Dynamo/Dynamo/Servers.swift#42 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -56,52 +56,31 @@ let ntohs = htons
 public class DynamoWebServer : NSObject, NSStreamDelegate {
 
     private let serverSocket: Int32
+    private let swiftlets: [DynamoSwiftlet]
+
+    /** port allocated for server if specified as 0 */
     public var serverPort: UInt16 = 0
 
+    func wrapConnection( clientSocket: Int32 ) -> DynamoHTTPConnection? {
+        return DynamoHTTPConnection( clientSocket: clientSocket )
+    }
+
+    /** basic initialiser for Swift web server processing using array of swiftlets */
     public convenience init?( portNumber: UInt16, swiftlets: [DynamoSwiftlet], localhostOnly: Bool = false ) {
 
-        self.init( portNumber, localhostOnly: localhostOnly )
+        self.init( portNumber, swiftlets: swiftlets, localhostOnly: localhostOnly )
 
         if serverPort != 0 {
-            runConnectionHandler( {
-                (clientSocket: Int32) in
-
-                if let httpClient = DynamoHTTPConnection( clientSocket: clientSocket ) {
-
-                    while httpClient.readHeaders() {
-                        var processed = false
-
-                        for swiftlet in swiftlets {
-
-                            switch swiftlet.process( httpClient ) {
-                            case .NotProcessed:
-                                continue
-                            case .Processed:
-                                return
-                            case .ProcessedAndReusable:
-                                httpClient.flush()
-                                processed = true
-                                break
-                            }
-
-                            break
-                        }
-
-                        if !processed {
-                            httpClient.status = 400
-                            httpClient.response( "Invalid request: \(httpClient.method) \(httpClient.path) \(httpClient.version)" )
-                            return
-                        }
-                    }
-                }
-            } )
+            runConnectionHandler( httpConnectionHander )
         }
         else {
             return nil
         }
     }
 
-    init( _ portNumber: UInt16, localhostOnly: Bool ) {
+    init( _ portNumber: UInt16, swiftlets: [DynamoSwiftlet], localhostOnly: Bool ) {
+
+        self.swiftlets = swiftlets
 
         var ip4addr = sockaddr_in(sin_len: UInt8(sizeof(sockaddr_in)),
             sin_family: sa_family_t(AF_INET),
@@ -156,6 +135,38 @@ public class DynamoWebServer : NSObject, NSStreamDelegate {
         } )
     }
 
+    func httpConnectionHander( clientSocket: Int32 ) {
+
+        if let httpClient = self.wrapConnection( clientSocket ) {
+
+            while httpClient.readHeaders() {
+                var processed = false
+
+                for swiftlet in swiftlets {
+
+                    switch swiftlet.process( httpClient ) {
+                    case .NotProcessed:
+                        continue
+                    case .Processed:
+                        return
+                    case .ProcessedAndReusable:
+                        httpClient.flush()
+                        processed = true
+                        break
+                    }
+
+                    break
+                }
+
+                if !processed {
+                    httpClient.status = 400
+                    httpClient.response( "Invalid request: \(httpClient.method) \(httpClient.path) \(httpClient.version)" )
+                    return
+                }
+            }
+        }
+    }
+
 }
 
 // MARK: SSL https: Web Server
@@ -174,33 +185,43 @@ public class DynamoSSLWebServer : DynamoWebServer {
         where keyName is the name of hte SSL certificate in the local keychain.
      */
 
-    public init?( portNumber: UInt16, swiftlets: [DynamoSwiftlet], certs: [AnyObject]?, surrogate: String? = nil ) {
-        var surrogate = surrogate
+    let certs: [AnyObject]
 
-        if surrogate == nil {
-            // port number 0 uses any available port
-            if let surrogateServer = DynamoWebServer( portNumber: 0, swiftlets: swiftlets, localhostOnly: true ) {
-                dynamoLog( "Surrogate server on port \(surrogateServer.serverPort)" )
-                surrogate = "http://localhost:\(surrogateServer.serverPort)"
-            }
-        }
+    override func wrapConnection( clientSocket: Int32 ) -> DynamoHTTPConnection? {
+        return DynamoSSLConnection( sslSocket: clientSocket, certs: certs )
+    }
 
-        super.init( portNumber, localhostOnly: false )
+    /**
+        default initialiser for SSL server. Can proxy a "surrogate" non-SSL server given it's URL
+    */
+    public init?( portNumber: UInt16, swiftlets: [DynamoSwiftlet], certs: [AnyObject], surrogate: String? = nil ) {
+
+        self.certs = certs
+
+        super.init( portNumber, swiftlets: swiftlets, localhostOnly: false )
 
         if serverPort != 0 {
-            let surrogateURL = NSURL( string: surrogate! )!
-
-            runConnectionHandler( {
-                (clientSocket: Int32) in
-
-                if let sslConnection = DynamoSSLConnection( clientSocket, certs: certs ),
-                    localConnection = DynamoHTTPConnection( url: surrogateURL ) {
-                        DynamoSelector.relay( "surrogate", from: sslConnection, to: localConnection, dynamoTrace )
+            if surrogate != nil {
+                if let surrogateURL = NSURL( string: surrogate! ) {
+                    runConnectionHandler( sslProxyHandler( surrogateURL ) )
                 }
-            } )
+                else {
+                    dynamoLog( "Invalid surrogate URL: \(surrogate)" )
+                }
+            }
+            else {
+                runConnectionHandler( httpConnectionHander )
+            }
         }
         else {
             return nil
+        }
+    }
+
+    func sslProxyHandler( surrogateURL: NSURL )( clientSocket: Int32 ) {
+        if let sslConnection = DynamoSSLConnection( sslSocket: clientSocket, certs: certs ),
+            localConnection = DynamoHTTPConnection( url: surrogateURL ) {
+                DynamoSelector.relay( "surrogate", from: sslConnection, to: localConnection, dynamoTrace )
         }
     }
 
@@ -211,7 +232,7 @@ class DynamoSSLConnection: DynamoHTTPConnection, NSStreamDelegate {
     let inputStream: NSInputStream
     let outputStream: NSOutputStream
 
-    init?( _ sslSocket: Int32, certs: [AnyObject]? ) {
+    init?( sslSocket: Int32, certs: [AnyObject]? ) {
 
         var readStream:  Unmanaged<CFReadStream>?
         var writeStream: Unmanaged<CFWriteStream>?
@@ -242,20 +263,20 @@ class DynamoSSLConnection: DynamoHTTPConnection, NSStreamDelegate {
         return inputStream.hasBytesAvailable
     }
 
-    override func read(buffer: UnsafeMutablePointer<Void>, count: Int) -> Int {
+    override func _read( buffer: UnsafeMutablePointer<Void>, count: Int ) -> Int {
         return inputStream.read( UnsafeMutablePointer<UInt8>(buffer), maxLength: count )
     }
 
-    override func write(buffer: UnsafePointer<Void>, count: Int) -> Int {
+    override func _write(buffer: UnsafePointer<Void>, count: Int ) -> Int {
         return outputStream.write( UnsafePointer<UInt8>(buffer), maxLength: count )
     }
 
     override func receive( buffer: UnsafeMutablePointer<Void>, count: Int ) -> Int? {
-        return inputStream.hasBytesAvailable ? read( buffer, count: count ) :  nil
+        return inputStream.hasBytesAvailable ? _read( buffer, count: count ) :  nil
     }
 
     override func forward( buffer: UnsafePointer<Void>, count: Int ) -> Int? {
-        return outputStream.hasSpaceAvailable ? write( buffer, count: count ) : nil
+        return outputStream.hasSpaceAvailable ? _write( buffer, count: count ) : nil
     }
     
     deinit {
@@ -288,6 +309,7 @@ func setupSocket( socket: Int32 ) -> Bool {
     return true
 }
 
+/** default tracer for frequent messages */
 public func dynamoTrace<T>( msg: T ) {
     println( msg )
 }

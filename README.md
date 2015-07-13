@@ -118,15 +118,9 @@ Testing with [JMeter](http://jmeter.apache.org/) has shown Dynamo is capable of 
 
 18,000 requests per minute for TickTckToe which does not reuse connections (see below)
 
-12,000 requests per minute for NumberGuesser SSL
-
-6,000 requests per minte TickTackToe SSL
-
 Reusing connections is important for large numbers of requests from the same client. The is
 achieved by using a single DynamoHTTPConnection.response( html ) method call rather than
-individual calls to DynamoHTTPConnection.print( html )'s. The slower numbers for SSL are due
-to architectural constraints. The SSL sever acts as a decrypting proxy to an internal non-SSL
-server so it has roughly a half the maximum throughput.
+individual calls to method DynamoHTTPConnection.print( html ).
 
 As ever, announcements of major commits to the repo will be made on twitter 
 [@Injection4Xcode](https://twitter.com/#!/@Injection4Xcode).

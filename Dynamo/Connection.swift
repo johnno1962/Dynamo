@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Connection.swift#30 $
+//  $Id: //depot/Dynamo/Dynamo/Connection.swift#33 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -41,7 +41,6 @@ var webDateFormatter: NSDateFormatter = {
 
 @objc public class DynamoHTTPConnection : NSObject {
 
-    private let readFILE: UnsafeMutablePointer<FILE>, writeFILE: UnsafeMutablePointer<FILE>
     let clientSocket: Int32
 
     /** reeust method received frmo browser */
@@ -72,21 +71,15 @@ var webDateFormatter: NSDateFormatter = {
     var knowsResponseLength = false
 
     // data for DynamoSelector
-    let writeBuffer = NSMutableData()
-    var writeCounter = 0
+    let readBuffer = NSMutableData()
+    var readCounter = 0
     var readEOF = false
     var label = ""
 
     /** initialise connection to browser with socket */
     public init?( clientSocket: Int32 ) {
         self.clientSocket = clientSocket
-        readFILE = fdopen( clientSocket, "r" )
-        writeFILE = fdopen( clientSocket, "w" )
         super.init()
-        if clientSocket >= 0 && (readFILE == nil || writeFILE == nil) {
-            Strerror( "FILE open error on fd #\(clientSocket)" )
-            return nil;
-        }
     }
 
     /** initialise connection to reote host/port specified in URL */
@@ -129,13 +122,44 @@ var webDateFormatter: NSDateFormatter = {
     }
 
     /** read from browser/remote connection */
-    public func read( buffer: UnsafeMutablePointer<Void>, count: Int ) -> Int {
-        return readFILE == nil ? -1 : fread( buffer, 1, count, readFILE )
+    func _read( buffer: UnsafeMutablePointer<Void>, count: Int ) -> Int {
+        return recv( clientSocket, buffer, count, 0 )
     }
 
     /** write to browser/remote connection */
+    func _write( buffer: UnsafePointer<Void>, count: Int ) -> Int {
+        return send( clientSocket, buffer, count, 0 )
+    }
+
+    /** read the requested number of bytes */
+    public func read( buffer: UnsafeMutablePointer<Void>, count: Int ) -> Int {
+        var pos = 0, buffered = min( readBuffer.length, count )
+        if buffered != 0 {
+            memcpy( buffer, readBuffer.bytes, buffered )
+            readBuffer.replaceBytesInRange( NSMakeRange( 0, buffered ), withBytes: nil, length: 0 )
+            pos += count
+        }
+        while ( pos < count ) {
+            let bytesRead = _read( buffer+pos, count: count-pos )
+            if bytesRead <= 0 {
+                break
+            }
+            pos += bytesRead
+        }
+        return pos
+    }
+
+    /** write the requested number of bytes */
     public func write( buffer: UnsafePointer<Void>, count: Int ) -> Int {
-        return writeFILE == nil ? -1 : fwrite( buffer, 1, count, writeFILE )
+        var pos = 0
+        while ( pos < count ) {
+            let bytesWritten = _write( buffer+pos, count: count-pos )
+            if bytesWritten <= 0 {
+                break
+            }
+            pos += bytesWritten
+        }
+        return pos
     }
 
     /** add a HTTP header value to the response */
@@ -197,13 +221,24 @@ var webDateFormatter: NSDateFormatter = {
         return false
     }
 
-    private var buffer = [Int8](count: 100001, repeatedValue: 0)
+    var buffer = [Int8](count: 8192, repeatedValue: 0), eolChar = Int32(10)
 
     func readLine() -> String? {
-        if readFILE != nil &&
-            fgets( &buffer, Int32(buffer.count), readFILE ) != nil {
-                return String( UTF8String: buffer )?
+        while true {
+            let eol = memchr( readBuffer.bytes, eolChar, readBuffer.length )
+            if eol != nil {
+                UnsafeMutablePointer<Int8>(eol).memory = 0
+                let line = String( UTF8String: UnsafePointer<Int8>(readBuffer.bytes) )?
                     .stringByTrimmingCharactersInSet( NSCharacterSet.whitespaceAndNewlineCharacterSet() )
+                readBuffer.replaceBytesInRange( NSMakeRange(0,eol+1-readBuffer.bytes), withBytes:nil, length:0 )
+                return line
+            }
+
+            let bytesRead = _read( UnsafeMutablePointer<Void>(buffer), count: buffer.count )
+            if bytesRead <= 0 {
+                break ///
+            }
+            readBuffer.appendBytes( buffer, length: bytesRead )
         }
         return nil
     }
@@ -340,11 +375,8 @@ var webDateFormatter: NSDateFormatter = {
         write( dout.bytes, count: dout.length )
     }
 
-    /** flush any buttered print() output to browser */
+    /** flush any buffered print() output to browser */
     public func flush() {
-        if writeFILE != nil {
-            fflush( writeFILE )
-        }
     }
 
     var hasBytesAvailable: Bool {
@@ -360,8 +392,6 @@ var webDateFormatter: NSDateFormatter = {
     }
 
     deinit {
-        fclose( writeFILE )
-        fclose( readFILE )
         close( clientSocket )
     }
 

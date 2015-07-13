@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Swiftlets.swift#7 $
+//  $Id: //depot/Dynamo/Dynamo/Swiftlets.swift#8 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -122,10 +122,12 @@ public class DynamoLoggingSwiftlet : NSObject, DynamoSwiftlet {
 
     let logger: (String) -> Void
 
+    /** default initialiser for logging Swiftlet */
     public init( logger: ((String) -> Void) = dynamoTrace ) {
         self.logger = logger
     }
 
+    /** log current request */
     public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
         logger( "\(httpClient.method) \(httpClient.path) \(httpClient.version) - \(httpClient.remoteAddr)" )
         return .NotProcessed
