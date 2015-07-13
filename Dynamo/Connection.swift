@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Connection.swift#33 $
+//  $Id: //depot/Dynamo/Dynamo/Connection.swift#34 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -64,10 +64,10 @@ var webDateFormatter: NSDateFormatter = {
     private var responseHeaders = ""
     private var sentResponseHeaders = false
 
-    /** "defalte" respose when possible - less bandwidth but slow */
+    /** "deflate" respose when possible - less bandwidth but slow */
     public var compressResponse = false
 
-    /** whether Content-Length has bee supplied */
+    /** whether Content-Length has been supplied */
     var knowsResponseLength = false
 
     // data for DynamoSelector
