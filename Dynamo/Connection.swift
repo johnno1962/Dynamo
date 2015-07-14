@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Connection.swift#35 $
+//  $Id: //depot/Dynamo/Dynamo/Connection.swift#36 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -84,11 +84,11 @@ var webDateFormatter: NSDateFormatter = {
 
         var yes: u_int = 1, yeslen = socklen_t(sizeof(yes.dynamicType))
         if setsockopt( clientSocket, SOL_SOCKET, SO_NOSIGPIPE, &yes, yeslen ) < 0 {
-            Strerror( "Could not set SO_NOSIGPIPE" )
+            dynamoStrerror( "Could not set SO_NOSIGPIPE" )
             return nil
         }
         else if setsockopt( clientSocket, IPPROTO_TCP, TCP_NODELAY, &yes, yeslen ) < 0 {
-            Strerror( "Could not set TCP_NODELAY" )
+            dynamoStrerror( "Could not set TCP_NODELAY" )
             return nil
         }
     }
@@ -102,10 +102,10 @@ var webDateFormatter: NSDateFormatter = {
 
                 let remoteSocket = socket( Int32(addr.sa_family), SOCK_STREAM, 0 )
                 if remoteSocket < 0 {
-                    Strerror( "Could not obtain socket" )
+                    dynamoStrerror( "Could not obtain socket" )
                 }
                 else if connect( remoteSocket, &addr, socklen_t(addr.sa_len) ) < 0 {
-                    Strerror( "Could not connect to: \(host):\(port)" )
+                    dynamoStrerror( "Could not connect to: \(host):\(port)" )
                 }
                 else {
                     self.init( clientSocket: remoteSocket )
@@ -132,12 +132,12 @@ var webDateFormatter: NSDateFormatter = {
         return "address unknown"
     }
 
-    /** read from browser/remote connection */
+    /** raw read from browser/remote connection */
     func _read( buffer: UnsafeMutablePointer<Void>, count: Int ) -> Int {
         return recv( clientSocket, buffer, count, 0 )
     }
 
-    /** write to browser/remote connection */
+    /** raw write to browser/remote connection */
     func _write( buffer: UnsafePointer<Void>, count: Int ) -> Int {
         return send( clientSocket, buffer, count, 0 )
     }
@@ -201,6 +201,7 @@ var webDateFormatter: NSDateFormatter = {
 
     /** read/parse standard HTTP headers from browser */
     func readHeaders() -> Bool {
+
         if let request = readLine() {
 
             let components = request.componentsSeparatedByString( " " )
@@ -232,16 +233,16 @@ var webDateFormatter: NSDateFormatter = {
         return false
     }
 
-    var buffer = [Int8](count: 8192, repeatedValue: 0), eolChar = Int32(10)
+    var buffer = [Int8](count: 8192, repeatedValue: 0), newlineChar = Int32(10)
 
     func readLine() -> String? {
         while true {
-            let eol = memchr( readBuffer.bytes, eolChar, readBuffer.length )
-            if eol != nil {
-                UnsafeMutablePointer<Int8>(eol).memory = 0
+            let endOfLine = memchr( readBuffer.bytes, newlineChar, readBuffer.length )
+            if endOfLine != nil {
+                UnsafeMutablePointer<Int8>(endOfLine).memory = 0
                 let line = String( UTF8String: UnsafePointer<Int8>(readBuffer.bytes) )?
                     .stringByTrimmingCharactersInSet( NSCharacterSet.whitespaceAndNewlineCharacterSet() )
-                readBuffer.replaceBytesInRange( NSMakeRange(0,eol+1-readBuffer.bytes), withBytes:nil, length:0 )
+                readBuffer.replaceBytesInRange( NSMakeRange( 0, endOfLine+1-readBuffer.bytes ), withBytes:nil, length:0 )
                 return line
             }
 
@@ -267,8 +268,7 @@ var webDateFormatter: NSDateFormatter = {
 
     /** POST data as NSData */
     public func postData() -> NSData? {
-        if let postLength = contentLength,
-                data = NSMutableData( length: postLength ) {
+        if let postLength = contentLength, data = NSMutableData( length: postLength ) {
             if read( UnsafeMutablePointer<Void>(data.bytes), count: postLength ) == postLength {
                 return data
             }
@@ -290,8 +290,9 @@ var webDateFormatter: NSDateFormatter = {
         return nil
     }
 
-    /** have broser set cookkie for this session/domain/path */
+    /** have browser set cookie for this session/domain/path */
     public func setCookie( name: String, value: String, domain: String? = nil, path: String? = nil, expires: Int? = nil ) {
+
         if !sentResponseHeaders {
             var value = "\(name)=\(value.stringByAddingPercentEscapesUsingEncoding( NSUTF8StringEncoding )!)"
 
@@ -416,8 +417,10 @@ private var hostAddressCache = [String:UnsafeMutablePointer<sockaddr>]()
     Caching version of gethostbyname() returning a struct sockaddr for use in a connect() call
 */
 public func addressForHost( hostname: String, port: UInt16 ) -> sockaddr? {
+
     var addr: UnsafeMutablePointer<hostent> = nil
     var sockaddrTmp = hostAddressCache[hostname]?.memory
+
     if sockaddrTmp == nil {
         if let hostString = hostname.cStringUsingEncoding( NSUTF8StringEncoding ) {
             addr = gethostbyname( hostString )

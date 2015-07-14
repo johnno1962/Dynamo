@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Swiftlets.swift#8 $
+//  $Id: //depot/Dynamo/Dynamo/Swiftlets.swift#9 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -53,6 +53,7 @@ public class DynamoApplicationSwiftlet : NSObject, DynamoBrowserSwiftlet {
      */
 
     public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+
         if let pathInfo = httpClient.url.path {
 
             if pathInfo.hasPrefix( pathPrefix ) {
@@ -90,9 +91,9 @@ public class DynamoApplicationSwiftlet : NSObject, DynamoBrowserSwiftlet {
             if let divider = nameValue.rangeOfString( "=" )?.startIndex {
                 let value = nameValue.substringFromIndex( advance( divider, 1 ) )
                 if let value = value
-                    .stringByReplacingOccurrencesOfString( "+", withString: " " )
-                    .stringByRemovingPercentEncoding {
-                        parameters[nameValue.substringToIndex( divider )] = value
+                        .stringByReplacingOccurrencesOfString( "+", withString: " " )
+                        .stringByRemovingPercentEncoding {
+                    parameters[nameValue.substringToIndex( divider )] = value
                 }
             }
             else {
@@ -107,7 +108,7 @@ public class DynamoApplicationSwiftlet : NSObject, DynamoBrowserSwiftlet {
      */
 
     public func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
-        fatalError( "DynamoApplicationSwiftlet.processRequest(): Subclass responsibility" )
+        dynamoLog( "DynamoApplicationSwiftlet.processRequest(): Subclass responsibility" )
     }
 
 }
@@ -153,6 +154,7 @@ public class DynamoSessionSwiftlet : DynamoApplicationSwiftlet {
 
     var appClass: DynamoSessionApplication.Type
     var sessions = [String:DynamoApplicationSwiftlet]()
+
     private var lastCheck = NSDate().timeIntervalSinceReferenceDate
     private var sessionLock = OS_SPINLOCK_INIT
     private let cookieName: String
@@ -241,7 +243,7 @@ public class DynamoSessionApplication : DynamoHTMLAppSwiftlet {
      */
 
     public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
-        dynamoLog( "DynamoSessionBsedApplcation.processRequest(): Subclass responsibility" )
+        dynamoLog( "DynamoSessionApplication.processRequest(): Subclass responsibility" )
     }
 
 }
@@ -290,6 +292,9 @@ public class DynamoBundleSwiftlet : DynamoSessionSwiftlet {
                 if let appClass = bundle.classNamed( "\(bundleName)Swiftlet" ) as? DynamoSessionApplication.Type {
                     super.init( pathPrefix: pathPrefix, appClass: appClass )
                     return
+                }
+                else {
+                    dynamoLog( "Could not locate class with @objc name \(bundleName)Swiftlet in \(bundlePath)")
                 }
             }
         }
@@ -366,43 +371,42 @@ public class DynamoServerPagesSwiftlet : DynamoApplicationSwiftlet {
 
     override public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
 
-        if let host = httpClient.requestHeaders["Host"] {
-            let path = httpClient.path
+        let path = httpClient.path
 
-            if let sspMatch = path.rangeOfString( ".ssp" )?.endIndex {
-                let sspPath = path.substringToIndex( sspMatch )
+        if let sspMatch = path.rangeOfString( ".ssp" )?.endIndex, host = httpClient.requestHeaders["Host"] {
+            let sspPath = path.substringToIndex( sspMatch )
 
-                if sspPath != path && fileManager.fileExistsAtPath( "\(documentRoot)/\(host)\(path)") {
-                    return .NotProcessed
-                }
+            if sspPath != path && fileManager.fileExistsAtPath( "\(documentRoot)/\(host)\(path)") {
+                return .NotProcessed
+            }
 
-                let sspFullPath = "\(documentRoot)/\(host)\(sspPath)"
-                var reloader = reloaders[sspPath]
+            let sspFullPath = "\(documentRoot)/\(host)\(sspPath)"
+            var reloader = reloaders[sspPath]
 
-                if reloader == nil && fileManager.fileExistsAtPath( sspFullPath ) {
-                    if let nameStart = sspPath.rangeOfString( "/",
-                                                    options: NSStringCompareOptions.BackwardsSearch )?.endIndex {
-                        let bundleName = sspPath.substringWithRange( Range( start: nameStart, end: advance( sspPath.endIndex, -4 ) ) )
-                        if let reloader = DynamoBundleSwiftlet( pathPrefix: sspPath,
-                                        bundleName: bundleName, bundlePath: sspFullPath ) {
-                            reloaders[sspPath] = reloader
-                        }
+            if reloader == nil && fileManager.fileExistsAtPath( sspFullPath ) {
+                if let nameStart = sspPath.rangeOfString( "/",
+                                                options: NSStringCompareOptions.BackwardsSearch )?.endIndex {
+                    let nameEnd = advance( sspPath.endIndex, -4 )
+                    let bundleName = sspPath.substringWithRange( Range( start: nameStart, end: nameEnd ) )
+                    if let reloader = DynamoBundleSwiftlet( pathPrefix: sspPath,
+                                    bundleName: bundleName, bundlePath: sspFullPath ) {
+                        reloaders[sspPath] = reloader
                     }
-                    else {
-                        dynamoLog( "Unable to parse .ssp path: \(sspPath)" )
-                        return .NotProcessed
-                    }
-                }
-
-                if let reloader = reloaders[sspPath] {
-                    return reloader.process( httpClient )
                 }
                 else {
-                    dynamoLog( "Missing .ssp bundle for path \(path)" )
+                    dynamoLog( "Unable to parse .ssp path: \(sspPath)" )
+                    return .NotProcessed
                 }
             }
+
+            if let reloader = reloaders[sspPath] {
+                return reloader.process( httpClient )
+            }
+            else {
+                dynamoLog( "Missing .ssp bundle for path \(path)" )
+            }
         }
-        
+
         return .NotProcessed
     }
 }

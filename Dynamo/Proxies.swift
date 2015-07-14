@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Proxies.swift#35 $
+//  $Id: //depot/Dynamo/Dynamo/Proxies.swift#36 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -201,7 +201,8 @@ final class DynamoSelector {
                 UnsafeMutablePointer<fd_set>( errorFlags ), &timeout ) < 0  {
                     timeout.tv_sec = 0
                     timeout.tv_usec = 0
-                    Strerror( "Select error \(readMap) \(writeMap)" )
+                    dynamoStrerror( "Select error \(readMap) \(writeMap)" )
+
                     for (fd,writer) in readMap {
                         FD_ZERO( readFlags )
                         FD_SET( fd, readFlags )
@@ -210,6 +211,7 @@ final class DynamoSelector {
                             close( fd )
                         }
                     }
+
                     for (fd,writer) in writeMap {
                         FD_ZERO( readFlags )
                         FD_SET( fd, readFlags )

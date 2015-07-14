@@ -5,14 +5,14 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Servers.swift#45 $
+//  $Id: //depot/Dynamo/Dynamo/Servers.swift#46 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
 
 import Foundation
 
-// MARK: Private functions
+// MARK: Private queues and missing IP functions
 
 let dynamoQueue = dispatch_queue_create( "DynamoThread", DISPATCH_QUEUE_CONCURRENT )
 let dynamoSSLQueue = dispatch_queue_create( "DynamoSSLThread", DISPATCH_QUEUE_CONCURRENT )
@@ -29,9 +29,12 @@ let ntohs = htons
 
 @objc public enum DynamoProcessed : Int {
     case
-        NotProcessed, // does not recogise the request
-        Processed, // has processed the request
-        ProcessedAndReusable // "" and connection may be reused
+        /** does not recogise the request */
+        NotProcessed,
+        /** has processed the request */
+        Processed,
+        /** "" and connection may be reused */
+        ProcessedAndReusable
 }
 
 /**
@@ -55,8 +58,8 @@ let ntohs = htons
 
 public class DynamoWebServer : NSObject, NSStreamDelegate {
 
-    private let serverSocket: Int32
     private let swiftlets: [DynamoSwiftlet]
+    private let serverSocket: Int32
 
     /** port allocated for server if specified as 0 */
     public var serverPort: UInt16 = 0
@@ -70,22 +73,17 @@ public class DynamoWebServer : NSObject, NSStreamDelegate {
 
         self.init( portNumber, swiftlets: swiftlets, localhostOnly: localhostOnly )
 
-        if serverPort != 0 {
-            runConnectionHandler( httpConnectionHander )
-        }
-        else {
-            return nil
-        }
+        runConnectionHandler( httpConnectionHander )
     }
 
-    init( _ portNumber: UInt16, swiftlets: [DynamoSwiftlet], localhostOnly: Bool ) {
+    init?( _ portNumber: UInt16, swiftlets: [DynamoSwiftlet], localhostOnly: Bool ) {
 
         self.swiftlets = swiftlets
 
         var ip4addr = sockaddr_in(sin_len: UInt8(sizeof(sockaddr_in)),
             sin_family: sa_family_t(AF_INET),
-            sin_port: htons(portNumber),
-            sin_addr: in_addr(s_addr: INADDR_ANY),
+            sin_port: htons( portNumber ),
+            sin_addr: in_addr( s_addr: INADDR_ANY ),
             sin_zero: (Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0)))
 
         if localhostOnly {
@@ -94,28 +92,29 @@ public class DynamoWebServer : NSObject, NSStreamDelegate {
 
         serverSocket = socket( Int32(ip4addr.sin_family), SOCK_STREAM, 0 )
         var yes: u_int = 1, yeslen = socklen_t(sizeof(yes.dynamicType))
-
-        if serverSocket < 0 {
-            Strerror( "Could not get server socket" )
-        }
-        else if setsockopt( serverSocket, SOL_SOCKET, SO_REUSEADDR, &yes, yeslen ) < 0 {
-            Strerror( "Could not set SO_REUSEADDR" )
-        }
-        else if Darwin.bind( serverSocket, sockaddr_cast(&ip4addr), socklen_t(ip4addr.sin_len) ) < 0 {
-            Strerror( "Could not bind service socket on port \(portNumber)" )
-        }
-        else if listen( serverSocket, 100 ) < 0 {
-            Strerror( "Server socket would not listen" )
-        }
-        else {
-            var addrLen = socklen_t(sizeof(ip4addr.dynamicType))
-            if getsockname( serverSocket, sockaddr_cast(&ip4addr), &addrLen ) == 0 {
-                serverPort = ntohs( ip4addr.sin_port )
-                dynamoLog( "Server available on http(s)://localhost:\(serverPort)" )
-            }
-        }
+        var addrLen = socklen_t(sizeof(ip4addr.dynamicType))
 
         super.init()
+
+        if serverSocket < 0 {
+            dynamoStrerror( "Could not get server socket" )
+        }
+        else if setsockopt( serverSocket, SOL_SOCKET, SO_REUSEADDR, &yes, yeslen ) < 0 {
+            dynamoStrerror( "Could not set SO_REUSEADDR" )
+        }
+        else if Darwin.bind( serverSocket, sockaddr_cast(&ip4addr), socklen_t(ip4addr.sin_len) ) < 0 {
+            dynamoStrerror( "Could not bind service socket on port \(portNumber)" )
+        }
+        else if listen( serverSocket, 100 ) < 0 {
+            dynamoStrerror( "Server socket would not listen" )
+        }
+        else if getsockname( serverSocket, sockaddr_cast(&ip4addr), &addrLen ) == 0 {
+            serverPort = ntohs( ip4addr.sin_port )
+            dynamoLog( "Server available on http(s)://localhost:\(serverPort)" )
+            return
+        }
+
+        return nil
     }
 
     func runConnectionHandler( connectionHandler: (Int32) -> Void ) {
@@ -179,14 +178,7 @@ public class DynamoWebServer : NSObject, NSStreamDelegate {
 
 public class DynamoSSLWebServer : DynamoWebServer {
 
-    /**
-        Creates a proxy SSL sever for the surroagte server at the url provided. If no url is provided
-        Also runs up it's own surroate no a random port on localhost to serve proxied requests. The 
-        certs argument is the array returned from DDKeychain.SSLIdentityAndCertificates( keyName )
-        where keyName is the name of hte SSL certificate in the local keychain.
-     */
-
-    let certs: [AnyObject]
+    private let certs: [AnyObject]
 
     override func wrapConnection( clientSocket: Int32 ) -> DynamoHTTPConnection? {
         return DynamoSSLConnection( sslSocket: clientSocket, certs: certs )
@@ -195,27 +187,20 @@ public class DynamoSSLWebServer : DynamoWebServer {
     /**
         default initialiser for SSL server. Can proxy a "surrogate" non-SSL server given it's URL
     */
-    public init?( portNumber: UInt16, swiftlets: [DynamoSwiftlet], certs: [AnyObject], surrogate: String? = nil ) {
+    public init?( portNumber: UInt16, swiftlets: [DynamoSwiftlet] = [], certs: [AnyObject], surrogate: String? = nil ) {
 
         self.certs = certs
 
         super.init( portNumber, swiftlets: swiftlets, localhostOnly: false )
 
-        if serverPort != 0 {
-            if surrogate != nil {
-                if let surrogateURL = NSURL( string: surrogate! ) {
-                    runConnectionHandler( sslProxyHandler( surrogateURL ) )
-                }
-                else {
-                    dynamoLog( "Invalid surrogate URL: \(surrogate)" )
-                }
-            }
-            else {
-                runConnectionHandler( httpConnectionHander )
-            }
+        if surrogate == nil {
+            runConnectionHandler( httpConnectionHander )
+        }
+        else if let surrogateURL = NSURL( string: surrogate! ) {
+            runConnectionHandler( sslProxyHandler( surrogateURL ) )
         }
         else {
-            return nil
+            dynamoLog( "Invalid surrogate URL: \(surrogate)" )
         }
     }
 
@@ -306,6 +291,6 @@ func dynamoLog<T>( msg: T ) {
     NSLog( "DynamoWebServer: %@", "\(msg)" )
 }
 
-func Strerror( msg: String ) {
+func dynamoStrerror( msg: String ) {
     dynamoLog( "\(msg) - \( String( UTF8String: strerror(errno) )! )" )
 }

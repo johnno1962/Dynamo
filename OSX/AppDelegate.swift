@@ -61,7 +61,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {//, WebFrameLoadDelegate, We
         ], certs: certs )
 
         // or can make SSL proxy to any non-SSL web server
-        DynamoSSLWebServer( portNumber: 9191, swiftlets: [], certs: certs, surrogate: "http://localhost:\(serverPort)" )
+        DynamoSSLWebServer( portNumber: 9191, certs: certs, surrogate: "http://localhost:\(serverPort)" )
 
         evalJavaScript = {
             javascript in
