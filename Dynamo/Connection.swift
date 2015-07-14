@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Connection.swift#34 $
+//  $Id: //depot/Dynamo/Dynamo/Connection.swift#35 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -78,8 +78,19 @@ var webDateFormatter: NSDateFormatter = {
 
     /** initialise connection to browser with socket */
     public init?( clientSocket: Int32 ) {
+
         self.clientSocket = clientSocket
         super.init()
+
+        var yes: u_int = 1, yeslen = socklen_t(sizeof(yes.dynamicType))
+        if setsockopt( clientSocket, SOL_SOCKET, SO_NOSIGPIPE, &yes, yeslen ) < 0 {
+            Strerror( "Could not set SO_NOSIGPIPE" )
+            return nil
+        }
+        else if setsockopt( clientSocket, IPPROTO_TCP, TCP_NODELAY, &yes, yeslen ) < 0 {
+            Strerror( "Could not set TCP_NODELAY" )
+            return nil
+        }
     }
 
     /** initialise connection to reote host/port specified in URL */
@@ -96,7 +107,7 @@ var webDateFormatter: NSDateFormatter = {
                 else if connect( remoteSocket, &addr, socklen_t(addr.sa_len) ) < 0 {
                     Strerror( "Could not connect to: \(host):\(port)" )
                 }
-                else if setupSocket( remoteSocket ) {
+                else {
                     self.init( clientSocket: remoteSocket )
                     return
                 }

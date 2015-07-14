@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Servers.swift#42 $
+//  $Id: //depot/Dynamo/Dynamo/Servers.swift#45 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -126,10 +126,11 @@ public class DynamoWebServer : NSObject, NSStreamDelegate {
 
                 if clientSocket >= 0 {
                     dispatch_async( dynamoQueue, {
-                        if setupSocket( clientSocket ) {
-                            connectionHandler( clientSocket )
-                        }
+                        connectionHandler( clientSocket )
                     } )
+                }
+                else {
+                    NSThread.sleepForTimeInterval( 0.5 )
                 }
             }
         } )
@@ -219,7 +220,7 @@ public class DynamoSSLWebServer : DynamoWebServer {
     }
 
     func sslProxyHandler( surrogateURL: NSURL )( clientSocket: Int32 ) {
-        if let sslConnection = DynamoSSLConnection( sslSocket: clientSocket, certs: certs ),
+        if let sslConnection = wrapConnection( clientSocket ),
             localConnection = DynamoHTTPConnection( url: surrogateURL ) {
                 DynamoSelector.relay( "surrogate", from: sslConnection, to: localConnection, dynamoTrace )
         }
@@ -296,19 +297,6 @@ func sockaddr_in_cast(p: UnsafeMutablePointer<sockaddr>) -> UnsafeMutablePointer
     return UnsafeMutablePointer<sockaddr_in>(p)
 }
 
-func setupSocket( socket: Int32 ) -> Bool {
-    var yes: u_int = 1, yeslen = socklen_t(sizeof(yes.dynamicType))
-    if setsockopt( socket, SOL_SOCKET, SO_NOSIGPIPE, &yes, yeslen ) < 0 {
-        Strerror( "Could not set SO_NOSIGPIPE" )
-        return false
-    }
-    else if setsockopt( socket, IPPROTO_TCP, TCP_NODELAY, &yes, yeslen ) < 0 {
-        Strerror( "Could not set TCP_NODELAY" )
-        return false
-    }
-    return true
-}
-
 /** default tracer for frequent messages */
 public func dynamoTrace<T>( msg: T ) {
     println( msg )
@@ -319,5 +307,5 @@ func dynamoLog<T>( msg: T ) {
 }
 
 func Strerror( msg: String ) {
-    dynamoLog( msg+" - "+String( UTF8String: strerror(errno) )! )
+    dynamoLog( "\(msg) - \( String( UTF8String: strerror(errno) )! )" )
 }

@@ -11,10 +11,10 @@ has turned to the server side to set up a simple framework inside which it is po
 with SSL, Proxies and what you could call "Swift Server Pages" which are loadable bundles of code
 placed in the document hierarchy.
 
-The Dynamo server core is based on "Swiftlets", instances implementing the DynamoSwiftlet which are
-presented with incoming HTTP requests from the browser and can choose to process it in any manner it
-chooses. The developer passes in an array of swiftlet instances combining the features and applications 
-desired on server startup.
+The Dynamo server core is based on "Swiftlets", instances implementing the `DynamoSwiftlet` protocol
+which are presented with incoming HTTP requests from the browser and can choose to process it in any
+manner it chooses. The developer passes in an array of swiftlet instances combining the features 
+and applications desired on server startup.
 
 ```Swift
     @objc public protocol DynamoSwiftlet {
@@ -40,25 +40,26 @@ The default swiftlet to serve documents from ~/Sites/host:port or the applicatio
 ### DynamoProxySwiftlet, DynamoSSLProxySwiftlet
 
 Dynamo can act as a proxy server logging what can be a surprising about of traffic from your browser.
+To use the proxy, run DynamoApp target and set yout proxy to localhost:8080.
 
 ### DynamoApplicationSwiftlet, DynamoSessionSwiftlet
 
-DynamoApplicationSwiftlet is the abstract superclass of all "application" swiftlets parsing browser GET and POST
+`DynamoApplicationSwiftlet` is the abstract superclass of all "application" swiftlets parsing browser GET and POST
 parameters and any Cookies. DynamoSessionSwiftlet adds the ability to have an application Swiftlet
 created separately for each unique web user using Cookies.
 
 ### DynamoBundleSwiftlet, DynamoServerPagesSwiftlet
 
-DynamoBundleSwiftlet, loads a swiftlet from a bundle with extension ".ssp" in an OSX application's resources.
+`DynamoBundleSwiftlet`, loads a swiftlet from a bundle with extension ".ssp" in an OSX application's resources.
 A simple python script can generate the Swift source for the bundle from a ".shtml" mixing HTML and Swift
-language. The DynamoServerPagesSwiftlet takes this a step further where the bundle is loaded from the
+language. The `DynamoServerPagesSwiftlet` takes this a step further where the bundle is loaded from the
 document root for the sever when used from the command line. If the bundle is updated for new functionality,
 provided it contains the "AutoLoader.m" stub the new code will be "swizzled" into operation.
 
 ### DynamoExampleAppSwiftlet, TickTackToe, NumberGuesser
 
-The DynamoExampleAppSwiftlet is used in the tests for checking character encoding in GET and POST
-form submission. TickTackToe is an example .ssp application in a bundle target. NumberGuesser is 
+The `DynamoExampleAppSwiftlet` is used in the tests for checking character encoding in GET and POST
+form submission. `TickTackToe` is an example .ssp application in a bundle target. `NumberGuesser` is 
 implemented as a .shtml template compiled into swift code by the Utilities/sspcompiler.py script.
 
 ### DynamoWebServer, DynamoSSLWebServer severs.
