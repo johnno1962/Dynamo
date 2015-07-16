@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Connection.swift#36 $
+//  $Id: //depot/Dynamo/Dynamo/Connection.swift#37 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -82,14 +82,16 @@ var webDateFormatter: NSDateFormatter = {
         self.clientSocket = clientSocket
         super.init()
 
-        var yes: u_int = 1, yeslen = socklen_t(sizeof(yes.dynamicType))
-        if setsockopt( clientSocket, SOL_SOCKET, SO_NOSIGPIPE, &yes, yeslen ) < 0 {
-            dynamoStrerror( "Could not set SO_NOSIGPIPE" )
-            return nil
-        }
-        else if setsockopt( clientSocket, IPPROTO_TCP, TCP_NODELAY, &yes, yeslen ) < 0 {
-            dynamoStrerror( "Could not set TCP_NODELAY" )
-            return nil
+        if clientSocket >= 0 {
+            var yes: u_int = 1, yeslen = socklen_t(sizeof(yes.dynamicType))
+            if setsockopt( clientSocket, SOL_SOCKET, SO_NOSIGPIPE, &yes, yeslen ) < 0 {
+                dynamoStrerror( "Could not set SO_NOSIGPIPE" )
+                return nil
+            }
+            else if setsockopt( clientSocket, IPPROTO_TCP, TCP_NODELAY, &yes, yeslen ) < 0 {
+                dynamoStrerror( "Could not set TCP_NODELAY" )
+                return nil
+            }
         }
     }
 

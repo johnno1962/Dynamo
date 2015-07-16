@@ -40,7 +40,7 @@ The default swiftlet to serve documents from ~/Sites/host:port or the applicatio
 ### DynamoProxySwiftlet, DynamoSSLProxySwiftlet
 
 Dynamo can act as a proxy server logging what can be a surprising about of traffic from your browser.
-To use the proxy, run DynamoApp target and set yout proxy to localhost:8080.
+To use the proxy, run DynamoApp target and set your proxy to localhost:8080.
 
 ### DynamoApplicationSwiftlet, DynamoSessionSwiftlet
 
@@ -105,7 +105,7 @@ The Dynamo framework has a .podspec file so it can be brought into your project 
     end
 ```
 
-Running an SSL server requires set of certificates which is generated using code slightly modified
+Running an SSL server requires set of certificates which can be generated using code slightly modified
 from robbiehanson's [CocoaHTTPServer](https://github.com/robbiehanson/CocoaHTTPServer) under a
 BSD license contained in the Utilities/DDKeyChain.[hm] source.
 
@@ -119,7 +119,7 @@ Testing with [JMeter](http://jmeter.apache.org/) has shown Dynamo is capable of 
 
 18,000 requests per minute for TickTckToe which does not reuse connections (see below)
 
-Reusing connections is important for large numbers of requests from the same client. The is
+Reusing connections is important for large numbers of requests from the same client. This is
 achieved by using a single DynamoHTTPConnection.response( html ) method call rather than
 individual calls to method DynamoHTTPConnection.print( html ).
 
