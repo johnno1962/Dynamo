@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Servers.swift#46 $
+//  $Id: //depot/Dynamo/Dynamo/Servers.swift#47 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -110,7 +110,8 @@ public class DynamoWebServer : NSObject, NSStreamDelegate {
         }
         else if getsockname( serverSocket, sockaddr_cast(&ip4addr), &addrLen ) == 0 {
             serverPort = ntohs( ip4addr.sin_port )
-            dynamoLog( "Server available on http(s)://localhost:\(serverPort)" )
+            let s = self.dynamicType === DynamoSSLWebServer.self ? "s" : ""
+            dynamoLog( "Server available on http\(s)://localhost:\(serverPort)" )
             return
         }
 
@@ -253,7 +254,7 @@ class DynamoSSLConnection: DynamoHTTPConnection, NSStreamDelegate {
         return inputStream.read( UnsafeMutablePointer<UInt8>(buffer), maxLength: count )
     }
 
-    override func _write(buffer: UnsafePointer<Void>, count: Int ) -> Int {
+    override func _write( buffer: UnsafePointer<Void>, count: Int ) -> Int {
         return outputStream.write( UnsafePointer<UInt8>(buffer), maxLength: count )
     }
 

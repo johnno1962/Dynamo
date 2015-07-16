@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Connection.swift#37 $
+//  $Id: //depot/Dynamo/Dynamo/Connection.swift#39 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -393,16 +393,17 @@ var webDateFormatter: NSDateFormatter = {
     public func flush() {
     }
 
+    // for DynamoSelector...
     var hasBytesAvailable: Bool {
         return false
     }
 
     func receive( buffer: UnsafeMutablePointer<Void>, count: Int ) -> Int? {
-        return recv( clientSocket, buffer, count, 0 )
+        return _read( buffer, count: count )
     }
 
     func forward( buffer: UnsafePointer<Void>, count: Int ) -> Int? {
-        return send( clientSocket, buffer, count, 0 )
+        return _write( buffer, count: count )
     }
 
     deinit {
