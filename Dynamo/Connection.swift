@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Connection.swift#39 $
+//  $Id: //depot/Dynamo/Dynamo/Connection.swift#40 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -150,9 +150,9 @@ var webDateFormatter: NSDateFormatter = {
         if buffered != 0 {
             memcpy( buffer, readBuffer.bytes, buffered )
             readBuffer.replaceBytesInRange( NSMakeRange( 0, buffered ), withBytes: nil, length: 0 )
-            pos += count
+            pos += buffered
         }
-        while ( pos < count ) {
+        while pos < count {
             let bytesRead = _read( buffer+pos, count: count-pos )
             if bytesRead <= 0 {
                 break
