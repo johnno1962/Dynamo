@@ -23,7 +23,7 @@ stml = file.read()
 def replacer(m):
     global imports, props, match, code
     out = "";
-    content = m.group(2)
+    content = m.group(2).rstrip()
     if m.group(1) == '@':
         imports += content
     elif m.group(1) == '!':
@@ -47,8 +47,9 @@ for key in code:
     stml = re.sub( key, code[key], stml )
 
 file = open( productName+".swift", "w" )
-file.write( '''
+file.write( '''//
 // compiled from %s.shtml
+//
 
 import Foundation
 #if os(OSX)
@@ -66,10 +67,9 @@ public class %sSwiftlet: DynamoSessionApplication {
         var response = ""
 
         response += "%s"
-        
+
         out.response( response )
     }
 
 }
-
 ''' % (productName, imports, productName, productName, props, stml) )

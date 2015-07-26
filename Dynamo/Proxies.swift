@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Proxies.swift#36 $
+//  $Id: //depot/Dynamo/Dynamo/Proxies.swift#50 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -19,7 +19,7 @@ import Foundation
      Swiftlet to allow a DynamoWebServer to act as a http: protocol proxy on the same port.
  */
 
-public class DynamoProxySwiftlet : NSObject, DynamoSwiftlet {
+public class DynamoProxySwiftlet: NSObject, DynamoSwiftlet {
 
     var logger: ((String) -> ())?
 
@@ -38,7 +38,7 @@ public class DynamoProxySwiftlet : NSObject, DynamoSwiftlet {
         if let host = httpClient.url.host, remoteConnection = DynamoHTTPConnection( url: httpClient.url ) {
 
             var remotePath = httpClient.url.path ?? "/"
-            if !remotePath.hasSuffix( "/" ) && httpClient.path.hasSuffix( "/" ) {
+            if !remotePath.hasSuffix( "/" ) && (httpClient.path.hasSuffix( "/" ) || httpClient.path.rangeOfString( "/?" ) != nil) {
                 remotePath += "/"
             }
             if let query = httpClient.url.query {
@@ -50,14 +50,20 @@ public class DynamoProxySwiftlet : NSObject, DynamoSwiftlet {
                 remoteConnection.rawPrint( "\(name): \(value)\r\n" )
             }
             remoteConnection.rawPrint( "\r\n" )
+
+            if httpClient.readBuffer.length != 0 {
+                let readBuffer = httpClient.readBuffer
+                remoteConnection.write( readBuffer.bytes, count: readBuffer.length )
+                readBuffer.replaceBytesInRange( NSMakeRange( 0, readBuffer.length ), withBytes: nil, length: 0 )
+            }
             remoteConnection.flush()
 
             DynamoSelector.relay( host, from: httpClient, to: remoteConnection, logger )
         }
-        
+
         return .Processed
     }
-    
+
 }
 
 /**
@@ -65,7 +71,7 @@ public class DynamoProxySwiftlet : NSObject, DynamoSwiftlet {
     This must be come before the DynamoProxySwiftlet in the list of swiftlets for the server for both to work.
 */
 
-public class DynamoSSLProxySwiftlet : DynamoProxySwiftlet {
+public class DynamoSSLProxySwiftlet: DynamoProxySwiftlet {
 
     /** connect socket through to destination SSL server for method "CONNECT" */
     public override func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
@@ -93,6 +99,12 @@ private let selectBitsPerFlag: Int32 = 32
 private let selectShift: Int32 = 5
 private let selectBitMask: Int32 = (1<<selectShift)-1
 private var dynamoQueueLock = OS_SPINLOCK_INIT
+private let dynamoProxyQueue = dispatch_queue_create( "DynamoProxyThread", DISPATCH_QUEUE_CONCURRENT )
+
+/** polling interval for proxy relay */
+public var dynamoPollingUsec: Int32 = 100*1000
+private var maxReadAhead = 10*1024*1024
+private var maxPacket = 2*1024
 
 func FD_ZERO( flags: UnsafeMutablePointer<Int32> ) {
     memset( flags, 0, sizeof(fd_set) )
@@ -131,7 +143,7 @@ final class DynamoSelector {
 
         if dynamoSelector == nil {
             dynamoSelector = DynamoSelector()
-            dispatch_async( dynamoSSLQueue, {
+            dispatch_async( dynamoProxyQueue, {
                 dynamoSelector!.selectLoop( logger )
             } )
         }
@@ -146,7 +158,7 @@ final class DynamoSelector {
         var writeFlags = UnsafeMutablePointer<Int32>( malloc( sizeof(fd_set) ) )
         var errorFlags = UnsafeMutablePointer<Int32>( malloc( sizeof(fd_set) ) )
 
-        var buffer = [Int8](count: 2*1024, repeatedValue: 0)
+        var buffer = [Int8](count: maxPacket, repeatedValue: 0)
         var timeout = timeval()
 
         while true {
@@ -173,8 +185,10 @@ final class DynamoSelector {
             FD_ZERO( errorFlags )
 
             var maxfd: Int32 = -1, fdcount = 0
-            for (fd,connection) in readMap {
-                FD_SET( fd, readFlags )
+            for (fd,writer) in readMap {
+                if writer.readBuffer.length < maxReadAhead {
+                    FD_SET( fd, readFlags )
+                }
                 FD_SET( fd, errorFlags )
                 if maxfd < fd {
                     maxfd = fd
@@ -183,7 +197,7 @@ final class DynamoSelector {
             }
 
             var hasWrite = false
-            for (fd,connection) in writeMap {
+            for (fd,writer) in writeMap {
                 FD_SET( fd, writeFlags )
                 FD_SET( fd, errorFlags )
                 if maxfd < fd {
@@ -193,34 +207,37 @@ final class DynamoSelector {
             }
 
             timeout.tv_sec = 0
-            timeout.tv_usec = 100*1000
+            timeout.tv_usec = dynamoPollingUsec
 
             if select( maxfd+1,
-                UnsafeMutablePointer<fd_set>( readFlags ),
-                hasWrite ? UnsafeMutablePointer<fd_set>( writeFlags ) : nil,
-                UnsafeMutablePointer<fd_set>( errorFlags ), &timeout ) < 0  {
-                    timeout.tv_sec = 0
-                    timeout.tv_usec = 0
-                    dynamoStrerror( "Select error \(readMap) \(writeMap)" )
+                    UnsafeMutablePointer<fd_set>( readFlags ),
+                    hasWrite ? UnsafeMutablePointer<fd_set>( writeFlags ) : nil,
+                    UnsafeMutablePointer<fd_set>( errorFlags ), &timeout ) < 0 {
 
-                    for (fd,writer) in readMap {
-                        FD_ZERO( readFlags )
-                        FD_SET( fd, readFlags )
-                        if  select( fd+1, UnsafeMutablePointer<fd_set>( readFlags ), nil, nil, &timeout ) < 0 {
-                            dynamoLog( "Closing reader: \(fd)" )
-                            close( fd )
-                        }
-                    }
+                timeout.tv_sec = 0
+                timeout.tv_usec = 0
+                dynamoStrerror( "Select error \(readMap) \(writeMap)" )
 
-                    for (fd,writer) in writeMap {
-                        FD_ZERO( readFlags )
-                        FD_SET( fd, readFlags )
-                        if  select( fd+1, UnsafeMutablePointer<fd_set>( readFlags ), nil, nil, &timeout ) < 0 {
-                            dynamoLog( "Closing writer: \(fd)" )
-                            close( fd )
-                        }
+                for (fd,writer) in readMap {
+                    FD_ZERO( readFlags )
+                    FD_SET( fd, readFlags )
+                    if  select( fd+1, UnsafeMutablePointer<fd_set>( readFlags ), nil, nil, &timeout ) < 0 {
+                        dynamoLog( "Closing reader: \(fd)" )
+                        close( fd )
                     }
-                    continue
+                }
+
+                for (fd,writer) in writeMap {
+                    FD_ZERO( readFlags )
+                    FD_SET( fd, readFlags )
+                    if  select( fd+1, UnsafeMutablePointer<fd_set>( readFlags ), nil, nil, &timeout ) < 0 {
+                        writeMap.removeValueForKey( writer.clientSocket )
+                        dynamoLog( "Closing writer: \(fd)" )
+                        close( fd )
+                    }
+                }
+
+                continue
             }
 
             if maxfd < 0 {
@@ -228,55 +245,45 @@ final class DynamoSelector {
             }
 
             for readFD in 0...maxfd {
-                if let writer = readMap[readFD], reader = readMap[writer.clientSocket] {
-                    if FD_ISSET( readFD, readFlags ) && !reader.readEOF ||
-                        reader.readCounter != 0 && reader.hasBytesAvailable {
+                if let writer = readMap[readFD], reader = readMap[writer.clientSocket]
+                    where FD_ISSET( readFD, readFlags ) || writer.readTotal != 0 && reader.hasBytesAvailable {
 
-                        if let bytesRead = reader.receive( &buffer, count: buffer.count ) {
+                    if let bytesRead = reader.receive( &buffer, count: buffer.count ) {
+                        let readBuffer = writer.readBuffer
 
-                            if logger != nil {
-                                logger!( "\(writer.label) \(reader.readCounter)+\(reader.readBuffer.length)+\(bytesRead) bytes (\(readFD)/\(readMap.count)/\(fdcount))" )
-                            }
+                        logger?( "\(writer.label) \(writer.readTotal)+\(readBuffer.length)+\(bytesRead) bytes (\(readFD)/\(readMap.count)/\(fdcount))" )
 
-                            if bytesRead <= 0 {
-                                if writer.readEOF || reader.readBuffer.length == 0 {
-                                    close( readFD )
-                                }
-                                else {
-                                    reader.readEOF = true
-                                }
-                            }
-                            else {
-                                reader.readBuffer.appendBytes( buffer, length: bytesRead )
-                                reader.readCounter += bytesRead
-                            }
+                        if bytesRead <= 0 {
+                            close( readFD )
+                        }
+                        else {
+                            readBuffer.appendBytes( buffer, length: bytesRead )
+                            writer.readTotal += bytesRead
+                        }
 
-                            if reader.readBuffer.length != 0 || reader.readEOF {
-                                writeMap[writer.clientSocket] = writer
-                            }
+                        if readBuffer.length != 0 {
+                            writeMap[writer.clientSocket] = writer
                         }
                     }
                 }
             }
 
-            for writeFD in 0...maxfd {
+            for (writeFD,writer) in writeMap {
                 if FD_ISSET( writeFD, writeFlags ) {
-                    if let writer = writeMap[writeFD], reader = readMap[writer.clientSocket],
-                        bytesWritten = writer.forward( reader.readBuffer.bytes, count: reader.readBuffer.length ) {
+                    let readBuffer = writer.readBuffer
 
+                    if let bytesWritten = writer.forward( readBuffer.bytes, count: readBuffer.length ) {
                         if bytesWritten <= 0 {
-                            dynamoLog( "Short write on relay" )
+                            writeMap.removeValueForKey( writer.clientSocket )
+                            dynamoLog( "Short write on relay \(writer.label)" )
                             close( writeFD )
                         }
                         else {
-                            reader.readBuffer.replaceBytesInRange( NSMakeRange( 0, bytesWritten ), withBytes: nil, length: 0 )
+                            readBuffer.replaceBytesInRange( NSMakeRange( 0, bytesWritten ), withBytes: nil, length: 0 )
                         }
 
-                        if reader.readBuffer.length == 0 {
+                        if readBuffer.length == 0 {
                             writeMap.removeValueForKey( writer.clientSocket )
-                            if reader.readEOF {
-                                close( writeFD )
-                            }
                         }
                     }
                 }
@@ -284,20 +291,19 @@ final class DynamoSelector {
 
             for errorFD in 0..<maxfd {
                 if FD_ISSET( errorFD, errorFlags ) {
+                    writeMap.removeValueForKey( errorFD )
                     dynamoLog( "ERROR on relay" )
                     close( errorFD )
                 }
             }
         }
     }
-    
+
     private func close( fd: Int32 ) {
         if let writer = readMap[fd] {
             readMap.removeValueForKey( writer.clientSocket )
-            writeMap.removeValueForKey( writer.clientSocket )
         }
         readMap.removeValueForKey( fd )
-        writeMap.removeValueForKey( fd )
     }
-    
+
 }

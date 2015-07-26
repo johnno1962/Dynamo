@@ -81,10 +81,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {//, WebFrameLoadDelegate, We
         alert.informativeText = message
         alert.runModal()
     }
-    
+
     func applicationWillTerminate(aNotification: NSNotification) {
         // Insert code here to tear down your application
     }
 
 }
-

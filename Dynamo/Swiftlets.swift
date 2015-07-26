@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Swiftlets.swift#9 $
+//  $Id: //depot/Dynamo/Dynamo/Swiftlets.swift#13 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -35,7 +35,7 @@ import CoreData
     process it. Handles parsing of HTTP headers to present to web application code.
  */
 
-public class DynamoApplicationSwiftlet : NSObject, DynamoBrowserSwiftlet {
+public class DynamoApplicationSwiftlet: NSObject, DynamoBrowserSwiftlet {
 
     let pathPrefix: String
 
@@ -54,33 +54,31 @@ public class DynamoApplicationSwiftlet : NSObject, DynamoBrowserSwiftlet {
 
     public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
 
-        if let pathInfo = httpClient.url.path {
+        if let pathInfo = httpClient.url.path
+                where pathInfo.hasPrefix( pathPrefix ) {
+            var parameters = [String:String]()
 
-            if pathInfo.hasPrefix( pathPrefix ) {
-                var parameters = [String:String]()
-
-                if let queryString = httpClient.url.query {
-                    addParameters( &parameters, from: queryString )
-                }
-
-                if httpClient.method == "POST" && httpClient.contentType == "application/x-www-form-urlencoded" {
-                    if let postData = httpClient.postString() {
-                        addParameters( &parameters, from: postData )
-                    }
-                    else {
-                        dynamoLog( "POST data not available" )
-                    }
-                }
-
-                var cookies = [String:String]()
-                if let cookieHeader = httpClient.requestHeaders["Cookie"] {
-                    addParameters( &cookies, from: cookieHeader, delimeter: "; " )
-                }
-
-                processRequest( httpClient, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
-
-                return httpClient.knowsResponseLength ? .ProcessedAndReusable : .Processed
+            if let queryString = httpClient.url.query {
+                addParameters( &parameters, from: queryString )
             }
+
+            if httpClient.method == "POST" && httpClient.contentType == "application/x-www-form-urlencoded" {
+                if let postData = httpClient.postString() {
+                    addParameters( &parameters, from: postData )
+                }
+                else {
+                    dynamoLog( "POST data not available" )
+                }
+            }
+
+            var cookies = [String:String]()
+            if let cookieHeader = httpClient.requestHeaders["Cookie"] {
+                addParameters( &cookies, from: cookieHeader, delimeter: "; " )
+            }
+
+            processRequest( httpClient, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
+
+            return httpClient.knowsResponseLength ? .ProcessedAndReusable : .Processed
         }
 
         return .NotProcessed
@@ -119,7 +117,7 @@ public class DynamoApplicationSwiftlet : NSObject, DynamoBrowserSwiftlet {
     Null swiftlet to log each request as it is presented to the processing chain.
  */
 
-public class DynamoLoggingSwiftlet : NSObject, DynamoSwiftlet {
+public class DynamoLoggingSwiftlet: NSObject, DynamoSwiftlet {
 
     let logger: (String) -> Void
 
@@ -150,12 +148,11 @@ private var sessionExpiryCheckInterval: NSTimeInterval = 60
     Sessions are identified by a UUID in a "DynamoSession" Coookie.
  */
 
-public class DynamoSessionSwiftlet : DynamoApplicationSwiftlet {
+public class DynamoSessionSwiftlet: DynamoApplicationSwiftlet {
 
     var appClass: DynamoSessionApplication.Type
     var sessions = [String:DynamoApplicationSwiftlet]()
 
-    private var lastCheck = NSDate().timeIntervalSinceReferenceDate
     private var sessionLock = OS_SPINLOCK_INIT
     private let cookieName: String
 
@@ -167,27 +164,27 @@ public class DynamoSessionSwiftlet : DynamoApplicationSwiftlet {
         self.appClass = appClass
         self.cookieName = cookieName
         super.init( pathPrefix: pathPrefix )
+        cleanupSessions()
     }
 
+    private func cleanupSessions() {
+        for (key, session) in sessions {
+            if let session = session as? DynamoSessionApplication
+                where session.expiry < NSDate.timeIntervalSinceReferenceDate() {
+                    OSSpinLockLock( &sessionLock )
+                    sessions.removeValueForKey( key )
+                    OSSpinLockUnlock( &sessionLock )
+            }
+        }
+
+        let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(sessionExpiryCheckInterval * Double(NSEC_PER_SEC)))
+        dispatch_after( delayTime, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), cleanupSessions )
+    }
     /**
         Create a new instance of the application class to process the request if request and have it process it.
      */
 
     public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
-
-        let now = NSDate.timeIntervalSinceReferenceDate()
-        if lastCheck + sessionExpiryCheckInterval < now {
-            lastCheck = now
-            for (key, session) in sessions {
-                if let session = session as? DynamoSessionApplication {
-                    if session.expiry < NSDate.timeIntervalSinceReferenceDate() {
-                        OSSpinLockLock( &sessionLock )
-                        sessions.removeValueForKey( key )
-                        OSSpinLockUnlock( &sessionLock )
-                    }
-                }
-            }
-        }
 
         OSSpinLockLock( &sessionLock )
         var sessionKey = cookies[cookieName]
@@ -213,7 +210,7 @@ public class DynamoSessionSwiftlet : DynamoApplicationSwiftlet {
     Class to be subclassed for the application code when writing session based applications
  */
 
-public class DynamoSessionApplication : DynamoHTMLAppSwiftlet {
+public class DynamoSessionApplication: DynamoHTMLAppSwiftlet {
 
     let sessionKey: String
     let manager: DynamoSessionSwiftlet
@@ -257,7 +254,7 @@ public class DynamoSessionApplication : DynamoHTMLAppSwiftlet {
     but retain their state. This does not work for changes to the layout or number of properties in the class.
 */
 
-public class DynamoBundleSwiftlet : DynamoSessionSwiftlet {
+public class DynamoBundleSwiftlet: DynamoSessionSwiftlet {
 
     let bundleName: String
     let bundlePath: String
@@ -287,15 +284,13 @@ public class DynamoBundleSwiftlet : DynamoSessionSwiftlet {
         self.binaryPath = "\(bundlePath)/Contents/MacOS/\(bundleName)"
         self.loaded = NSDate().timeIntervalSinceReferenceDate
 
-        if let bundle = NSBundle( path: bundlePath ) {
-            if bundle.load() {
-                if let appClass = bundle.classNamed( "\(bundleName)Swiftlet" ) as? DynamoSessionApplication.Type {
-                    super.init( pathPrefix: pathPrefix, appClass: appClass )
-                    return
-                }
-                else {
-                    dynamoLog( "Could not locate class with @objc name \(bundleName)Swiftlet in \(bundlePath)")
-                }
+        if let bundle = NSBundle( path: bundlePath ) where bundle.load() {
+            if let appClass = bundle.classNamed( "\(bundleName)Swiftlet" ) as? DynamoSessionApplication.Type {
+                super.init( pathPrefix: pathPrefix, appClass: appClass )
+                return
+            }
+            else {
+                dynamoLog( "Could not locate class with @objc name \(bundleName)Swiftlet in \(bundlePath)")
             }
         }
 
@@ -313,26 +308,25 @@ public class DynamoBundleSwiftlet : DynamoSessionSwiftlet {
     public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
 
         if let attrs = fileManager.attributesOfItemAtPath( binaryPath, error: nil ),
-            lastModified = (attrs[NSFileModificationDate] as? NSDate)?.timeIntervalSinceReferenceDate {
-            if lastModified > loaded {
-                let nextPath = "/tmp/\(bundleName)V\(loadNumber++).ssp"
+            lastModified = (attrs[NSFileModificationDate] as? NSDate)?.timeIntervalSinceReferenceDate
+                where lastModified > loaded {
+            let nextPath = "/tmp/\(bundleName)V\(loadNumber++).ssp"
 
-                if fileManager.removeItemAtPath( nextPath, error: nil ) &&
-                    fileManager.copyItemAtPath( bundlePath, toPath: nextPath, error: nil ) {
+            if fileManager.removeItemAtPath( nextPath, error: nil ) &&
+                fileManager.copyItemAtPath( bundlePath, toPath: nextPath, error: nil ) {
 
-                    if let bundle = NSBundle( path: nextPath ) {
-                        if bundle.load() {
-                            // AutoLoader.m Swizzles new implementation
-                            self.loaded = lastModified
-                        }
-                        else {
-                            dynamoLog( "Could not reload bundle \(nextPath)" )
-                        }
+                if let bundle = NSBundle( path: nextPath ) {
+                    if bundle.load() {
+                        // AutoLoader.m Swizzles new implementation
+                        self.loaded = lastModified
+                    }
+                    else {
+                        dynamoLog( "Could not reload bundle \(nextPath)" )
                     }
                 }
-                else {
-                    dynamoLog( "Could not copy bundle to \(nextPath)" )
-                }
+            }
+            else {
+                dynamoLog( "Could not copy bundle to \(nextPath)" )
             }
         }
 
@@ -349,7 +343,7 @@ public class DynamoBundleSwiftlet : DynamoSessionSwiftlet {
     bundle is updated.
 */
 
-public class DynamoServerPagesSwiftlet : DynamoApplicationSwiftlet {
+public class DynamoServerPagesSwiftlet: DynamoApplicationSwiftlet {
 
     let documentRoot: String
     var reloaders = [String:DynamoBundleSwiftlet]()

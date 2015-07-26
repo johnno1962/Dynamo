@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/07/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Document.swift#3 $
+//  $Id: //depot/Dynamo/Dynamo/Document.swift#6 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -70,7 +70,7 @@ Default swiftlet, generally last in the swiftlet chain to serve static documents
 This is either from the app resources directory for iOS apps or ~/Sites/hostname:port/... on OSX.
 */
 
-public class DynamoDocumentSwiftlet : NSObject, DynamoSwiftlet {
+public class DynamoDocumentSwiftlet: NSObject, DynamoSwiftlet {
 
     let fileManager = NSFileManager.defaultManager()
     let documentRoot: String
@@ -117,21 +117,21 @@ public class DynamoDocumentSwiftlet : NSObject, DynamoSwiftlet {
 
             let zippedPath = fullPath+".gz"
             if fileManager.fileExistsAtPath( zippedPath ) {
-                httpClient.addHeader( "Content-Encoding", value: "gzip" )
+                httpClient.addResponseHeader( "Content-Encoding", value: "gzip" )
                 fullPath = zippedPath
             }
 
             if var attrs = fileManager.attributesOfItemAtPath( fullPath, error: nil ),
-                        lastModified = attrs[NSFileModificationDate] as? NSDate {
+                        lastModifiedDate = attrs[NSFileModificationDate] as? NSDate {
 
-                httpClient.addHeader( "Last-Modified", value: webDate( lastModified ) )
+                let lastModified = webDate( lastModifiedDate )
+                httpClient.addResponseHeader( "Last-Modified", value: lastModified )
 
-                if let since = httpClient.requestHeaders["If-Modified-Since"] {
-                    if webDate( lastModified ) == since {
-                        httpClient.status = 304
-                        httpClient.response( "" )
-                        return .ProcessedAndReusable
-                    }
+                if let since = httpClient.requestHeaders["If-Modified-Since"]
+                        where since == lastModified {
+                    httpClient.status = 304
+                    httpClient.response( "" )
+                    return .ProcessedAndReusable
                 }
 
                 if let data = NSData( contentsOfFile: fullPath ) {
@@ -147,8 +147,8 @@ public class DynamoDocumentSwiftlet : NSObject, DynamoSwiftlet {
                 return .ProcessedAndReusable
             }
         }
-        
+
         return .NotProcessed
     }
-    
+
 }

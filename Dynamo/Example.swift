@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/07/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Example.swift#3 $
+//  $Id: //depot/Dynamo/Dynamo/Example.swift#4 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -18,7 +18,7 @@ import Foundation
     Example web application or "swiftlet" testing form sbumission.
  */
 
-public class DynamoExampleAppSwiftlet : DynamoHTMLAppSwiftlet {
+public class DynamoExampleAppSwiftlet: DynamoHTMLAppSwiftlet {
 
     /**
         This is the entry point for most application swiftlets after browser parameters have been parsed.
@@ -78,5 +78,5 @@ public class DynamoExampleAppSwiftlet : DynamoHTMLAppSwiftlet {
 
         out.print( p() + backButton() )
     }
-    
+
 }

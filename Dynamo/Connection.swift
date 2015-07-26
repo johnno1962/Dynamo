@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Connection.swift#40 $
+//  $Id: //depot/Dynamo/Dynamo/Connection.swift#50 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -35,11 +35,11 @@ var webDateFormatter: NSDateFormatter = {
 }()
 
 /**
-    Class representing a connection to a client web browser. One is created each time a browser
-    connects to read the standard HTTP headers ready to present to each of the swiftlets of the server.
+    Class representing a request from a client web browser. This is the request part
+    of DynamoHTTPConnection though in practice they are the same instance.
 */
 
-@objc public class DynamoHTTPConnection : NSObject {
+public class DynamoHTTPRequest: NSObject {
 
     let clientSocket: Int32
 
@@ -61,6 +61,7 @@ var webDateFormatter: NSDateFormatter = {
     /** HTTP request headers received */
     public var requestHeaders = [String:String]()
 
+    // response ivars need to be here...
     private var responseHeaders = ""
     private var sentResponseHeaders = false
 
@@ -70,10 +71,9 @@ var webDateFormatter: NSDateFormatter = {
     /** whether Content-Length has been supplied */
     var knowsResponseLength = false
 
-    // data for DynamoSelector
+    // read buffering
     let readBuffer = NSMutableData()
-    var readCounter = 0
-    var readEOF = false
+    var readTotal = 0
     var label = ""
 
     /** initialise connection to browser with socket */
@@ -88,10 +88,6 @@ var webDateFormatter: NSDateFormatter = {
                 dynamoStrerror( "Could not set SO_NOSIGPIPE" )
                 return nil
             }
-            else if setsockopt( clientSocket, IPPROTO_TCP, TCP_NODELAY, &yes, yeslen ) < 0 {
-                dynamoStrerror( "Could not set TCP_NODELAY" )
-                return nil
-            }
         }
     }
 
@@ -104,7 +100,7 @@ var webDateFormatter: NSDateFormatter = {
 
                 let remoteSocket = socket( Int32(addr.sa_family), SOCK_STREAM, 0 )
                 if remoteSocket < 0 {
-                    dynamoStrerror( "Could not obtain socket" )
+                    dynamoStrerror( "Could not obtain remote socket" )
                 }
                 else if connect( remoteSocket, &addr, socklen_t(addr.sa_len) ) < 0 {
                     dynamoStrerror( "Could not connect to: \(host):\(port)" )
@@ -139,18 +135,12 @@ var webDateFormatter: NSDateFormatter = {
         return recv( clientSocket, buffer, count, 0 )
     }
 
-    /** raw write to browser/remote connection */
-    func _write( buffer: UnsafePointer<Void>, count: Int ) -> Int {
-        return send( clientSocket, buffer, count, 0 )
-    }
-
     /** read the requested number of bytes */
     public func read( buffer: UnsafeMutablePointer<Void>, count: Int ) -> Int {
-        var pos = 0, buffered = min( readBuffer.length, count )
-        if buffered != 0 {
-            memcpy( buffer, readBuffer.bytes, buffered )
-            readBuffer.replaceBytesInRange( NSMakeRange( 0, buffered ), withBytes: nil, length: 0 )
-            pos += buffered
+        var pos = min( readBuffer.length, count )
+        if pos != 0 {
+            memcpy( buffer, readBuffer.bytes, pos )
+            readBuffer.replaceBytesInRange( NSMakeRange( 0, pos ), withBytes: nil, length: 0 )
         }
         while pos < count {
             let bytesRead = _read( buffer+pos, count: count-pos )
@@ -162,21 +152,8 @@ var webDateFormatter: NSDateFormatter = {
         return pos
     }
 
-    /** write the requested number of bytes */
-    public func write( buffer: UnsafePointer<Void>, count: Int ) -> Int {
-        var pos = 0
-        while ( pos < count ) {
-            let bytesWritten = _write( buffer+pos, count: count-pos )
-            if bytesWritten <= 0 {
-                break
-            }
-            pos += bytesWritten
-        }
-        return pos
-    }
-
     /** add a HTTP header value to the response */
-    public func addHeader( name: String, value: String ) {
+    public func addResponseHeader( name: String, value: String ) {
         responseHeaders += "\(name): \(value)\r\n"
     }
 
@@ -186,7 +163,7 @@ var webDateFormatter: NSDateFormatter = {
             return requestHeaders["Content-Type"] ?? requestHeaders["Content-type"] ?? "text/plain"
         }
         set {
-            addHeader( "Content-Type", value: newValue )
+            addResponseHeader( "Content-Type", value: newValue )
         }
     }
 
@@ -196,7 +173,7 @@ var webDateFormatter: NSDateFormatter = {
             return (requestHeaders["Content-Length"] ?? requestHeaders["Content-length"])?.toInt()
         }
         set {
-            addHeader( "Content-Length", value: String( newValue ?? 0 ) )
+            addResponseHeader( "Content-Length", value: String( newValue ?? 0 ) )
             knowsResponseLength = true
         }
     }
@@ -270,10 +247,9 @@ var webDateFormatter: NSDateFormatter = {
 
     /** POST data as NSData */
     public func postData() -> NSData? {
-        if let postLength = contentLength, data = NSMutableData( length: postLength ) {
-            if read( UnsafeMutablePointer<Void>(data.bytes), count: postLength ) == postLength {
-                return data
-            }
+        if let postLength = contentLength, data = NSMutableData( length: postLength )
+            where read( UnsafeMutablePointer<Void>(data.bytes), count: postLength ) == postLength {
+            return data
         }
         return nil
     }
@@ -292,6 +268,38 @@ var webDateFormatter: NSDateFormatter = {
         return nil
     }
 
+}
+
+/**
+    Class representing a connection to a client web browser. One is created each time a browser
+    connects to read the standard HTTP headers ready to present to each of the swiftlets of the server.
+*/
+
+public class DynamoHTTPConnection: DynamoHTTPRequest {
+
+    /** raw write to browser/remote connection */
+    func _write( buffer: UnsafePointer<Void>, count: Int ) -> Int {
+        return send( clientSocket, buffer, count, 0 )
+    }
+
+    /** write the requested number of bytes */
+    public func write( buffer: UnsafePointer<Void>, count: Int ) -> Int {
+        var pos = 0
+        while pos < count {
+            let bytesWritten = _write( buffer+pos, count: count-pos )
+            if bytesWritten <= 0 {
+                break
+            }
+            pos += bytesWritten
+        }
+        return pos
+    }
+
+    /** flush any buffered print() output to browser */
+    public func flush() {
+        // writes not buffered currently
+    }
+    
     /** have browser set cookie for this session/domain/path */
     public func setCookie( name: String, value: String, domain: String? = nil, path: String? = nil, expires: Int? = nil ) {
 
@@ -311,7 +319,7 @@ var webDateFormatter: NSDateFormatter = {
                 value += "; Expires=" + cookieDateFormatter.stringFromDate( expires )
             }
 
-            addHeader( "Set-Cookie", value: value )
+            addResponseHeader( "Set-Cookie", value: value )
         }
         else {
             dynamoLog( "Cookies must be set before the first HTML content is sent" )
@@ -323,8 +331,8 @@ var webDateFormatter: NSDateFormatter = {
             contentType = dynamoHtmlMimeType
         }
 
-        addHeader( "Date", value: webDateFormatter.stringFromDate( NSDate() ) )
-        addHeader( "Server", value: "Dynamo" )
+        addResponseHeader( "Date", value: webDateFormatter.stringFromDate( NSDate() ) )
+        addResponseHeader( "Server", value: "Dynamo" )
 
         let statusText = dynamoStatusText[status] ?? "Unknown Status"
         rawPrint( "\(version) \(status) \(statusText)\r\n\(responseHeaders)\r\n" )
@@ -380,17 +388,13 @@ var webDateFormatter: NSDateFormatter = {
         if compressResponse && requestHeaders["Accept-Encoding"] == "gzip, deflate" {
             if let deflated = dout.deflate() {
                 dout = deflated
-                addHeader( "Content-Encoding", value: "deflate" )
+                addResponseHeader( "Content-Encoding", value: "deflate" )
             }
         }
 #endif
         contentLength = dout.length
         sendResponseHeaders()
         write( dout.bytes, count: dout.length )
-    }
-
-    /** flush any buffered print() output to browser */
-    public func flush() {
     }
 
     // for DynamoSelector...
@@ -407,6 +411,7 @@ var webDateFormatter: NSDateFormatter = {
     }
 
     deinit {
+        flush()
         close( clientSocket )
     }
 
@@ -465,7 +470,7 @@ public func addressForHost( hostname: String, port: UInt16 ) -> sockaddr? {
     else {
         sockaddr_in_cast( &(sockaddrTmp!) ).memory.sin_port = htons( port )
     }
-    
+
     return sockaddrTmp
 }
 

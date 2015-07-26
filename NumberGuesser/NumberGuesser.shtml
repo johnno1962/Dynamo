@@ -1,4 +1,4 @@
-<%@ private let i = 99 %>
+<%@ private let staticVar = 99 %>
 <html>
 <%!
     private let number = Int(arc4random()%100)+1

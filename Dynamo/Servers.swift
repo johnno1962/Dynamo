@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Servers.swift#47 $
+//  $Id: //depot/Dynamo/Dynamo/Servers.swift#52 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -14,8 +14,7 @@ import Foundation
 
 // MARK: Private queues and missing IP functions
 
-let dynamoQueue = dispatch_queue_create( "DynamoThread", DISPATCH_QUEUE_CONCURRENT )
-let dynamoSSLQueue = dispatch_queue_create( "DynamoSSLThread", DISPATCH_QUEUE_CONCURRENT )
+let dynamoRequestQueue = dispatch_queue_create( "DynamoRequestThread", DISPATCH_QUEUE_CONCURRENT )
 
 let INADDR_ANY = in_addr_t(0)
 let htons = Int(OSHostByteOrder()) == OSLittleEndian ? _OSSwapInt16 : { $0 }
@@ -27,14 +26,11 @@ let ntohs = htons
      will be kept open and recycled.
  */
 
-@objc public enum DynamoProcessed : Int {
+@objc public enum DynamoProcessed: Int {
     case
-        /** does not recogise the request */
-        NotProcessed,
-        /** has processed the request */
-        Processed,
-        /** "" and connection may be reused */
-        ProcessedAndReusable
+        NotProcessed, // does not recogise the request
+        Processed, // has processed the request
+        ProcessedAndReusable // "" and connection may be reused
 }
 
 /**
@@ -46,7 +42,7 @@ let ntohs = htons
     /**
         each request is presented ot each swiftlet until one indicates it has processed the request
      */
-    @objc func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed    
+    @objc func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
 }
 
 // MARK: Basic http: Web server
@@ -56,7 +52,7 @@ let ntohs = htons
      of swiftlets provided in a connecton thread until one is encountered that has processed the request.
  */
 
-public class DynamoWebServer : NSObject, NSStreamDelegate {
+public class DynamoWebServer: NSObject, NSStreamDelegate {
 
     private let swiftlets: [DynamoSwiftlet]
     private let serverSocket: Int32
@@ -125,7 +121,7 @@ public class DynamoWebServer : NSObject, NSStreamDelegate {
                 let clientSocket = accept( self.serverSocket, nil, nil )
 
                 if clientSocket >= 0 {
-                    dispatch_async( dynamoQueue, {
+                    dispatch_async( dynamoRequestQueue, {
                         connectionHandler( clientSocket )
                     } )
                 }
@@ -177,7 +173,7 @@ public class DynamoWebServer : NSObject, NSStreamDelegate {
     port to a surrogate DynamoWebServer on a random port on the localhost to actually process the requests.
 */
 
-public class DynamoSSLWebServer : DynamoWebServer {
+public class DynamoSSLWebServer: DynamoWebServer {
 
     private let certs: [AnyObject]
 
@@ -265,12 +261,13 @@ class DynamoSSLConnection: DynamoHTTPConnection, NSStreamDelegate {
     override func forward( buffer: UnsafePointer<Void>, count: Int ) -> Int? {
         return outputStream.hasSpaceAvailable ? _write( buffer, count: count ) : nil
     }
-    
+
     deinit {
+        flush()
         outputStream.close()
         inputStream.close()
     }
-    
+
 }
 
 // MARK: Functions
