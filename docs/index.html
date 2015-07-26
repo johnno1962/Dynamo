@@ -30,46 +30,49 @@
           <a href="Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Classes/DynamoApplicationSwiftlet.html">DynamoApplicationSwiftlet</a>
+                <a href="Classes/ApplicationSwiftlet.html">ApplicationSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoBundleSwiftlet.html">DynamoBundleSwiftlet</a>
+                <a href="Classes/BundleSwiftlet.html">BundleSwiftlet</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoDocumentSwiftlet.html">DynamoDocumentSwiftlet</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Classes/DynamoExampleAppSwiftlet.html">DynamoExampleAppSwiftlet</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Classes/DynamoHTMLAppSwiftlet.html">DynamoHTMLAppSwiftlet</a>
+                <a href="Classes/DocumentSwiftlet.html">DocumentSwiftlet</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/DynamoHTTPConnection.html">DynamoHTTPConnection</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoLoggingSwiftlet.html">DynamoLoggingSwiftlet</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Classes/DynamoProxySwiftlet.html">DynamoProxySwiftlet</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Classes/DynamoSSLProxySwiftlet.html">DynamoSSLProxySwiftlet</a>
+                <a href="Classes/DynamoHTTPRequest.html">DynamoHTTPRequest</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/DynamoSSLWebServer.html">DynamoSSLWebServer</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/DynamoServerPagesSwiftlet.html">DynamoServerPagesSwiftlet</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Classes/DynamoSessionApplication.html">DynamoSessionApplication</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Classes/DynamoSessionSwiftlet.html">DynamoSessionSwiftlet</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="Classes/DynamoWebServer.html">DynamoWebServer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ExampleAppSwiftlet.html">ExampleAppSwiftlet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/HTMLApplicationSwiftlet.html">HTMLApplicationSwiftlet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/LoggingSwiftlet.html">LoggingSwiftlet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ProxySwiftlet.html">ProxySwiftlet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SSLProxySwiftlet.html">SSLProxySwiftlet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ServerPagesSwiftlet.html">ServerPagesSwiftlet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SessionApplication.html">SessionApplication</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SessionSwiftlet.html">SessionSwiftlet</a>
               </li>
             </ul>
           </li>
@@ -81,6 +84,9 @@
               </li>
               <li class="nav-group-task">
                 <a href="Global Variables.html#/s:v6Dynamo21dynamoMimeTypeMappingGVSs10DictionarySSSS_">dynamoMimeTypeMapping</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Global Variables.html#/s:v6Dynamo17dynamoPollingUsecVSs5Int32">dynamoPollingUsec</a>
               </li>
               <li class="nav-group-task">
                 <a href="Global Variables.html#/s:v6Dynamo16dynamoStatusTextGVSs10DictionarySiSS_">dynamoStatusText</a>
@@ -146,10 +152,10 @@ has turned to the server side to set up a simple framework inside which it is po
 with SSL, Proxies and what you could call <q>Swift Server Pages</q> which are loadable bundles of code
 placed in the document hierarchy.</p>
 
-<p>The Dynamo server core is based on <q>Swiftlets</q>, instances implementing the DynamoSwiftlet which are
-presented with incoming HTTP requests from the browser and can choose to process it in any manner it
-chooses. The developer passes in an array of swiftlet instances combining the features and applications 
-desired on server startup.</p>
+<p>The Dynamo server core is based on <q>Swiftlets</q>, instances implementing the <code>DynamoSwiftlet</code> protocol
+which are presented with incoming HTTP requests from the browser and can choose to process it in any
+manner it chooses. The developer passes in an array of swiftlet instances combining the features 
+and applications desired on server startup.</p>
 <pre class="highlight plaintext"><code>    @objc public protocol DynamoSwiftlet {
 
         @objc func process( httpClient: DynamoHTTPConnection ) -&gt; DynamoProcessed    
@@ -165,36 +171,37 @@ desired on server startup.</p>
 
 <p>For further information about the classes and protools that make up Dynamo please consult the jazzy docs
 <a href="http://johnholdsworth.com/dynamo/docs/">here</a>. The Swiftlets included in the framework are as follows:</p>
-<a href='#dynamodocumentswiftlet' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='dynamodocumentswiftlet'>DynamoDocumentSwiftlet</h3>
+<a href='#documentswiftlet' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='documentswiftlet'>DocumentSwiftlet</h3>
 
 <p>The default swiftlet to serve documents from ~/Sites/host:port or the applications resources directory for iOS.</p>
-<a href='#dynamoproxyswiftlet_dynamosslproxyswiftlet' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='dynamoproxyswiftlet_dynamosslproxyswiftlet'>DynamoProxySwiftlet, DynamoSSLProxySwiftlet</h3>
+<a href='#proxyswiftlet_sslproxyswiftlet' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='proxyswiftlet_sslproxyswiftlet'>ProxySwiftlet, SSLProxySwiftlet</h3>
 
-<p>Dynamo can act as a proxy server logging what can be a surprising about of traffic from your browser.</p>
-<a href='#dynamoapplicationswiftlet_dynamosessionswiftlet' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='dynamoapplicationswiftlet_dynamosessionswiftlet'>DynamoApplicationSwiftlet, DynamoSessionSwiftlet</h3>
+<p>Dynamo can act as a proxy server logging what can be a surprising about of traffic from your browser.
+To use the proxy, run <code>OSX</code> target and set your proxy to localhost:8080.</p>
+<a href='#applicationswiftlet_sessionswiftlet' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='applicationswiftlet_sessionswiftlet'>ApplicationSwiftlet, SessionSwiftlet</h3>
 
-<p>DynamoApplicationSwiftlet is the abstract superclass of all <q>application</q> swiftlets parsing browser GET and POST
-parameters and any Cookies. DynamoSessionSwiftlet adds the ability to have an application Swiftlet
+<p><code>ApplicationSwiftlet</code> is the abstract superclass of all <q>application</q> swiftlets parsing browser GET and POST
+parameters and any Cookies. <code>SessionSwiftlet</code> adds the ability to have an application Swiftlet
 created separately for each unique web user using Cookies.</p>
-<a href='#dynamobundleswiftlet_dynamoserverpagesswiftlet' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='dynamobundleswiftlet_dynamoserverpagesswiftlet'>DynamoBundleSwiftlet, DynamoServerPagesSwiftlet</h3>
+<a href='#bundleswiftlet_serverpagesswiftlet' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='bundleswiftlet_serverpagesswiftlet'>BundleSwiftlet, ServerPagesSwiftlet</h3>
 
-<p>DynamoBundleSwiftlet, loads a swiftlet from a bundle with extension <q>.ssp</q> in an OSX application&rsquo;s resources.
+<p><code>BundleSwiftlet</code>, loads a swiftlet from a bundle with extension <q>.ssp</q> in an OSX application&rsquo;s resources.
 A simple python script can generate the Swift source for the bundle from a <q>.shtml</q> mixing HTML and Swift
-language. The DynamoServerPagesSwiftlet takes this a step further where the bundle is loaded from the
+language. The <code>ServerPagesSwiftlet</code> takes this a step further where the bundle is loaded from the
 document root for the sever when used from the command line. If the bundle is updated for new functionality,
 provided it contains the <q>AutoLoader.m</q> stub the new code will be <q>swizzled</q> into operation.</p>
-<a href='#dynamoexampleappswiftlet_ticktacktoe_numberguesser' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='dynamoexampleappswiftlet_ticktacktoe_numberguesser'>DynamoExampleAppSwiftlet, TickTackToe, NumberGuesser</h3>
+<a href='#exampleappswiftlet_ticktacktoe_numberguesser' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='exampleappswiftlet_ticktacktoe_numberguesser'>ExampleAppSwiftlet, TickTackToe, NumberGuesser</h3>
 
-<p>The DynamoExampleAppSwiftlet is used in the tests for checking character encoding in GET and POST
-form submission. TickTackToe is an example .ssp application in a bundle target. NumberGuesser is 
+<p>The <code>ExampleAppSwiftlet</code> is used in the tests for checking character encoding in GET and POST
+form submission. <code>TickTackToe</code> is an example .ssp application in a bundle target. <code>NumberGuesser</code> is 
 implemented as a .shtml template compiled into swift code by the Utilities/sspcompiler.py script.</p>
 <a href='#dynamowebserver_dynamosslwebserver_severs' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='dynamowebserver_dynamosslwebserver_severs'>DynamoWebServer, DynamoSSLWebServer severs.</h3>
 
 <p>Consult OSX/AppDelegate.swift or iOS/AppDelegate.m of the OSX and iOS targets for how to create
 instances of these classes. </p>
 <pre class="highlight plaintext"><code>    // create shared swiftlet for server applications
-    let exampleTableGeneratorApp = DynamoExampleAppSwiftlet( pathPrefix: "/example" )
-    let tickTackToeGame = DynamoBundleSwiftlet( pathPrefix: "/ticktacktoe", bundleName: "TickTackToe" )!
+    let exampleTableGenerator = ExampleAppSwiftlet( pathPrefix: "/example" )
+    let tickTackToeGame = BundleSwiftlet( pathPrefix: "/ticktacktoe", bundleName: "TickTackToe" )!
 
     let logger = {
         (msg: String) in
@@ -203,13 +210,13 @@ instances of these classes. </p>
 
     // create non-SSL server/proxy on 8080
     DynamoWebServer( portNumber: serverPort, swiftlets: [
-        DynamoLoggingSwiftlet( logger: dynamoTrace ),
-        exampleTableGeneratorApp,
+        LoggingSwiftlet( logger: dynamoTrace ),
+        exampleTableGenerator,
         tickTackToeGame,
-        DynamoSSLProxySwiftlet( logger: logger ),
-        DynamoProxySwiftlet( logger: logger ),
-        DynamoServerPagesSwiftlet( documentRoot: documentRoot ),
-        DynamoDocumentSwiftlet( documentRoot: documentRoot )
+        SSLProxySwiftlet( logger: logger ),
+        ProxySwiftlet( logger: logger ),
+        ServerPagesSwiftlet( documentRoot: documentRoot ),
+        DocumentSwiftlet( documentRoot: documentRoot )
     ] )
 </code></pre>
 
@@ -227,7 +234,7 @@ be run from inside the DynamoApp.app&rsquo;s resources so it can find the Dynamo
     end
 </code></pre>
 
-<p>Running an SSL server requires set of certificates which is generated using code slightly modified
+<p>Running an SSL server requires set of certificates which can be generated using code slightly modified
 from robbiehanson&rsquo;s <a href="https://github.com/robbiehanson/CocoaHTTPServer">CocoaHTTPServer</a> under a
 BSD license contained in the Utilities/DDKeyChain.[hm] source.</p>
 <a href='#performance' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h2 id='performance'>Performance</h2>
@@ -240,7 +247,7 @@ BSD license contained in the Utilities/DDKeyChain.[hm] source.</p>
 
 <p>18,000 requests per minute for TickTckToe which does not reuse connections (see below)</p>
 
-<p>Reusing connections is important for large numbers of requests from the same client. The is
+<p>Reusing connections is important for large numbers of requests from the same client. This is
 achieved by using a single DynamoHTTPConnection.response( html ) method call rather than
 individual calls to method DynamoHTTPConnection.print( html ).</p>
 
@@ -267,7 +274,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2015 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2015-07-13)</p>
+          <p>&copy; 2015 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2015-07-26)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.2.2</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>DynamoSwiftlet Protocol Reference</title>
+    <title>SessionSwiftlet Class Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -9,8 +9,8 @@
     <script src="../js/jazzy.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/swift/Protocol/DynamoSwiftlet" class="dashAnchor"></a>
-    <a title="DynamoSwiftlet Protocol Reference"></a>
+    <a name="//apple_ref/swift/Class/SessionSwiftlet" class="dashAnchor"></a>
+    <a title="SessionSwiftlet Class Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../index.html"> Docs</a> (17% documented)</p>
@@ -21,7 +21,7 @@
       <p id="breadcrumbs">
         <a href="../index.html"> Reference</a>
         <img id="carat" src="../img/carat.png" />
-        DynamoSwiftlet Protocol Reference
+        SessionSwiftlet Class Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -140,8 +140,9 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>DynamoSwiftlet</h1>
-            <p>Basic protocol that switlets implement to pick up and process requests from a client.</p>
+            <h1>SessionSwiftlet</h1>
+            <p>Swiftlet that creates now instancews of the application class per user session.
+Sessions are identified by a UUID in a <q>DynamoSession</q> Coookie.</p>
 
           </section>
           <section class="section task-group-section">
@@ -150,9 +151,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FP6Dynamo14DynamoSwiftlet7processUS0___FQPS0_FCS_20DynamoHTTPConnectionOS_15DynamoProcessed"></a>
-                    <a name="//apple_ref/swift/Method/process(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FP6Dynamo14DynamoSwiftlet7processUS0___FQPS0_FCS_20DynamoHTTPConnectionOS_15DynamoProcessed">process(_:)</a>
+                    <a name="/s:FC6Dynamo15SessionSwiftletcFMS0_FT10pathPrefixSS8appClassMCS_18SessionApplication10cookieNameSS_S0_"></a>
+                    <a name="//apple_ref/swift/Method/init(pathPrefix:appClass:cookieName:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo15SessionSwiftletcFMS0_FT10pathPrefixSS8appClassMCS_18SessionApplication10cookieNameSS_S0_">init(pathPrefix:appClass:cookieName:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -160,14 +161,41 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>each request is presented ot each swiftlet until one indicates it has processed the request</p>
+                        <p>Makea bindling between a pat pah prefix and a class the will be instantieted to process a session of requests</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="Swift">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="k">@objc</span> <span class="kd">func</span> <span class="nf">process</span><span class="p">(</span> <span class="nv">httpClient</span><span class="p">:</span> <span class="kt">DynamoHTTPConnection</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">DynamoProcessed</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span> <span class="nv">pathPrefix</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">appClass</span><span class="p">:</span> <span class="kt">SessionApplication</span><span class="o">.</span><span class="k">Type</span><span class="p">,</span> <span class="nv">cookieName</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"DynamoSession"</span> <span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC6Dynamo15SessionSwiftlet14processRequestFS0_FTCS_20DynamoHTTPConnection8pathInfoSS10parametersGVSs10DictionarySSSS_7cookiesGS2_SSSS__T_"></a>
+                    <a name="//apple_ref/swift/Method/processRequest(_:pathInfo:parameters:cookies:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo15SessionSwiftlet14processRequestFS0_FTCS_20DynamoHTTPConnection8pathInfoSS10parametersGVSs10DictionarySSSS_7cookiesGS2_SSSS__T_">processRequest(_:pathInfo:parameters:cookies:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Create a new instance of the application class to process the request if request and have it process it.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">override</span> <span class="kd">func</span> <span class="nf">processRequest</span><span class="p">(</span> <span class="nv">out</span><span class="p">:</span> <span class="kt">DynamoHTTPConnection</span><span class="p">,</span> <span class="nv">pathInfo</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">parameters</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="kt">String</span><span class="p">],</span> <span class="nv">cookies</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="kt">String</span><span class="p">]</span> <span class="p">)</span></code></pre>
 
                         </div>
                       </div>

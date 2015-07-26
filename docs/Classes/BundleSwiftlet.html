@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>DynamoSwiftlet Protocol Reference</title>
+    <title>BundleSwiftlet Class Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -9,8 +9,8 @@
     <script src="../js/jazzy.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/swift/Protocol/DynamoSwiftlet" class="dashAnchor"></a>
-    <a title="DynamoSwiftlet Protocol Reference"></a>
+    <a name="//apple_ref/swift/Class/BundleSwiftlet" class="dashAnchor"></a>
+    <a title="BundleSwiftlet Class Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../index.html"> Docs</a> (17% documented)</p>
@@ -21,7 +21,7 @@
       <p id="breadcrumbs">
         <a href="../index.html"> Reference</a>
         <img id="carat" src="../img/carat.png" />
-        DynamoSwiftlet Protocol Reference
+        BundleSwiftlet Class Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -140,8 +140,11 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>DynamoSwiftlet</h1>
-            <p>Basic protocol that switlets implement to pick up and process requests from a client.</p>
+            <h1>BundleSwiftlet</h1>
+            <p>This Swiftlet is session based and also loads it&rsquo;s application code from a code bundle with a <q>.ssp</q> extension.
+If the module includes the Utilities/AutoLoader.m code it will reload and swizzle it&#39;a new implementation when
+the bundle is rebuilt/re-deployed for hot-swapping in the code. Existing instances/sessions receive the new code
+but retain their state. This does not work for changes to the layout or number of properties in the class.</p>
 
           </section>
           <section class="section task-group-section">
@@ -150,9 +153,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FP6Dynamo14DynamoSwiftlet7processUS0___FQPS0_FCS_20DynamoHTTPConnectionOS_15DynamoProcessed"></a>
-                    <a name="//apple_ref/swift/Method/process(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FP6Dynamo14DynamoSwiftlet7processUS0___FQPS0_FCS_20DynamoHTTPConnectionOS_15DynamoProcessed">process(_:)</a>
+                    <a name="/s:FC6Dynamo14BundleSwiftletcFMS0_FT10pathPrefixSS10bundleNameSS_GSqS0__"></a>
+                    <a name="//apple_ref/swift/Method/init(pathPrefix:bundleName:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo14BundleSwiftletcFMS0_FT10pathPrefixSS10bundleNameSS_GSqS0__">init(pathPrefix:bundleName:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -160,14 +163,71 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>each request is presented ot each swiftlet until one indicates it has processed the request</p>
+                        <p>A convenience initialiser for <q>.ssp</q> bundles that are in the projects resources</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="Swift">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="k">@objc</span> <span class="kd">func</span> <span class="nf">process</span><span class="p">(</span> <span class="nv">httpClient</span><span class="p">:</span> <span class="kt">DynamoHTTPConnection</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">DynamoProcessed</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="n">convenience</span> <span class="nf">init</span><span class="p">?(</span> <span class="nv">pathPrefix</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">bundleName</span><span class="p">:</span> <span class="kt">String</span> <span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC6Dynamo14BundleSwiftletcFMS0_FT10pathPrefixSS10bundleNameSS10bundlePathSS_GSqS0__"></a>
+                    <a name="//apple_ref/swift/Method/init(pathPrefix:bundleName:bundlePath:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo14BundleSwiftletcFMS0_FT10pathPrefixSS10bundleNameSS10bundlePathSS_GSqS0__">init(pathPrefix:bundleName:bundlePath:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Initialises and performs an initial load of bundle specified.
+Bundle must contain a class with the @objc name <q>\(bundleNme)Swiftlet</q>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">?(</span> <span class="nv">pathPrefix</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">bundleName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">bundlePath</span><span class="p">:</span> <span class="kt">String</span> <span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC6Dynamo14BundleSwiftlet14processRequestFS0_FTCS_20DynamoHTTPConnection8pathInfoSS10parametersGVSs10DictionarySSSS_7cookiesGS2_SSSS__T_"></a>
+                    <a name="//apple_ref/swift/Method/processRequest(_:pathInfo:parameters:cookies:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC6Dynamo14BundleSwiftlet14processRequestFS0_FTCS_20DynamoHTTPConnection8pathInfoSS10parametersGVSs10DictionarySSSS_7cookiesGS2_SSSS__T_">processRequest(_:pathInfo:parameters:cookies:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>When it comes to process a bundle swiftlet,  the modificatoin timme of the binsry
+is checked and if the bundle has been changed will reload the bundle by copying
+it to a new unique path in /tmp.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="Swift">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">override</span> <span class="kd">func</span> <span class="nf">processRequest</span><span class="p">(</span> <span class="nv">out</span><span class="p">:</span> <span class="kt">DynamoHTTPConnection</span><span class="p">,</span> <span class="nv">pathInfo</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">parameters</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="kt">String</span><span class="p">],</span> <span class="nv">cookies</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="kt">String</span><span class="p">]</span> <span class="p">)</span></code></pre>
 
                         </div>
                       </div>

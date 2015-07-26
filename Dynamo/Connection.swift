@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Connection.swift#51 $
+//  $Id: //depot/Dynamo/Dynamo/Connection.swift#52 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -49,17 +49,17 @@ public class DynamoHTTPRequest: NSObject {
     /** path to document requests */
     public var path = "/"
 
-    /** HTTP version reported by browser */
+    /** HTTP version from browser */
     public var version = "HTTP/1.1"
 
-    /** request epressed as NSURL */
+    /** request parsed as NSURL */
     public var url = dummyBase
-
-    /** status to be returned in response */
-    public var status = 200
 
     /** HTTP request headers received */
     public var requestHeaders = [String:String]()
+
+    /** status to be returned in response */
+    public var status = 200
 
     // response ivars need to be here...
     private var responseHeaders = ""

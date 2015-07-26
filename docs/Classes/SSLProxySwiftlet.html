@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>DynamoSwiftlet Protocol Reference</title>
+    <title>SSLProxySwiftlet Class Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -9,8 +9,8 @@
     <script src="../js/jazzy.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/swift/Protocol/DynamoSwiftlet" class="dashAnchor"></a>
-    <a title="DynamoSwiftlet Protocol Reference"></a>
+    <a name="//apple_ref/swift/Class/SSLProxySwiftlet" class="dashAnchor"></a>
+    <a title="SSLProxySwiftlet Class Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../index.html"> Docs</a> (17% documented)</p>
@@ -21,7 +21,7 @@
       <p id="breadcrumbs">
         <a href="../index.html"> Reference</a>
         <img id="carat" src="../img/carat.png" />
-        DynamoSwiftlet Protocol Reference
+        SSLProxySwiftlet Class Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -140,8 +140,9 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>DynamoSwiftlet</h1>
-            <p>Basic protocol that switlets implement to pick up and process requests from a client.</p>
+            <h1>SSLProxySwiftlet</h1>
+            <p>Swiftlet to allow a DynamoWebServer to act as a https: SSL connection protocol proxy on the same port.
+This must be come before the DynamoProxySwiftlet in the list of swiftlets for the server for both to work.</p>
 
           </section>
           <section class="section task-group-section">
@@ -150,9 +151,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FP6Dynamo14DynamoSwiftlet7processUS0___FQPS0_FCS_20DynamoHTTPConnectionOS_15DynamoProcessed"></a>
+                    <a name="/s:FC6Dynamo16SSLProxySwiftlet7processFS0_FCS_20DynamoHTTPConnectionOS_15DynamoProcessed"></a>
                     <a name="//apple_ref/swift/Method/process(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FP6Dynamo14DynamoSwiftlet7processUS0___FQPS0_FCS_20DynamoHTTPConnectionOS_15DynamoProcessed">process(_:)</a>
+                    <a class="token" href="#/s:FC6Dynamo16SSLProxySwiftlet7processFS0_FCS_20DynamoHTTPConnectionOS_15DynamoProcessed">process(_:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -160,14 +161,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>each request is presented ot each swiftlet until one indicates it has processed the request</p>
+                        <p>connect socket through to destination SSL server for method <q>CONNECT</q></p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="Swift">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="k">@objc</span> <span class="kd">func</span> <span class="nf">process</span><span class="p">(</span> <span class="nv">httpClient</span><span class="p">:</span> <span class="kt">DynamoHTTPConnection</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">DynamoProcessed</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">override</span> <span class="kd">func</span> <span class="nf">process</span><span class="p">(</span> <span class="nv">httpClient</span><span class="p">:</span> <span class="kt">DynamoHTTPConnection</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">DynamoProcessed</span></code></pre>
 
                         </div>
                       </div>
