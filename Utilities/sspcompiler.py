@@ -59,7 +59,7 @@ import Dynamo
 %s
 
 @objc (%sSwiftlet)
-public class %sSwiftlet: DynamoSessionApplication {
+public class %sSwiftlet: SessionApplication {
 
 %s
 

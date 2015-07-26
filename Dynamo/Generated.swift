@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Generated.swift#10 $
+//  $Id: //depot/Dynamo/Dynamo/Generated.swift#11 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -29,7 +29,7 @@ private func htmlEscape( attrValue: String ) -> String {
     a( ["href"="htp://google.com"], "link text" ) becomes "<a href='http//google.com'>link text</a>".
  */
 
-public class DynamoHTMLAppSwiftlet: DynamoApplicationSwiftlet {
+public class HTMLApplicationSwiftlet: ApplicationSwiftlet {
 
     /**
         Opens and closes and HTHL tag with the specidied content. If the content is null the tag is only opened.

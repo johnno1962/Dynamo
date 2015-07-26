@@ -46,7 +46,7 @@ private class TickTackGameEngine: NSObject {
 }
 
 @objc (TickTackToeSwiftlet)
-public class TickTackToeSwiftlet: DynamoSessionApplication {
+public class TickTackToeSwiftlet: SessionApplication {
 
     private var engine = TickTackGameEngine()
 
@@ -68,7 +68,7 @@ public class TickTackToeSwiftlet: DynamoSessionApplication {
             .filter( { $0 == "red" || $0 == "green" } )
             .map( { "\($0) wins: \(cookies[$0]!)" } ) )
 
-        out.print( html( nil ) + head( title( "Table Example!" ) +
+        out.print( html( nil ) + head( title( "Tick Tack Toe Example" ) +
             style( "body, table { font: 10pt Arial; } " +
                     "table { border: 4px outset; } " +
                     "td { border: 4px inset; }" ) ) + body( nil ) +

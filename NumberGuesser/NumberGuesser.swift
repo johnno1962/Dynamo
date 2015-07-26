@@ -10,7 +10,7 @@ import Dynamo
  private let staticVar = 99
 
 @objc (NumberGuesserSwiftlet)
-public class NumberGuesserSwiftlet: DynamoSessionApplication {
+public class NumberGuesserSwiftlet: SessionApplication {
 
 
     private let number = Int(arc4random()%100)+1
@@ -19,24 +19,26 @@ public class NumberGuesserSwiftlet: DynamoSessionApplication {
     override public func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
         var response = ""
 
-        response += "<html>\n<body>\n    <form method=\"POST\" action=\"\(out.path)\">\n    "
+        response += "<html><head><title>Number Guesser Example</title></head>\n<body>\n    <form method=\"POST\" action=\"\(out.path)\">\n    "
 
         // response will be "deflated" if possible
         out.compressResponse = true
 
         if let guess = parameters["guess"]?.toInt() {
-        if guess == number {
-            clearSession()
-response += "        <h3>You're right!</h3>\n        <input type=\"submit\" value=\"Play again\">\n        <a href=\"/\">Back to menu</a>\n            "
- return
+            if guess == number {
+                clearSession()
+response += "                <h3>You're right!</h3>\n                <input type=\"submit\" value=\"Play again\">\n                <a href=\"/\">Back to menu</a>\n                "
+
+                    out.response( response )
+                    return
+            }
+            else if guess < number  {
+                history.append( "\(guess) is too low" )
+            }
+            else if guess > number {
+                history.append( "\(guess) is too high" )
+            }
         }
-        else if guess < number  {
-            history.append( "\(guess) is too low" )
-        }
-        else if guess > number {
-            history.append( "\(guess) is too high" )
-        }
-    }
 response += "    <h3>Thinking of a number between 1 and 100..</h3>\n    "
  for try in history {
 response += "        \(try)<br>\n    "

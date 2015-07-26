@@ -32,19 +32,19 @@ int main( int argc, char *argv[] ) {
     }
 
     NSMutableArray *swiftlets = [NSMutableArray new];
-    [swiftlets addObject:[[DynamoLoggingSwiftlet alloc] initWithLogger:^( NSString *request) {
+    [swiftlets addObject:[[LoggingSwiftlet alloc] initWithLogger:^( NSString *request) {
         NSLog( @"%@", request );
     }]];
-    [swiftlets addObject:[[DynamoServerPagesSwiftlet alloc] initWithDocumentRoot:documentRoot]];
-    [swiftlets addObject:[[DynamoDocumentSwiftlet alloc] initWithDocumentRoot:documentRoot report404:TRUE]];
+    [swiftlets addObject:[[ServerPagesSwiftlet alloc] initWithDocumentRoot:documentRoot]];
+    [swiftlets addObject:[[DocumentSwiftlet alloc] initWithDocumentRoot:documentRoot report404:TRUE]];
 
     if ( keyChainName ) {
         NSArray *certs = [DDKeychain SSLIdentityAndCertificates:keyChainName];
         (void)[[DynamoSSLWebServer alloc] initWithPortNumber:serverPort swiftlets:swiftlets certs:certs surrogate:nil];
     }
     else {
-        [swiftlets insertObject:[[DynamoSSLProxySwiftlet alloc] initWithLogger:nil] atIndex:1];
-        [swiftlets insertObject:[[DynamoProxySwiftlet alloc] initWithLogger:nil] atIndex:2];
+        [swiftlets insertObject:[[SSLProxySwiftlet alloc] initWithLogger:nil] atIndex:1];
+        [swiftlets insertObject:[[ProxySwiftlet alloc] initWithLogger:nil] atIndex:2];
         (void)[[DynamoWebServer alloc] initWithPortNumber:serverPort swiftlets:swiftlets localhostOnly:NO];
     }
 

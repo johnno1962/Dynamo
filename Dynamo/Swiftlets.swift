@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Swiftlets.swift#13 $
+//  $Id: //depot/Dynamo/Dynamo/Swiftlets.swift#14 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -35,7 +35,7 @@ import CoreData
     process it. Handles parsing of HTTP headers to present to web application code.
  */
 
-public class DynamoApplicationSwiftlet: NSObject, DynamoBrowserSwiftlet {
+public class ApplicationSwiftlet: NSObject, DynamoBrowserSwiftlet {
 
     let pathPrefix: String
 
@@ -111,29 +111,6 @@ public class DynamoApplicationSwiftlet: NSObject, DynamoBrowserSwiftlet {
 
 }
 
-// MARK: Logging Swiftlet
-
-/**
-    Null swiftlet to log each request as it is presented to the processing chain.
- */
-
-public class DynamoLoggingSwiftlet: NSObject, DynamoSwiftlet {
-
-    let logger: (String) -> Void
-
-    /** default initialiser for logging Swiftlet */
-    public init( logger: ((String) -> Void) = dynamoTrace ) {
-        self.logger = logger
-    }
-
-    /** log current request */
-    public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
-        logger( "\(httpClient.method) \(httpClient.path) \(httpClient.version) - \(httpClient.remoteAddr)" )
-        return .NotProcessed
-    }
-
-}
-
 // MARK: Session based applications
 
 /**
@@ -148,10 +125,10 @@ private var sessionExpiryCheckInterval: NSTimeInterval = 60
     Sessions are identified by a UUID in a "DynamoSession" Coookie.
  */
 
-public class DynamoSessionSwiftlet: DynamoApplicationSwiftlet {
+public class SessionSwiftlet: ApplicationSwiftlet {
 
-    var appClass: DynamoSessionApplication.Type
-    var sessions = [String:DynamoApplicationSwiftlet]()
+    var appClass: SessionApplication.Type
+    var sessions = [String:ApplicationSwiftlet]()
 
     private var sessionLock = OS_SPINLOCK_INIT
     private let cookieName: String
@@ -160,7 +137,7 @@ public class DynamoSessionSwiftlet: DynamoApplicationSwiftlet {
         Makea bindling between a pat pah prefix and a class the will be instantieted to process a session of requests
      */
 
-    public init( pathPrefix: String, appClass: DynamoSessionApplication.Type, cookieName: String = "DynamoSession" ) {
+    public init( pathPrefix: String, appClass: SessionApplication.Type, cookieName: String = "DynamoSession" ) {
         self.appClass = appClass
         self.cookieName = cookieName
         super.init( pathPrefix: pathPrefix )
@@ -169,7 +146,7 @@ public class DynamoSessionSwiftlet: DynamoApplicationSwiftlet {
 
     private func cleanupSessions() {
         for (key, session) in sessions {
-            if let session = session as? DynamoSessionApplication
+            if let session = session as? SessionApplication
                 where session.expiry < NSDate.timeIntervalSinceReferenceDate() {
                     OSSpinLockLock( &sessionLock )
                     sessions.removeValueForKey( key )
@@ -210,10 +187,10 @@ public class DynamoSessionSwiftlet: DynamoApplicationSwiftlet {
     Class to be subclassed for the application code when writing session based applications
  */
 
-public class DynamoSessionApplication: DynamoHTMLAppSwiftlet {
+public class SessionApplication: HTMLApplicationSwiftlet {
 
     let sessionKey: String
-    let manager: DynamoSessionSwiftlet
+    let manager: SessionSwiftlet
     var expiry: NSTimeInterval
 
     /**
@@ -228,7 +205,7 @@ public class DynamoSessionApplication: DynamoHTMLAppSwiftlet {
         Create new instance of applicatoin swiftlet on damand for session based processing
      */
 
-    required public init( manager: DynamoSessionSwiftlet, sessionKey: String ) {
+    required public init( manager: SessionSwiftlet, sessionKey: String ) {
         self.manager = manager
         self.sessionKey = sessionKey
         self.expiry = NSDate.timeIntervalSinceReferenceDate() + dynanmoDefaultSessionExpiry
@@ -254,7 +231,7 @@ public class DynamoSessionApplication: DynamoHTMLAppSwiftlet {
     but retain their state. This does not work for changes to the layout or number of properties in the class.
 */
 
-public class DynamoBundleSwiftlet: DynamoSessionSwiftlet {
+public class BundleSwiftlet: SessionSwiftlet {
 
     let bundleName: String
     let bundlePath: String
@@ -285,7 +262,7 @@ public class DynamoBundleSwiftlet: DynamoSessionSwiftlet {
         self.loaded = NSDate().timeIntervalSinceReferenceDate
 
         if let bundle = NSBundle( path: bundlePath ) where bundle.load() {
-            if let appClass = bundle.classNamed( "\(bundleName)Swiftlet" ) as? DynamoSessionApplication.Type {
+            if let appClass = bundle.classNamed( "\(bundleName)Swiftlet" ) as? SessionApplication.Type {
                 super.init( pathPrefix: pathPrefix, appClass: appClass )
                 return
             }
@@ -295,7 +272,7 @@ public class DynamoBundleSwiftlet: DynamoSessionSwiftlet {
         }
 
         dynamoLog( "Could not find/load swiftlet for bundle \(bundlePath)" )
-        super.init( pathPrefix: pathPrefix, appClass: DynamoSessionApplication.self )
+        super.init( pathPrefix: pathPrefix, appClass: SessionApplication.self )
         return nil
     }
 
@@ -312,8 +289,8 @@ public class DynamoBundleSwiftlet: DynamoSessionSwiftlet {
                 where lastModified > loaded {
             let nextPath = "/tmp/\(bundleName)V\(loadNumber++).ssp"
 
-            if fileManager.removeItemAtPath( nextPath, error: nil ) &&
-                fileManager.copyItemAtPath( bundlePath, toPath: nextPath, error: nil ) {
+            fileManager.removeItemAtPath( nextPath, error: nil )
+            if fileManager.copyItemAtPath( bundlePath, toPath: nextPath, error: nil ) {
 
                 if let bundle = NSBundle( path: nextPath ) {
                     if bundle.load() {
@@ -343,10 +320,10 @@ public class DynamoBundleSwiftlet: DynamoSessionSwiftlet {
     bundle is updated.
 */
 
-public class DynamoServerPagesSwiftlet: DynamoApplicationSwiftlet {
+public class ServerPagesSwiftlet: ApplicationSwiftlet {
 
     let documentRoot: String
-    var reloaders = [String:DynamoBundleSwiftlet]()
+    var reloaders = [String:BundleSwiftlet]()
     let fileManager = NSFileManager.defaultManager()
 
     /**
@@ -382,7 +359,7 @@ public class DynamoServerPagesSwiftlet: DynamoApplicationSwiftlet {
                                                 options: NSStringCompareOptions.BackwardsSearch )?.endIndex {
                     let nameEnd = advance( sspPath.endIndex, -4 )
                     let bundleName = sspPath.substringWithRange( Range( start: nameStart, end: nameEnd ) )
-                    if let reloader = DynamoBundleSwiftlet( pathPrefix: sspPath,
+                    if let reloader = BundleSwiftlet( pathPrefix: sspPath,
                                     bundleName: bundleName, bundlePath: sspFullPath ) {
                         reloaders[sspPath] = reloader
                     }

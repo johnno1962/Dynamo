@@ -13,7 +13,7 @@ import WebKit
 public var evalJavaScript: (String -> String?)!
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate {//, WebFrameLoadDelegate, WebUIDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, /*WebFrameLoadDelegate,*/ WKUIDelegate {
 
     @IBOutlet weak var window: NSWindow!
     @IBOutlet weak var webView: WebView!
@@ -25,8 +25,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {//, WebFrameLoadDelegate, We
         let documentRoot = "\(NSHomeDirectory())/Sites"
 
         // create shared swiftlet for server applications
-        let exampleTableGeneratorApp = DynamoExampleAppSwiftlet( pathPrefix: "/example" )
-        let tickTackToeGame = DynamoBundleSwiftlet( pathPrefix: "/ticktacktoe", bundleName: "TickTackToe" )!
+        let exampleTableGenerator = ExampleAppSwiftlet( pathPrefix: "/example" )
+        let tickTackToeGame = BundleSwiftlet( pathPrefix: "/ticktacktoe", bundleName: "TickTackToe" )!
 
         let logger = {
             (msg: String) in
@@ -35,13 +35,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {//, WebFrameLoadDelegate, We
 
         // create non-SSL server/proxy on 8080
         DynamoWebServer( portNumber: serverPort, swiftlets: [
-            DynamoLoggingSwiftlet( logger: dynamoTrace ),
-            exampleTableGeneratorApp,
+            LoggingSwiftlet( logger: dynamoTrace ),
+            exampleTableGenerator,
             tickTackToeGame,
-            DynamoSSLProxySwiftlet( logger: logger ),
-            DynamoProxySwiftlet( logger: logger ),
-            DynamoServerPagesSwiftlet( documentRoot: documentRoot ),
-            DynamoDocumentSwiftlet( documentRoot: documentRoot )
+            SSLProxySwiftlet( logger: logger ),
+            ProxySwiftlet( logger: logger ),
+            ServerPagesSwiftlet( documentRoot: documentRoot ),
+            DocumentSwiftlet( documentRoot: documentRoot )
         ] )
 
         let keyChainName = "DynamoSSL"
@@ -53,11 +53,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {//, WebFrameLoadDelegate, We
 
         // create SSL server on port 9090
         DynamoSSLWebServer( portNumber: sslServerPort, swiftlets: [
-            DynamoLoggingSwiftlet( logger: { println( $0 ) } ),
-            exampleTableGeneratorApp,
+            LoggingSwiftlet( logger: { println( $0 ) } ),
+            exampleTableGenerator,
             tickTackToeGame,
-            DynamoServerPagesSwiftlet( documentRoot: documentRoot ),
-            DynamoDocumentSwiftlet( documentRoot: documentRoot )
+            ServerPagesSwiftlet( documentRoot: documentRoot ),
+            DocumentSwiftlet( documentRoot: documentRoot )
         ], certs: certs )
 
         // or can make SSL proxy to any non-SSL web server

@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Connection.swift#50 $
+//  $Id: //depot/Dynamo/Dynamo/Connection.swift#51 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -397,7 +397,7 @@ public class DynamoHTTPConnection: DynamoHTTPRequest {
         write( dout.bytes, count: dout.length )
     }
 
-    // for DynamoSelector...
+    // for DynamoSelector used by proxies
     var hasBytesAvailable: Bool {
         return false
     }

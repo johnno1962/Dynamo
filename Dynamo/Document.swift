@@ -5,17 +5,40 @@
 //  Created by John Holdsworth on 11/07/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Document.swift#6 $
+//  $Id: //depot/Dynamo/Dynamo/Document.swift#7 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
 
 import Foundation
 
+// MARK: Logging Swiftlet
+
+/**
+    Null swiftlet to log each request as it is presented to the processing chain.
+*/
+
+public class LoggingSwiftlet: NSObject, DynamoSwiftlet {
+
+    let logger: (String) -> Void
+
+    /** default initialiser for logging Swiftlet */
+    public init( logger: ((String) -> Void) = dynamoTrace ) {
+        self.logger = logger
+    }
+
+    /** log current request */
+    public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+        logger( "\(httpClient.method) \(httpClient.path) \(httpClient.version) - \(httpClient.remoteAddr)" )
+        return .NotProcessed
+    }
+    
+}
+
 // MARK: Default document Swiftlet
 
 /**
-Default document mime type/charset
+    Default document mime type/charset
 */
 
 public var dynamoHtmlMimeType = "text/html; charset=utf-8"
@@ -66,11 +89,11 @@ public var dynamoMimeTypeMapping = [
 ]
 
 /**
-Default swiftlet, generally last in the swiftlet chain to serve static documents from the file system.
-This is either from the app resources directory for iOS apps or ~/Sites/hostname:port/... on OSX.
+    Default swiftlet, generally last in the swiftlet chain to serve static documents from the file system.
+    This is either from the app resources directory for iOS apps or ~/Sites/hostname:port/... on OSX.
 */
 
-public class DynamoDocumentSwiftlet: NSObject, DynamoSwiftlet {
+public class DocumentSwiftlet: NSObject, DynamoSwiftlet {
 
     let fileManager = NSFileManager.defaultManager()
     let documentRoot: String

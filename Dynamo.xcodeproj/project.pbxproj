@@ -834,6 +834,7 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/NumberGuesser/NumberGuesser.shtml",
+				"$(SRCROOT)/Utilities/sspcompiler.py",
 			);
 			outputPaths = (
 				"$(SRCROOT)/NumberGuesser/NumberGuesser.swift",

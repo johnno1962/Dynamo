@@ -24,14 +24,14 @@
     };
 
     NSArray *swiftlets = @[
-        [[DynamoExampleAppSwiftlet alloc] initWithPathPrefix:@"/example"],
-        [[DynamoSessionSwiftlet alloc] initWithPathPrefix:@"/ticktacktoe"
+        [[ExampleAppSwiftlet alloc] initWithPathPrefix:@"/example"],
+        [[SessionSwiftlet alloc] initWithPathPrefix:@"/ticktacktoe"
                                                  appClass:[TickTackToeSwiftlet class] cookieName: @"TTT"],
-        [[DynamoSessionSwiftlet alloc] initWithPathPrefix:@"/NumberGuesser.ssp"
+        [[SessionSwiftlet alloc] initWithPathPrefix:@"/NumberGuesser.ssp"
                                                  appClass:[NumberGuesserSwiftlet class] cookieName: @"NUM"],
-        [[DynamoSSLProxySwiftlet alloc] initWithLogger:logger],
-        [[DynamoProxySwiftlet alloc] initWithLogger:logger],
-        [[DynamoDocumentSwiftlet alloc] init]
+        [[SSLProxySwiftlet alloc] initWithLogger:logger],
+        [[ProxySwiftlet alloc] initWithLogger:logger],
+        [[DocumentSwiftlet alloc] init]
      ];
 
     (void)[[DynamoWebServer alloc] initWithPortNumber:8080 swiftlets:swiftlets localhostOnly:YES];

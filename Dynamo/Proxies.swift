@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Proxies.swift#50 $
+//  $Id: //depot/Dynamo/Dynamo/Proxies.swift#51 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -19,7 +19,7 @@ import Foundation
      Swiftlet to allow a DynamoWebServer to act as a http: protocol proxy on the same port.
  */
 
-public class DynamoProxySwiftlet: NSObject, DynamoSwiftlet {
+public class ProxySwiftlet: NSObject, DynamoSwiftlet {
 
     var logger: ((String) -> ())?
 
@@ -71,7 +71,7 @@ public class DynamoProxySwiftlet: NSObject, DynamoSwiftlet {
     This must be come before the DynamoProxySwiftlet in the list of swiftlets for the server for both to work.
 */
 
-public class DynamoSSLProxySwiftlet: DynamoProxySwiftlet {
+public class SSLProxySwiftlet: ProxySwiftlet {
 
     /** connect socket through to destination SSL server for method "CONNECT" */
     public override func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {

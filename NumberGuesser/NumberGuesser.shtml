@@ -1,5 +1,5 @@
 <%@ private let staticVar = 99 %>
-<html>
+<html><head><title>Number Guesser Example</title></head>
 <%!
     private let number = Int(arc4random()%100)+1
     private var history = [String]()
@@ -11,20 +11,22 @@
         out.compressResponse = true
 
         if let guess = parameters["guess"]?.toInt() {
-        if guess == number {
-            clearSession() %>
-        <h3>You're right!</h3>
-        <input type="submit" value="Play again">
-        <a href="/">Back to menu</a>
-            <% return
-        }
-        else if guess < number  {
-            history.append( "\(guess) is too low" )
-        }
-        else if guess > number {
-            history.append( "\(guess) is too high" )
-        }
-    } %>
+            if guess == number {
+                clearSession() %>
+                <h3>You're right!</h3>
+                <input type="submit" value="Play again">
+                <a href="/">Back to menu</a>
+                <%
+                    out.response( response )
+                    return
+            }
+            else if guess < number  {
+                history.append( "\(guess) is too low" )
+            }
+            else if guess > number {
+                history.append( "\(guess) is too high" )
+            }
+        } %>
     <h3>Thinking of a number between 1 and 100..</h3>
     <% for try in history { %>
         \(try)<br>
