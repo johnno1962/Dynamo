@@ -9,11 +9,11 @@
 //  Include in ".ssp" bundle projects.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
-#import <mach-o/getsect.h>
-#import <objc/runtime.h>
-#import <dlfcn.h>
+@import MachO.getsect;
+@import ObjectiveC.runtime;
+@import Darwin.POSIX.dlfcn;
 
 @implementation NSObject(DynamoLoader)
 

@@ -6,17 +6,18 @@
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
+@import Darwin.POSIX.pwd;
+
 #import "DDKeychain.h"
-#import <pwd.h>
 
 @import Dynamo;
 
 int main( int argc, char *argv[] ) {
     unsigned short serverPort = 8080;
     NSString *documentRoot = [NSHomeDirectory() stringByAppendingPathComponent:@"Sites"];
+    const char *runAs = NULL;
     NSString *keyChainName;
-    const char *runAs;
 
     switch ( argc ) {
     default:

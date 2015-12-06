@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/07/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Document.swift#7 $
+//  $Id: //depot/Dynamo/Sources/Document.swift#1 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -132,11 +132,12 @@ public class DocumentSwiftlet: NSObject, DynamoSwiftlet {
             let siteHost = httpClient.requestHeaders["Host"] ?? "localhost"
             var fullPath = "\(documentRoot)/\(siteHost)"+(httpClient.url.path ?? "/")
 
-            if fileManager.contentsOfDirectoryAtPath( fullPath, error: nil ) != nil {
-                fullPath = fullPath.stringByAppendingPathComponent( "index.html" )
+            if (try? fileManager.contentsOfDirectoryAtPath( fullPath )) != nil {
+                fullPath = NSURL( fileURLWithPath: fullPath ).URLByAppendingPathComponent( "index.html" ).path!
             }
 
-            httpClient.contentType = dynamoMimeTypeMapping[fullPath.pathExtension] ?? dynamoHtmlMimeType
+            let ext = NSURL( fileURLWithPath: fullPath ).pathExtension
+            httpClient.contentType = (ext != nil ? dynamoMimeTypeMapping[ext!] : nil) ?? dynamoHtmlMimeType
 
             let zippedPath = fullPath+".gz"
             if fileManager.fileExistsAtPath( zippedPath ) {
@@ -144,7 +145,7 @@ public class DocumentSwiftlet: NSObject, DynamoSwiftlet {
                 fullPath = zippedPath
             }
 
-            if var attrs = fileManager.attributesOfItemAtPath( fullPath, error: nil ),
+            if let attrs = try? fileManager.attributesOfItemAtPath( fullPath ),
                         lastModifiedDate = attrs[NSFileModificationDate] as? NSDate {
 
                 let lastModified = webDate( lastModifiedDate )

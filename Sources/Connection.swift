@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Connection.swift#52 $
+//  $Id: //depot/Dynamo/Sources/Connection.swift#2 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -33,6 +33,12 @@ var webDateFormatter: NSDateFormatter = {
     formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
     return formatter
 }()
+
+public extension String {
+    public func toInt() -> Int? {
+        return Int(self)
+    }
+}
 
 /**
     Class representing a request from a client web browser. This is the request part
@@ -96,7 +102,7 @@ public class DynamoHTTPRequest: NSObject {
         if let host = url.host {
             let port = UInt16(url.port?.intValue ?? 80)
 
-            if var addr = addressForHost( host, port ) {
+            if var addr = addressForHost( host, port: port ) {
 
                 let remoteSocket = socket( Int32(addr.sa_family), SOCK_STREAM, 0 )
                 if remoteSocket < 0 {
@@ -200,7 +206,7 @@ public class DynamoHTTPRequest: NSObject {
 
                 while let line = readLine() {
                     if let divider = line.rangeOfString( ": " )?.startIndex {
-                        requestHeaders[line.substringToIndex( divider )] = line.substringFromIndex( advance( divider, 2 ) )
+                        requestHeaders[line.substringToIndex( divider )] = line.substringFromIndex( divider.advancedBy(2 ) )
                     }
                     else {
                         return true
@@ -221,7 +227,7 @@ public class DynamoHTTPRequest: NSObject {
                 UnsafeMutablePointer<Int8>(endOfLine).memory = 0
                 let line = String( UTF8String: UnsafePointer<Int8>(readBuffer.bytes) )?
                     .stringByTrimmingCharactersInSet( NSCharacterSet.whitespaceAndNewlineCharacterSet() )
-                readBuffer.replaceBytesInRange( NSMakeRange( 0, endOfLine+1-readBuffer.bytes ), withBytes:nil, length:0 )
+                readBuffer.replaceBytesInRange( NSMakeRange( 0, UnsafePointer<Void>(endOfLine)+1-readBuffer.bytes ), withBytes:nil, length:0 )
                 return line
             }
 
@@ -257,11 +263,9 @@ public class DynamoHTTPRequest: NSObject {
     /** POST data as JSON object */
     public func postJSON() -> AnyObject? {
         if let data = postData() {
-            var error: NSError?
-            if let json: AnyObject = NSJSONSerialization.JSONObjectWithData( data, options: nil, error: &error ) {
-                return json
-            }
-            else {
+            do {
+                return try NSJSONSerialization.JSONObjectWithData( data, options: [] )
+            } catch let error as NSError {
                 dynamoLog( "JSON parse error:: \(error)" )
             }
         }
@@ -369,16 +373,17 @@ public class DynamoHTTPConnection: DynamoHTTPRequest {
 
     /** set response as a whole from JSON object */
     public func responseJSON( object: AnyObject ) {
-        var error: NSError?
         if NSJSONSerialization.isValidJSONObject( object ) {
-            if let json = NSJSONSerialization.dataWithJSONObject( object,
-                    options: NSJSONWritingOptions.PrettyPrinted, error: &error ) {
+            do {
+                let json = try NSJSONSerialization.dataWithJSONObject( object,
+                        options: NSJSONWritingOptions.PrettyPrinted )
                 contentType = dynamoMimeTypeMapping["json"] ?? "application/json"
                 responseData( json )
                 return
+            } catch let error as NSError {
+                dynamoLog( "Could not encode: \(object) \(error)" )
             }
         }
-        dynamoLog( "Could not encode: \(object) \(error)" )
     }
 
     /** set response as a whole from NSData */
@@ -477,7 +482,7 @@ public func addressForHost( hostname: String, port: UInt16 ) -> sockaddr? {
 extension NSData {
 
     /**
-        Swizzled/overridden by NSData+deflate.m
+        Overridden by NSData+deflate.m
      */
     func deflate() -> NSData? {
         return nil

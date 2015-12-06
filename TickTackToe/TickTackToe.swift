@@ -58,15 +58,15 @@ public class TickTackToeSwiftlet: SessionApplication {
             engine = TickTackGameEngine()
             if whoWon != "draw" {
                 let newCount = cookies[whoWon] ?? "0"
-                let newValue = "\(newCount.toInt()!+1)"
+                let newValue = "\(Int(newCount)!+1)"
                 out.setCookie( whoWon, value: newValue, expires: 60 )
                 cookies[whoWon] = newValue
             }
         }
 
-        let scores = ", ".join( cookies.keys
+        let scores = cookies.keys
             .filter( { $0 == "red" || $0 == "green" } )
-            .map( { "\($0) wins: \(cookies[$0]!)" } ) )
+            .map( { "\($0) wins: \(cookies[$0]!)" } ).joinWithSeparator( ", " )
 
         out.print( html( nil ) + head( title( "Tick Tack Toe Example" ) +
             style( "body, table { font: 10pt Arial; } " +
@@ -75,7 +75,7 @@ public class TickTackToeSwiftlet: SessionApplication {
             h3( "Tick Tack Toe "+scores ) )
 
         // make move
-        var player = parameters["player"] ?? "green"
+        let player = parameters["player"] ?? "green"
 
         if let x = parameters["x"]?.toInt(), y = parameters["y"]?.toInt() {
             engine.board[y][x] = player
@@ -104,7 +104,7 @@ public class TickTackToeSwiftlet: SessionApplication {
         out.print( _table() )
 
         // check for winner
-        var won = engine.winner()
+        let won = engine.winner()
 
         if won != nil {
             out.print( script( "alert( '\(player) wins' ); document.location.href = '/ticktacktoe?reset=\(won!)';" ) )

@@ -5,28 +5,17 @@
 //  Created by John Holdsworth on 11/07/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/NSData+deflate.m#8 $
+//  $Id: //depot/Dynamo/Sources/NSData+deflate.m#1 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
 
-#import <Foundation/Foundation.h>
-#import <objc/runtime.h>
+@import Foundation;
 #import <zlib.h>
 
-@interface NSData(deflate)
-- (NSData *)deflate;
-@end
+@implementation NSData(deflate)
 
-@implementation NSData(delflate2)
-
-+ (void)load {
-    // replace Swift placeholder with this implementation (no bridging headers in frameworks)
-    method_exchangeImplementations(class_getInstanceMethod( self, @selector(deflate) ),
-                                   class_getInstanceMethod( self, @selector(deflate2) ));
-}
-
-- (NSData *)deflate2 {
+- (NSData *)deflate {
     uLong sourceLen = self.length;
     uLong destLen = compressBound( sourceLen );
     Bytef *dest = malloc( destLen );

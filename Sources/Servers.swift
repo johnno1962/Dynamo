@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Servers.swift#52 $
+//  $Id: //depot/Dynamo/Sources/Servers.swift#1 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -282,7 +282,7 @@ func sockaddr_in_cast(p: UnsafeMutablePointer<sockaddr>) -> UnsafeMutablePointer
 
 /** default tracer for frequent messages */
 public func dynamoTrace<T>( msg: T ) {
-    println( msg )
+    print( msg )
 }
 
 func dynamoLog<T>( msg: T ) {

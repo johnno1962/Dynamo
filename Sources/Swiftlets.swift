@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Swiftlets.swift#14 $
+//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#1 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -87,7 +87,7 @@ public class ApplicationSwiftlet: NSObject, DynamoBrowserSwiftlet {
     private func addParameters(  inout parameters: [String:String], from queryString: String, delimeter: String = "&" ) {
         for nameValue in queryString.componentsSeparatedByString( delimeter ) {
             if let divider = nameValue.rangeOfString( "=" )?.startIndex {
-                let value = nameValue.substringFromIndex( advance( divider, 1 ) )
+                let value = nameValue.substringFromIndex( divider.advancedBy( 1 ) )
                 if let value = value
                         .stringByReplacingOccurrencesOfString( "+", withString: " " )
                         .stringByRemovingPercentEncoding {
@@ -167,7 +167,7 @@ public class SessionSwiftlet: ApplicationSwiftlet {
         var sessionKey = cookies[cookieName]
         if sessionKey == nil || sessions[sessionKey!] == nil {
             sessionKey = NSUUID().UUIDString
-            sessions[sessionKey!] = appClass( manager: self, sessionKey: sessionKey! )
+            sessions[sessionKey!] = appClass.init( manager: self, sessionKey: sessionKey! )
             out.setCookie( cookieName, value: sessionKey!, path: pathPrefix )
             out.contentType = dynamoHtmlMimeType
         }
@@ -284,13 +284,18 @@ public class BundleSwiftlet: SessionSwiftlet {
 
     public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
 
-        if let attrs = fileManager.attributesOfItemAtPath( binaryPath, error: nil ),
+        if let attrs = try? fileManager.attributesOfItemAtPath( binaryPath),
             lastModified = (attrs[NSFileModificationDate] as? NSDate)?.timeIntervalSinceReferenceDate
                 where lastModified > loaded {
             let nextPath = "/tmp/\(bundleName)V\(loadNumber++).ssp"
 
-            fileManager.removeItemAtPath( nextPath, error: nil )
-            if fileManager.copyItemAtPath( bundlePath, toPath: nextPath, error: nil ) {
+            do {
+                try fileManager.removeItemAtPath( nextPath )
+            } catch _ {
+            }
+
+            do {
+                try fileManager.copyItemAtPath( bundlePath, toPath: nextPath )
 
                 if let bundle = NSBundle( path: nextPath ) {
                     if bundle.load() {
@@ -301,9 +306,8 @@ public class BundleSwiftlet: SessionSwiftlet {
                         dynamoLog( "Could not reload bundle \(nextPath)" )
                     }
                 }
-            }
-            else {
-                dynamoLog( "Could not copy bundle to \(nextPath)" )
+            } catch let error as NSError {
+                dynamoLog( "Could not copy bundle to \(nextPath) \(error)" )
             }
         }
 
@@ -352,12 +356,12 @@ public class ServerPagesSwiftlet: ApplicationSwiftlet {
             }
 
             let sspFullPath = "\(documentRoot)/\(host)\(sspPath)"
-            var reloader = reloaders[sspPath]
+            let reloader = reloaders[sspPath]
 
             if reloader == nil && fileManager.fileExistsAtPath( sspFullPath ) {
                 if let nameStart = sspPath.rangeOfString( "/",
                                                 options: NSStringCompareOptions.BackwardsSearch )?.endIndex {
-                    let nameEnd = advance( sspPath.endIndex, -4 )
+                    let nameEnd = sspPath.endIndex.advancedBy(-4 )
                     let bundleName = sspPath.substringWithRange( Range( start: nameStart, end: nameEnd ) )
                     if let reloader = BundleSwiftlet( pathPrefix: sspPath,
                                     bundleName: bundleName, bundlePath: sspFullPath ) {

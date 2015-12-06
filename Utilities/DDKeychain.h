@@ -21,8 +21,8 @@
 
  */
 
-#import <Cocoa/Cocoa.h>
-#import <Security/Security.h>
+@import Cocoa;
+@import Security;
 
 @interface DDKeychain : NSObject
 {

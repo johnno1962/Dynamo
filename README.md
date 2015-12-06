@@ -61,6 +61,7 @@ provided it contains the "AutoLoader.m" stub the new code will be "swizzled" int
 The `ExampleAppSwiftlet` is used in the tests for checking character encoding in GET and POST
 form submission. `TickTackToe` is an example .ssp application in a bundle target. `NumberGuesser` is 
 implemented as a .shtml template compiled into swift code by the Utilities/sspcompiler.py script.
+Changes made to these Swiftlets will take effect when you reload the page after a project build.
 
 ### DynamoWebServer, DynamoSSLWebServer severs.
 

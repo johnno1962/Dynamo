@@ -30,11 +30,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, /*WebFrameLoadDelegate,*/ WK
 
         let logger = {
             (msg: String) in
-            println( msg )
+            print( msg )
         }
 
         // create non-SSL server/proxy on 8080
-        DynamoWebServer( portNumber: serverPort, swiftlets: [
+        _ = DynamoWebServer( portNumber: serverPort, swiftlets: [
             LoggingSwiftlet( logger: dynamoTrace ),
             exampleTableGenerator,
             tickTackToeGame,
@@ -52,8 +52,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, /*WebFrameLoadDelegate,*/ WK
         }
 
         // create SSL server on port 9090
-        DynamoSSLWebServer( portNumber: sslServerPort, swiftlets: [
-            LoggingSwiftlet( logger: { println( $0 ) } ),
+        _ = DynamoSSLWebServer( portNumber: sslServerPort, swiftlets: [
+            LoggingSwiftlet( logger: { print( $0 ) } ),
             exampleTableGenerator,
             tickTackToeGame,
             ServerPagesSwiftlet( documentRoot: documentRoot ),
@@ -61,7 +61,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, /*WebFrameLoadDelegate,*/ WK
         ], certs: certs )
 
         // or can make SSL proxy to any non-SSL web server
-        DynamoSSLWebServer( portNumber: 9191, certs: certs, surrogate: "http://localhost:\(serverPort)" )
+        _ = DynamoSSLWebServer( portNumber: 9191, certs: certs, surrogate: "http://localhost:\(serverPort)" )
 
         evalJavaScript = {
             javascript in
@@ -71,11 +71,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, /*WebFrameLoadDelegate,*/ WK
         webView.mainFrame.loadRequest( NSURLRequest( URL: NSURL( string: "http://localhost:\(serverPort)" )! ) )
     }
 
-    override func webView( aWebView: WebView, didReceiveTitle aTitle: String, forFrame frame: WebFrame ) {
+    func webView( aWebView: WebView, didReceiveTitle aTitle: String, forFrame frame: WebFrame ) {
         window.title = aTitle
     }
 
-    override func webView( sender: WebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WebFrame ) {
+    func webView( sender: WebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WebFrame ) {
         let alert = NSAlert()
         alert.messageText = "JavaScript message from page"
         alert.informativeText = message

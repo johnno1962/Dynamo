@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Dynamo/Proxies.swift#51 $
+//  $Id: //depot/Dynamo/Sources/Proxies.swift#1 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -110,23 +110,23 @@ func FD_ZERO( flags: UnsafeMutablePointer<Int32> ) {
     memset( flags, 0, sizeof(fd_set) )
 }
 
-func FD_CLR( fd: Int32, flags: UnsafeMutablePointer<Int32> ) {
+func FD_CLR( fd: Int32, _ flags: UnsafeMutablePointer<Int32> ) {
     let set = flags + Int( fd>>selectShift )
     set.memory &= ~(1<<(fd&selectBitMask))
 }
 
-func FD_SET( fd: Int32, flags: UnsafeMutablePointer<Int32> ) {
+func FD_SET( fd: Int32, _ flags: UnsafeMutablePointer<Int32> ) {
     let set = flags + Int( fd>>selectShift )
     set.memory |= 1<<(fd&selectBitMask)
 }
 
-func FD_ISSET( fd: Int32, flags: UnsafeMutablePointer<Int32> ) -> Bool {
+func FD_ISSET( fd: Int32, _ flags: UnsafeMutablePointer<Int32> ) -> Bool {
     let set = flags + Int( fd>>selectShift )
     return (set.memory & (1<<(fd&selectBitMask))) != 0
 }
 
 @asmname("fcntl")
-func fcntl( filedesc: Int32, command: Int32, arg: Int32 ) -> Int32
+func fcntl( filedesc: Int32, _ command: Int32, _ arg: Int32 ) -> Int32
 
 /**
     More efficient than relying on operating system to handle many reads on different threads when proxying
@@ -152,11 +152,11 @@ final class DynamoSelector {
         OSSpinLockUnlock( &dynamoQueueLock )
     }
 
-    func selectLoop( _ logger: ((String) -> Void)? = nil ) {
+    func selectLoop( logger: ((String) -> Void)? = nil ) {
 
-        var readFlags = UnsafeMutablePointer<Int32>( malloc( sizeof(fd_set) ) )
-        var writeFlags = UnsafeMutablePointer<Int32>( malloc( sizeof(fd_set) ) )
-        var errorFlags = UnsafeMutablePointer<Int32>( malloc( sizeof(fd_set) ) )
+        let readFlags = UnsafeMutablePointer<Int32>( malloc( sizeof(fd_set) ) )
+        let writeFlags = UnsafeMutablePointer<Int32>( malloc( sizeof(fd_set) ) )
+        let errorFlags = UnsafeMutablePointer<Int32>( malloc( sizeof(fd_set) ) )
 
         var buffer = [Int8](count: maxPacket, repeatedValue: 0)
         var timeout = timeval()
@@ -197,7 +197,7 @@ final class DynamoSelector {
             }
 
             var hasWrite = false
-            for (fd,writer) in writeMap {
+            for (fd,_) in writeMap {
                 FD_SET( fd, writeFlags )
                 FD_SET( fd, errorFlags )
                 if maxfd < fd {
@@ -218,7 +218,7 @@ final class DynamoSelector {
                 timeout.tv_usec = 0
                 dynamoStrerror( "Select error \(readMap) \(writeMap)" )
 
-                for (fd,writer) in readMap {
+                for (fd,_) in readMap {
                     FD_ZERO( readFlags )
                     FD_SET( fd, readFlags )
                     if  select( fd+1, UnsafeMutablePointer<fd_set>( readFlags ), nil, nil, &timeout ) < 0 {
@@ -248,7 +248,9 @@ final class DynamoSelector {
                 if let writer = readMap[readFD], reader = readMap[writer.clientSocket]
                     where FD_ISSET( readFD, readFlags ) || writer.readTotal != 0 && reader.hasBytesAvailable {
 
+                        print( "READ.. \(writer.label)" )
                     if let bytesRead = reader.receive( &buffer, count: buffer.count ) {
+                        print( "READ \(writer.label)" )
                         let readBuffer = writer.readBuffer
 
                         logger?( "\(writer.label) \(writer.readTotal)+\(readBuffer.length)+\(bytesRead) bytes (\(readFD)/\(readMap.count)/\(fdcount))" )
@@ -272,8 +274,10 @@ final class DynamoSelector {
                 if FD_ISSET( writeFD, writeFlags ) {
                     let readBuffer = writer.readBuffer
 
+                    print( "WRITE.. \(writer.label)" )
                     if let bytesWritten = writer.forward( readBuffer.bytes, count: readBuffer.length ) {
-                        if bytesWritten <= 0 {
+                        print( "WRITE \(writer.label)" )
+                       if bytesWritten <= 0 {
                             writeMap.removeValueForKey( writer.clientSocket )
                             dynamoLog( "Short write on relay \(writer.label)" )
                             close( writeFD )

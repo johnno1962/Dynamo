@@ -40,8 +40,8 @@ response += "                <h3>You're right!</h3>\n                <input type
             }
         }
 response += "    <h3>Thinking of a number between 1 and 100..</h3>\n    "
- for try in history {
-response += "        \(try)<br>\n    "
+ for guess in history {
+response += "        \(guess)<br>\n    "
  }
 response += "    Enter a guess: <input type=\"textfield\" name=\"guess\">\n    <input type=\"submit\" value=\"Enter\">\n    </form>\n</body>\n</html>"
 
