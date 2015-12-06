@@ -102,7 +102,8 @@ public class DynamoHTTPRequest: NSObject {
         if let host = url.host {
             let port = UInt16(url.port?.intValue ?? 80)
 
-            if var addr = addressForHost( host, port: port ) {
+            if let addr = addressForHost( host, port: port ) {
+                var addr = addr
 
                 let remoteSocket = socket( Int32(addr.sa_family), SOCK_STREAM, 0 )
                 if remoteSocket < 0 {
@@ -363,7 +364,8 @@ public class DynamoHTTPConnection: DynamoHTTPRequest {
 
     /** set response as a whole from a String */
     public func response( output: String ) {
-        if var bytes = output.cStringUsingEncoding( NSUTF8StringEncoding ) {
+        if let bytes = output.cStringUsingEncoding( NSUTF8StringEncoding ) {
+            var bytes = bytes
             responseData( NSData( bytesNoCopy: &bytes, length: Int(strlen(bytes)), freeWhenDone: false ) )
         }
         else {

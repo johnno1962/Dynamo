@@ -125,8 +125,8 @@ func FD_ISSET( fd: Int32, _ flags: UnsafeMutablePointer<Int32> ) -> Bool {
     return (set.memory & (1<<(fd&selectBitMask))) != 0
 }
 
-@asmname("fcntl")
-func fcntl( filedesc: Int32, _ command: Int32, _ arg: Int32 ) -> Int32
+//@asmname("fcntl")
+//func fcntl( filedesc: Int32, _ command: Int32, _ arg: Int32 ) -> Int32
 
 /**
     More efficient than relying on operating system to handle many reads on different threads when proxying
@@ -169,11 +169,11 @@ final class DynamoSelector {
                 to.label = "-> \(label)"
                 from.label = "<- \(label)"
 
-                if label == "surrogate" {
-                    var flags = fcntl( to.clientSocket, F_GETFL, 0 )
-                    flags |= O_NONBLOCK
-                    fcntl( to.clientSocket, F_SETFL, flags )
-                }
+//                if label == "surrogate" {
+//                    var flags = fcntl( to.clientSocket, F_GETFL, 0 )
+//                    flags |= O_NONBLOCK
+//                    fcntl( to.clientSocket, F_SETFL, flags )
+//                }
 
                 readMap[from.clientSocket] = to
                 readMap[to.clientSocket] = from
