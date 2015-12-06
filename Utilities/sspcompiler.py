@@ -52,7 +52,7 @@ file.write( '''//
 //
 
 import Foundation
-#if os(OSX)
+#if !os(iOS)
 import Dynamo
 #endif
 

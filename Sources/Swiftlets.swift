@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#2 $
+//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#1 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -19,13 +19,13 @@ import Foundation
     and cookies and any POST parameters. The web application then implements this protocol.
  */
 
-@objc public protocol DynamoBrowserSwiftlet: DynamoSwiftlet {
+public protocol DynamoBrowserSwiftlet: DynamoSwiftlet {
 
     /**
         A request can be further parsed to extract parameters, method "POST" data and cookies before processing
      */
 
-    @objc func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
+    func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
 
 }
 
@@ -34,7 +34,7 @@ import Foundation
     process it. Handles parsing of HTTP headers to present to web application code.
  */
 
-public class ApplicationSwiftlet: NSObject, DynamoBrowserSwiftlet {
+public class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
 
     let pathPrefix: String
 
@@ -102,7 +102,7 @@ public class ApplicationSwiftlet: NSObject, DynamoBrowserSwiftlet {
     /**
         An application Swiftlet implements this method to performs it's processing printing to the browser
         or setting a "response" as whole which will allow the connection to be reused.
-     */
+     */	   
 
     public func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
         dynamoLog( "DynamoApplicationSwiftlet.processRequest(): Subclass responsibility" )
@@ -129,7 +129,7 @@ public class SessionSwiftlet: ApplicationSwiftlet {
     var appClass: SessionApplication.Type
     var sessions = [String:ApplicationSwiftlet]()
 
-    private var sessionLock = OS_SPINLOCK_INIT
+    private var sessionLock = NSLock()
     private let cookieName: String
 
     /**
@@ -146,15 +146,17 @@ public class SessionSwiftlet: ApplicationSwiftlet {
     private func cleanupSessions() {
         for (key, session) in sessions {
             if let session = session as? SessionApplication
-                where session.expiry < NSDate.timeIntervalSinceReferenceDate() {
-                    OSSpinLockLock( &sessionLock )
+                where session.expiry < NSDate().timeIntervalSinceReferenceDate {
+                    sessionLock.lock()
                     sessions.removeValueForKey( key )
-                    OSSpinLockUnlock( &sessionLock )
+                    sessionLock.unlock()
             }
         }
 
+#if !os(Linux)
         let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(sessionExpiryCheckInterval * Double(NSEC_PER_SEC)))
         dispatch_after( delayTime, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), cleanupSessions )
+#endif
     }
     /**
         Create a new instance of the application class to process the request if request and have it process it.
@@ -162,7 +164,7 @@ public class SessionSwiftlet: ApplicationSwiftlet {
 
     public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
 
-        OSSpinLockLock( &sessionLock )
+    	sessionLock.lock()
         var sessionKey = cookies[cookieName]
         if sessionKey == nil || sessions[sessionKey!] == nil {
             sessionKey = NSUUID().UUIDString
@@ -170,7 +172,7 @@ public class SessionSwiftlet: ApplicationSwiftlet {
             out.setCookie( cookieName, value: sessionKey!, path: pathPrefix )
             out.contentType = dynamoHtmlMimeType
         }
-        OSSpinLockUnlock( &sessionLock )
+        sessionLock.unlock()
 
         if let sessionApp = sessions[sessionKey!] {
             sessionApp.processRequest( out, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
@@ -207,7 +209,7 @@ public class SessionApplication: HTMLApplicationSwiftlet {
     required public init( manager: SessionSwiftlet, sessionKey: String ) {
         self.manager = manager
         self.sessionKey = sessionKey
-        self.expiry = NSDate.timeIntervalSinceReferenceDate() + dynanmoDefaultSessionExpiry
+        self.expiry = NSDate().timeIntervalSinceReferenceDate + dynanmoDefaultSessionExpiry
         super.init( pathPrefix: "N/A" )
     }
 
@@ -323,6 +325,8 @@ public class BundleSwiftlet: SessionSwiftlet {
     bundle is updated.
 */
 
+#if !os(Linux)
+
 public class ServerPagesSwiftlet: ApplicationSwiftlet {
 
     let documentRoot: String
@@ -384,3 +388,5 @@ public class ServerPagesSwiftlet: ApplicationSwiftlet {
         return .NotProcessed
     }
 }
+
+#endif

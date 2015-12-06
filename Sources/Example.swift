@@ -36,7 +36,7 @@ public class ExampleAppSwiftlet: HTMLApplicationSwiftlet {
                         tr( td( "Title: " ) + td( input( ["type":"textfield", "name":"title"] ) ) ) +
                         tr( td( "Width: " ) + td( input( ["type":"textfield", "name":"width"] ) ) ) +
                         tr( td( "Height: " ) + td( input( ["type":"textfield", "name":"height"] ) ) ) +
-                        tr( td( ["colspan":"2"], input( ["type": "submit"] )) )
+                        tr( td( ["colspan":"2"], input( ["type": "submit", "value": "Generate"] )) )
                     )
                 )
             )
@@ -58,7 +58,7 @@ public class ExampleAppSwiftlet: HTMLApplicationSwiftlet {
                 }
             }
 
-            out.print( _table()+p()+input( ["type": "submit"] )+_form() )
+            out.print( _table()+p()+input( ["type": "submit", "value": "Complete"] )+_form() )
         }
         else {
             out.print( h3( "Your table:" ) + table( ["border":"1"], nil ) )

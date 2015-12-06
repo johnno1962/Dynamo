@@ -5,13 +5,16 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Proxies.swift#2 $
+//  $Id: //depot/Dynamo/Sources/Proxies.swift#1 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
 
 import Foundation
 
+#if os(Linux)
+import Glibc
+#endif
 
 // MARK: Proxy Swiftlets
 
@@ -19,7 +22,7 @@ import Foundation
      Swiftlet to allow a DynamoWebServer to act as a http: protocol proxy on the same port.
  */
 
-public class ProxySwiftlet: NSObject, DynamoSwiftlet {
+public class ProxySwiftlet: _NSObject_, DynamoSwiftlet {
 
     var logger: ((String) -> ())?
 
@@ -98,7 +101,7 @@ var dynamoSelector: DynamoSelector?
 private let selectBitsPerFlag: Int32 = 32
 private let selectShift: Int32 = 5
 private let selectBitMask: Int32 = (1<<selectShift)-1
-private var dynamoQueueLock = OS_SPINLOCK_INIT
+private var dynamoQueueLock = NSLock()
 private let dynamoProxyQueue = dispatch_queue_create( "DynamoProxyThread", DISPATCH_QUEUE_CONCURRENT )
 
 /** polling interval for proxy relay */
@@ -139,7 +142,7 @@ final class DynamoSelector {
     var queue = [(String,DynamoHTTPConnection,DynamoHTTPConnection)]()
 
     class func relay( label: String, from: DynamoHTTPConnection, to: DynamoHTTPConnection, _ logger: ((String) -> ())? ) {
-        OSSpinLockLock( &dynamoQueueLock )
+        dynamoQueueLock.lock()
 
         if dynamoSelector == nil {
             dynamoSelector = DynamoSelector()
@@ -149,7 +152,7 @@ final class DynamoSelector {
         }
 
         dynamoSelector!.queue.append( (label,from,to) )
-        OSSpinLockUnlock( &dynamoQueueLock )
+        dynamoQueueLock.unlock()
     }
 
     func selectLoop( logger: ((String) -> Void)? = nil ) {
@@ -163,7 +166,7 @@ final class DynamoSelector {
 
         while true {
 
-            OSSpinLockLock( &dynamoQueueLock )
+	    dynamoQueueLock.lock()
             while queue.count != 0 {
                 let (label,from,to) = queue.removeAtIndex(0)
                 to.label = "-> \(label)"
@@ -178,7 +181,7 @@ final class DynamoSelector {
                 readMap[from.clientSocket] = to
                 readMap[to.clientSocket] = from
             }
-            OSSpinLockUnlock( &dynamoQueueLock )
+	    dynamoQueueLock.unlock()
 
             FD_ZERO( readFlags )
             FD_ZERO( writeFlags )
@@ -207,7 +210,11 @@ final class DynamoSelector {
             }
 
             timeout.tv_sec = 0
+            #if os(Linux)
+            timeout.tv_usec = Int(dynamoPollingUsec)
+            #else
             timeout.tv_usec = dynamoPollingUsec
+            #endif
 
             if select( maxfd+1,
                     UnsafeMutablePointer<fd_set>( readFlags ),

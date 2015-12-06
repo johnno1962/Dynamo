@@ -93,7 +93,7 @@ public var dynamoMimeTypeMapping = [
     This is either from the app resources directory for iOS apps or ~/Sites/hostname:port/... on OSX.
 */
 
-public class DocumentSwiftlet: NSObject, DynamoSwiftlet {
+public class DocumentSwiftlet: _NSObject_, DynamoSwiftlet {
 
     let fileManager = NSFileManager.defaultManager()
     let documentRoot: String
@@ -103,9 +103,15 @@ public class DocumentSwiftlet: NSObject, DynamoSwiftlet {
         Convenience initialiser taking document root from the resources directory/localhost:port
     */
 
+    #if os(Linux)
+    public convenience init() {
+        self.init( documentRoot: NSBundle.mainBundle().resourcePath! )
+    }
+    #else
     public convenience override init() {
         self.init( documentRoot: NSBundle.mainBundle().resourcePath! )
     }
+    #endif
 
     /**
         Initialiser pecifying documentRoot an whether this is the last Swiftlet and it should report 404
@@ -132,9 +138,11 @@ public class DocumentSwiftlet: NSObject, DynamoSwiftlet {
             let siteHost = httpClient.requestHeaders["Host"] ?? "localhost"
             var fullPath = "\(documentRoot)/\(siteHost)"+(httpClient.url.path ?? "/")
 
+#if !os(Linux)
             if (try? fileManager.contentsOfDirectoryAtPath( fullPath )) != nil {
                 fullPath = NSURL( fileURLWithPath: fullPath ).URLByAppendingPathComponent( "index.html" ).path!
             }
+#endif
 
             let ext = NSURL( fileURLWithPath: fullPath ).pathExtension
             httpClient.contentType = (ext != nil ? dynamoMimeTypeMapping[ext!] : nil) ?? dynamoHtmlMimeType

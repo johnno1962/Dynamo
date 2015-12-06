@@ -41,9 +41,13 @@ public class HTMLApplicationSwiftlet: ApplicationSwiftlet {
         if attributes != nil {
             for (name, value) in attributes! {
                 html += " \(name)"
-                if value != NSNull() {
+                #if os(Linux)
                     html += "='\(htmlEscape(value))'"
-                }
+                #else
+                    if value != NSNull() {
+                        html += "='\(htmlEscape(value))'"
+                    }
+                #endif
             }
         }
 

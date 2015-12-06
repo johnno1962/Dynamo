@@ -11,14 +11,13 @@
 //
 
 import Foundation
+#if os(Linux)
+import Glibc
+#endif
 
 // MARK: Private queues and missing IP functions
 
 let dynamoRequestQueue = dispatch_queue_create( "DynamoRequestThread", DISPATCH_QUEUE_CONCURRENT )
-
-let INADDR_ANY = in_addr_t(0)
-let htons = Int(OSHostByteOrder()) == OSLittleEndian ? _OSSwapInt16 : { $0 }
-let ntohs = htons
 
 /**
      Result returned by a swiftlet to indicate whether it has handled the request. If a "Content-Length"
@@ -37,13 +36,23 @@ let ntohs = htons
      Basic protocol that switlets implement to pick up and process requests from a client.
  */
 
+#if os(Linux)
+public protocol DynamoSwiftlet {
+
+    /**
+     each request is presented ot each swiftlet until one indicates it has processed the request
+     */
+    func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
+}
+#else
 @objc public protocol DynamoSwiftlet {
 
     /**
-        each request is presented ot each swiftlet until one indicates it has processed the request
+     each request is presented ot each swiftlet until one indicates it has processed the request
      */
-    @objc func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
+    func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
 }
+#endif
 
 // MARK: Basic http: Web server
 
@@ -52,7 +61,7 @@ let ntohs = htons
      of swiftlets provided in a connecton thread until one is encountered that has processed the request.
  */
 
-public class DynamoWebServer: NSObject, NSStreamDelegate {
+public class DynamoWebServer: _NSObject_ {
 
     private let swiftlets: [DynamoSwiftlet]
     private let serverSocket: Int32
@@ -67,6 +76,7 @@ public class DynamoWebServer: NSObject, NSStreamDelegate {
     /** basic initialiser for Swift web server processing using array of swiftlets */
     public convenience init?( portNumber: UInt16, swiftlets: [DynamoSwiftlet], localhostOnly: Bool = false ) {
 
+        print(swiftlets)
         self.init( portNumber, swiftlets: swiftlets, localhostOnly: localhostOnly )
 
         runConnectionHandler( httpConnectionHander )
@@ -76,21 +86,36 @@ public class DynamoWebServer: NSObject, NSStreamDelegate {
 
         self.swiftlets = swiftlets
 
-        var ip4addr = sockaddr_in(sin_len: UInt8(sizeof(sockaddr_in)),
+#if os(Linux)
+        var ip4addr = sockaddr_in(
             sin_family: sa_family_t(AF_INET),
             sin_port: htons( portNumber ),
             sin_addr: in_addr( s_addr: INADDR_ANY ),
-            sin_zero: (Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0)))
+            sin_zero: (0,0,0,0,0,0,0,0) )
+#else
+        var ip4addr = sockaddr_in( sin_len: UInt8(sizeof(sockaddr_in)),
+            sin_family: sa_family_t(AF_INET),
+            sin_port: htons( portNumber ),
+            sin_addr: in_addr( s_addr: INADDR_ANY ),
+            sin_zero: (0,0,0,0,0,0,0,0) )
+#endif
 
         if localhostOnly {
             inet_aton( "127.0.0.1", &ip4addr.sin_addr )
         }
 
+        #if os(Linux)
+        serverSocket = socket( Int32(ip4addr.sin_family), Int32(SOCK_STREAM.rawValue), 0 )
+        #else
         serverSocket = socket( Int32(ip4addr.sin_family), SOCK_STREAM, 0 )
+        #endif
+
         var yes: u_int = 1, yeslen = socklen_t(sizeof(yes.dynamicType))
         var addrLen = socklen_t(sizeof(ip4addr.dynamicType))
 
+        #if !os(Linux)
         super.init()
+        #endif
 
         if serverSocket < 0 {
             dynamoStrerror( "Could not get server socket" )
@@ -98,7 +123,7 @@ public class DynamoWebServer: NSObject, NSStreamDelegate {
         else if setsockopt( serverSocket, SOL_SOCKET, SO_REUSEADDR, &yes, yeslen ) < 0 {
             dynamoStrerror( "Could not set SO_REUSEADDR" )
         }
-        else if Darwin.bind( serverSocket, sockaddr_cast(&ip4addr), socklen_t(ip4addr.sin_len) ) < 0 {
+        else if bind( serverSocket, sockaddr_cast(&ip4addr), addrLen ) < 0 {
             dynamoStrerror( "Could not bind service socket on port \(portNumber)" )
         }
         else if listen( serverSocket, 100 ) < 0 {
@@ -106,7 +131,11 @@ public class DynamoWebServer: NSObject, NSStreamDelegate {
         }
         else if getsockname( serverSocket, sockaddr_cast(&ip4addr), &addrLen ) == 0 {
             serverPort = ntohs( ip4addr.sin_port )
+            #if os(Linux)
+            let s = ""
+            #else
             let s = self.dynamicType === DynamoSSLWebServer.self ? "s" : ""
+            #endif
             dynamoLog( "Server available on http\(s)://localhost:\(serverPort)" )
             return
         }
@@ -166,6 +195,8 @@ public class DynamoWebServer: NSObject, NSStreamDelegate {
 
 }
 
+#if !os(Linux)
+
 // MARK: SSL https: Web Server
 
 /**
@@ -210,7 +241,7 @@ public class DynamoSSLWebServer: DynamoWebServer {
 
 }
 
-class DynamoSSLConnection: DynamoHTTPConnection, NSStreamDelegate {
+class DynamoSSLConnection: DynamoHTTPConnection {
 
     let inputStream: NSInputStream
     let outputStream: NSOutputStream
@@ -270,7 +301,16 @@ class DynamoSSLConnection: DynamoHTTPConnection, NSStreamDelegate {
 
 }
 
+#endif
+
 // MARK: Functions
+
+let INADDR_ANY = in_addr_t(0)
+
+func htons( port: UInt16 ) -> UInt16 {
+    return (port << 8) + (port >> 8)
+}
+let ntohs = htons
 
 func sockaddr_cast(p: UnsafeMutablePointer<Void>) -> UnsafeMutablePointer<sockaddr> {
     return UnsafeMutablePointer<sockaddr>(p)
@@ -286,9 +326,17 @@ public func dynamoTrace<T>( msg: T ) {
 }
 
 func dynamoLog<T>( msg: T ) {
+#if os(Linux)
+    print( "DynamoWebServer: \(msg)" )
+#else
     NSLog( "DynamoWebServer: %@", "\(msg)" )
+#endif
 }
 
 func dynamoStrerror( msg: String ) {
-    dynamoLog( "\(msg) - \( String( UTF8String: strerror(errno) )! )" )
+#if os(Linux)
+    dynamoLog( "\(msg)" )
+#else
+    dynamoLog( "\(msg) - \( String.fromCString( strerror(errno) )! )" )
+#endif
 }

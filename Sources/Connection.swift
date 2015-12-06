@@ -5,12 +5,16 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Connection.swift#3 $
+//  $Id: //depot/Dynamo/Sources/Connection.swift#2 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
 
 import Foundation
+
+#if os(Linux)
+import Glibc
+#endif
 
 // MARK: HTTP request parser
 
@@ -45,7 +49,7 @@ public extension String {
     of DynamoHTTPConnection though in practice they are the same instance.
 */
 
-public class DynamoHTTPRequest: NSObject {
+public class DynamoHTTPRequest: _NSObject_ {
 
     let clientSocket: Int32
 
@@ -86,14 +90,19 @@ public class DynamoHTTPRequest: NSObject {
     public init?( clientSocket: Int32 ) {
 
         self.clientSocket = clientSocket
+
+        #if !os(Linux)
         super.init()
+        #endif
 
         if clientSocket >= 0 {
+            #if !os(Linux)
             var yes: u_int = 1, yeslen = socklen_t(sizeof(yes.dynamicType))
             if setsockopt( clientSocket, SOL_SOCKET, SO_NOSIGPIPE, &yes, yeslen ) < 0 {
                 dynamoStrerror( "Could not set SO_NOSIGPIPE" )
                 return nil
             }
+            #endif
         }
     }
 
@@ -104,12 +113,17 @@ public class DynamoHTTPRequest: NSObject {
 
             if let addr = addressForHost( host, port: port ) {
                 var addr = addr
+                #if os(Linux)
+                let addrLen = socklen_t(sizeof(sockaddr))
+                #else
+                let addrLen = socklen_t(addr.sa_len)
+                #endif
 
-                let remoteSocket = socket( Int32(addr.sa_family), SOCK_STREAM, 0 )
+                let remoteSocket = socket( Int32(addr.sa_family), 0, 0 )
                 if remoteSocket < 0 {
                     dynamoStrerror( "Could not obtain remote socket" )
                 }
-                else if connect( remoteSocket, &addr, socklen_t(addr.sa_len) ) < 0 {
+                else if connect( remoteSocket, &addr, addrLen ) < 0 {
                     dynamoStrerror( "Could not connect to: \(host):\(port)" )
                 }
                 else {
@@ -118,7 +132,7 @@ public class DynamoHTTPRequest: NSObject {
                 }
             }
         }
-
+        
         self.init( clientSocket: -1 )
         return nil
     }
@@ -130,7 +144,7 @@ public class DynamoHTTPRequest: NSObject {
 
         if getpeername( clientSocket, &addr, &addrLen ) == 0 {
             if addr.sa_family == sa_family_t(AF_INET) {
-                return String( UTF8String: inet_ntoa( sockaddr_in_cast(&addr).memory.sin_addr ) )!
+                return String.fromCString( inet_ntoa( sockaddr_in_cast(&addr).memory.sin_addr ) )!
             }
         }
 
@@ -226,7 +240,11 @@ public class DynamoHTTPRequest: NSObject {
             let endOfLine = memchr( readBuffer.bytes, newlineChar, readBuffer.length )
             if endOfLine != nil {
                 UnsafeMutablePointer<Int8>(endOfLine).memory = 0
-                let line = String( UTF8String: UnsafePointer<Int8>(readBuffer.bytes) )?
+                #if os(Linux)
+                UnsafeMutablePointer<Int8>(endOfLine-1).memory = 0
+                #endif
+
+                let line = String.fromCString( UnsafePointer<Int8>(readBuffer.bytes) )?
                     .stringByTrimmingCharactersInSet( NSCharacterSet.whitespaceAndNewlineCharacterSet() )
                 readBuffer.replaceBytesInRange( NSMakeRange( 0, UnsafePointer<Void>(endOfLine)+1-readBuffer.bytes ), withBytes:nil, length:0 )
                 return line
@@ -246,7 +264,7 @@ public class DynamoHTTPRequest: NSObject {
         if let postLength = contentLength {
             var buffer = [Int8](count: postLength+1, repeatedValue: 0)
             if read( &buffer, count: postLength ) == postLength {
-                return String( UTF8String: buffer )
+               return String.fromCString( buffer )
             }
         }
         return nil
@@ -346,12 +364,9 @@ public class DynamoHTTPConnection: DynamoHTTPRequest {
 
     /** print a sring directly to browser */
     public func rawPrint( output: String ) {
-        if let bytes = output.cStringUsingEncoding( NSUTF8StringEncoding ) {
+        output.withCString( { (bytes) in
             write( bytes, count: Int(strlen(bytes)) )
-        }
-        else {
-            dynamoLog( "Could not encode: \(output)" )
-        }
+        } )
     }
 
     /** print a string, sending HTTP headers if not already sent */
@@ -364,12 +379,9 @@ public class DynamoHTTPConnection: DynamoHTTPRequest {
 
     /** set response as a whole from a String */
     public func response( output: String ) {
-        if let bytes = output.cStringUsingEncoding( NSUTF8StringEncoding ) {
-            var bytes = bytes
-            responseData( NSData( bytesNoCopy: &bytes, length: Int(strlen(bytes)), freeWhenDone: false ) )
-        }
-        else {
-            dynamoLog( "Could not encode: \(output)" )
+        output.withCString { (bytes) in
+            responseData( NSData( bytesNoCopy: UnsafeMutablePointer<Void>(bytes),
+                length: Int(strlen( bytes )), freeWhenDone: false ) )
         }
     }
 
@@ -437,11 +449,15 @@ public func addressForHost( hostname: String, port: UInt16 ) -> sockaddr? {
     var sockaddrTmp = hostAddressCache[hostname]?.memory
 
     if sockaddrTmp == nil {
-        if let hostString = hostname.cStringUsingEncoding( NSUTF8StringEncoding ) {
+        hostname.withCString { (hostString) in
             addr = gethostbyname( hostString )
         }
         if addr == nil {
-            dynamoLog( "Could not resolve \(hostname) - "+String( UTF8String: hstrerror(h_errno) )! )
+	#if os(Linux)
+            dynamoLog( "Could not resolve \(hostname)" )
+	#else
+	    dynamoLog( "Could not resolve \(hostname) - "+String.fromCString( hstrerror(h_errno) )! )
+	#endif
             return nil
         }
     }
@@ -452,18 +468,32 @@ public func addressForHost( hostname: String, port: UInt16 ) -> sockaddr? {
 
         case AF_INET:
             let addr0 = UnsafePointer<in_addr>(addr.memory.h_addr_list.memory)
-            var ip4addr = sockaddr_in(sin_len: UInt8(sizeof(sockaddr_in)),
+#if os(Linux)
+	    var ip4addr = sockaddr_in(
+                sin_family: sa_family_t(addr.memory.h_addrtype),
+                sin_port: htons( port ), sin_addr: addr0.memory,
+                sin_zero: (UInt8(0),UInt8(0),UInt8(0),UInt8(0),UInt8(0),UInt8(0),UInt8(0),UInt8(0)))
+#else
+	    var ip4addr = sockaddr_in(sin_len: UInt8(sizeof(sockaddr_in)),
                 sin_family: sa_family_t(addr.memory.h_addrtype),
                 sin_port: htons( port ), sin_addr: addr0.memory,
                 sin_zero: (Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0)))
+#endif
             sockaddrPtr.memory = sockaddr_cast(&ip4addr).memory
 
         case AF_INET6: // TODO... completely untested
             let addr0 = UnsafePointer<in6_addr>(addr.memory.h_addr_list.memory)
-            var ip6addr = sockaddr_in6(sin6_len: UInt8(sizeof(sockaddr_in6)),
+#if os(Linux)
+            var ip6addr = sockaddr_in6(
+                sin6_family: sa_family_t(addr.memory.h_addrtype),
+                sin6_port: in_port_t(htons( port )), sin6_flowinfo: 0, sin6_addr: addr0.memory,
+                sin6_scope_id: 0)
+#else
+	    var ip6addr = sockaddr_in6(sin6_len: UInt8(sizeof(sockaddr_in6)),
                 sin6_family: sa_family_t(addr.memory.h_addrtype),
                 sin6_port: htons( port ), sin6_flowinfo: 0, sin6_addr: addr0.memory,
                 sin6_scope_id: 0)
+#endif
             sockaddrPtr.memory = sockaddr_cast(&ip6addr).memory
 
         default:
