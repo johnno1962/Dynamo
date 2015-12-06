@@ -18,7 +18,7 @@ import Foundation
     Null swiftlet to log each request as it is presented to the processing chain.
 */
 
-public class LoggingSwiftlet: NSObject, DynamoSwiftlet {
+public class LoggingSwiftlet: _NSObject_, DynamoSwiftlet {
 
     let logger: (String) -> Void
 
@@ -103,15 +103,9 @@ public class DocumentSwiftlet: _NSObject_, DynamoSwiftlet {
         Convenience initialiser taking document root from the resources directory/localhost:port
     */
 
-    #if os(Linux)
-    public convenience init() {
-        self.init( documentRoot: NSBundle.mainBundle().resourcePath! )
-    }
-    #else
     public convenience override init() {
         self.init( documentRoot: NSBundle.mainBundle().resourcePath! )
     }
-    #endif
 
     /**
         Initialiser pecifying documentRoot an whether this is the last Swiftlet and it should report 404
