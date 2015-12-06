@@ -5,13 +5,12 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#1 $
+//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#2 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
 
 import Foundation
-import CoreData
 
 // MARK: Swiftlets for dynamic content
 
