@@ -76,7 +76,6 @@ public class DynamoWebServer: _NSObject_ {
     /** basic initialiser for Swift web server processing using array of swiftlets */
     public convenience init?( portNumber: UInt16, swiftlets: [DynamoSwiftlet], localhostOnly: Bool = false ) {
 
-        print(swiftlets)
         self.init( portNumber, swiftlets: swiftlets, localhostOnly: localhostOnly )
 
         runConnectionHandler( httpConnectionHander )
