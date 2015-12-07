@@ -13,6 +13,8 @@ import Foundation
  */
 
 #if os(Linux)
+import Glibc
+
 public class _NSObject_ {
     init() {
     }

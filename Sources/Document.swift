@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/07/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Document.swift#3 $
+//  $Id: //depot/Dynamo/Sources/Document.swift#4 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
