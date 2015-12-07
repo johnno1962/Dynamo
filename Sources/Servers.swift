@@ -138,9 +138,13 @@ public class DynamoWebServer: _NSObject_ {
                     case .Processed:
                         return
                     case .ProcessedAndReusable:
+                        #if os(Linux)
+                        return
+                        #else
                         httpClient.flush()
                         processed = true
                         break
+                        #endif
                     }
 
                     break

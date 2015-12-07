@@ -134,7 +134,11 @@ public class DocumentSwiftlet: _NSObject_, DynamoSwiftlet {
 
             var isDir: ObjCBool = false
             if fileManager.fileExistsAtPath( fullPath, isDirectory: &isDir ) && isDir {
+                #if os(Linux)
+                fullPath += "/index.html"
+                #else
                 fullPath = NSURL( fileURLWithPath: fullPath ).URLByAppendingPathComponent( "index.html" ).path!
+                #endif
             }
 
             let ext = NSURL( fileURLWithPath: fullPath ).pathExtension
