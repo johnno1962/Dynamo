@@ -5,12 +5,15 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Linux.swift#1 $
+//  $Id: //depot/Dynamo/Sources/Linux.swift#4 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
 
+// Hastily put together NSString/libdispatch substitutes
+
 import Foundation
+
 
 #if os(Linux)
 import Glibc
@@ -40,12 +43,50 @@ private func unhex( char: Int8 ) -> Int8 {
 
 extension String {
 
+    var ord: Int8 {
+        return Int8(utf8.first!)
+    }
+
+    var stringByRemovingPercentEncoding: String? {
+        var arr = [Int8]( count: 100000, repeatedValue: 0 )
+        var out = UnsafeMutablePointer<Int8>( arr )
+
+        self.withCString { (bytes) in
+            var bytes = UnsafeMutablePointer<Int8>(bytes)
+
+            while out < &arr + arr.count {
+                let start = strchr( bytes, Int32(percent) ) - UnsafeMutablePointer<Int8>( bytes )
+                if start < 0 {
+                    strcat( out, bytes )
+                    break
+                }
+
+                bytes[start] = 0
+                strcat( out, bytes )
+                bytes += start + 3
+                out += start + 1
+                out[-1] = (unhex( bytes[-2] ) << 4) + unhex( bytes[-1] )
+            }
+        }
+
+        return String.fromCString( arr )
+    }
+
+    func stringByAddingPercentEscapesUsingEncoding( encoding: Int ) -> String? {
+        return self
+    }
+
+    func stringByTrimmingCharactersInSet( cset: NSCharacterSet ) -> String {
+        return self
+    }
+    
     func componentsSeparatedByString( sep: String ) -> [String] {
         var out = [String]()
 
         self.withCString { (bytes) in
             sep.withCString { (sbytes) in
                 var bytes = UnsafeMutablePointer<Int8>( bytes )
+
                 while true {
                     let start = strstr( bytes, sbytes ) - UnsafeMutablePointer<Int8>( bytes )
                     if start < 0 {
@@ -62,6 +103,10 @@ extension String {
         return out
     }
 
+    func stringByReplacingOccurrencesOfString( str1: String, withString str2: String ) -> String {
+        return self.componentsSeparatedByString( str1 ).joinWithSeparator( str2 )
+    }
+
     func rangeOfString( str: String ) -> Range<Int>? {
         var start = -1
         self.withCString { (bytes) in
@@ -69,74 +114,9 @@ extension String {
                 start = strstr( bytes, sbytes ) - UnsafeMutablePointer<Int8>( bytes )
             }
         }
-        if start < 0 {
-            return nil
-        }
-        return start..<start+str.utf8.count
+        return start < 0 ? nil : start..<start+str.utf8.count
     }
 
-    func stringByReplacingOccurrencesOfString( str1: String, withString str2: String ) -> String {
-        let arr = [Int8]( count: 100000, repeatedValue: 0 )
-        let out = UnsafeMutablePointer<Int8>( arr )
-
-        self.withCString { (bytes) in
-            var bytes = bytes
-            str1.withCString { (bytes1) in
-                str2.withCString { (bytes2) in
-
-                    while true {
-                        let start = strstr( bytes, bytes1 ) - UnsafeMutablePointer<Int8>( bytes )
-                        if start < 0 {
-                            strcat( out, bytes )
-                            break
-                        }
-                        strcat( out, bytes )
-                        strcat( out, bytes2 )
-                        bytes = bytes + start + Int(strlen( bytes1 )) + Int(strlen( bytes2 ))
-                    }
-                }
-            }
-        }
-
-        return String.fromCString( out )!
-    }
-
-    var ord: Int8 {
-    	return Int8(utf8.first!)
-    }
-
-    var stringByRemovingPercentEncoding: String? {
-        let arr = [Int8]( count: 100000, repeatedValue: 0 )
-        var out = UnsafeMutablePointer<Int8>( arr )
-
-        self.withCString { (bytes) in
-            var bytes = UnsafeMutablePointer<Int8>(bytes)
-            while true {
-                let start = strchr( bytes, Int32(percent) ) - UnsafeMutablePointer<Int8>( bytes )
-                if start < 0 {
-                    strcat( out, bytes )
-                    break
-                }
-
-                bytes[start] = 0
-                strcat( out, bytes )
-                bytes += start + 3
-                out += start + 1
-                out[-1] = (unhex( bytes[-2] ) << 4) + unhex( bytes[-1] )
-            }
-        }
-        
-        return String.fromCString( arr )
-    }
-    
-    func stringByAddingPercentEscapesUsingEncoding( encoding: Int ) -> String? {
-        return self
-    }
-    
-    func stringByTrimmingCharactersInSet( cset: NSCharacterSet ) -> String {
-        return self
-    }
-    
     func substringToIndex( index: Int ) -> String {
         var out = self
         self.withCString { (bytes) in
