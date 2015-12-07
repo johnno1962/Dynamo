@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/07/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Document.swift#2 $
+//  $Id: //depot/Dynamo/Sources/Document.swift#3 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -28,7 +28,7 @@ public class LoggingSwiftlet: _NSObject_, DynamoSwiftlet {
     }
 
     /** log current request */
-    public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+    public func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
         logger( "\(httpClient.method) \(httpClient.path) \(httpClient.version) - \(httpClient.remoteAddr)" )
         return .NotProcessed
     }
@@ -125,18 +125,17 @@ public class DocumentSwiftlet: _NSObject_, DynamoSwiftlet {
         Look for static documents in directory named affter host(:port) used in url
     */
 
-    public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+    public func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
 
         if httpClient.method == "GET" {
 
             let siteHost = httpClient.requestHeaders["Host"] ?? "localhost"
             var fullPath = "\(documentRoot)/\(siteHost)"+(httpClient.url.path ?? "/")
 
-#if !os(Linux)
-            if (try? fileManager.contentsOfDirectoryAtPath( fullPath )) != nil {
+            var isDir: ObjCBool = false
+            if fileManager.fileExistsAtPath( fullPath, isDirectory: &isDir ) && isDir {
                 fullPath = NSURL( fileURLWithPath: fullPath ).URLByAppendingPathComponent( "index.html" ).path!
             }
-#endif
 
             let ext = NSURL( fileURLWithPath: fullPath ).pathExtension
             httpClient.contentType = (ext != nil ? dynamoMimeTypeMapping[ext!] : nil) ?? dynamoHtmlMimeType

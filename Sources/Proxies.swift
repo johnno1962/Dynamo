@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Proxies.swift#3 $
+//  $Id: //depot/Dynamo/Sources/Proxies.swift#4 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -14,6 +14,7 @@ import Foundation
 
 #if os(Linux)
 import Glibc
+import NSLinux
 #endif
 
 // MARK: Proxy Swiftlets
@@ -32,7 +33,7 @@ public class ProxySwiftlet: _NSObject_, DynamoSwiftlet {
     }
 
     /** process as proxy request if request path has "host" */
-    public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+    public func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
 
         if httpClient.url.host == dummyBase.host {
             return .NotProcessed
@@ -77,7 +78,7 @@ public class ProxySwiftlet: _NSObject_, DynamoSwiftlet {
 public class SSLProxySwiftlet: ProxySwiftlet {
 
     /** connect socket through to destination SSL server for method "CONNECT" */
-    public override func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+    public override func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
         if httpClient.method == "CONNECT" {
 
             if let urlForDestination = NSURL( string: "https://\(httpClient.path)" ),

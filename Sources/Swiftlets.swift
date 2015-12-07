@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#3 $
+//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#4 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -13,21 +13,6 @@
 import Foundation
 
 // MARK: Swiftlets for dynamic content
-
-/**
-    Once a swiftlet has decided it can handle a request the headers are interpreted to extract parameters
-    and cookies and any POST parameters. The web application then implements this protocol.
- */
-
-public protocol DynamoBrowserSwiftlet: DynamoSwiftlet {
-
-    /**
-        A request can be further parsed to extract parameters, method "POST" data and cookies before processing
-     */
-
-    func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
-
-}
 
 /**
     Base application swiftlet testing to see if the URL path matches against a prefix to decide if it should
@@ -46,41 +31,60 @@ public class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
         self.pathPrefix = pathPrefix
     }
 
+    public func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+
+        if let pathInfo = httpClient.url.path where pathInfo.hasPrefix( pathPrefix ) {
+            let endIndex = pathInfo.rangeOfString( pathPrefix )!.endIndex
+            return process( httpClient, pathInfo: pathInfo.substringToIndex( endIndex ) )
+        }
+
+        return .NotProcessed
+    }
+
     /**
         Filters by path prefix to determine if this Swiftlet is to be used and parses browser
         query string, any post data and cookeis arriving from the browser.
      */
 
-    public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+    public func process( httpClient: DynamoHTTPConnection, pathInfo: String ) -> DynamoProcessed {
 
-        if let pathInfo = httpClient.url.path
-                where pathInfo.hasPrefix( pathPrefix ) {
-            var parameters = [String:String]()
+        var cookies = [String:String]()
+        if let cookieHeader = httpClient.requestHeaders["Cookie"] {
+            addParameters( &cookies, from: cookieHeader, delimeter: "; " )
+        }
 
-            if let queryString = httpClient.url.query {
-                addParameters( &parameters, from: queryString )
+        var parameters = [String:String]()
+        if let queryString = httpClient.url.query {
+            addParameters( &parameters, from: queryString )
+        }
+
+        if httpClient.method == "POST" {
+            if httpClient.contentType == "application/json" {
+
+                if let json = httpClient.postJSON() {
+                    processJSON( httpClient,
+                        pathInfo: pathInfo,
+                        parameters: parameters,
+                        cookies: cookies,
+                        json: json )
+                }
+
+                return httpClient.knowsResponseLength ? .ProcessedAndReusable : .Processed
             }
 
-            if httpClient.method == "POST" && httpClient.contentType == "application/x-www-form-urlencoded" {
+            if httpClient.contentType == "application/x-www-form-urlencoded" {
                 if let postData = httpClient.postString() {
                     addParameters( &parameters, from: postData )
                 }
                 else {
-                    dynamoLog( "POST data not available" )
+                    dynamoLog( "POST data read error" )
                 }
             }
-
-            var cookies = [String:String]()
-            if let cookieHeader = httpClient.requestHeaders["Cookie"] {
-                addParameters( &cookies, from: cookieHeader, delimeter: "; " )
-            }
-
-            processRequest( httpClient, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
-
-            return httpClient.knowsResponseLength ? .ProcessedAndReusable : .Processed
         }
 
-        return .NotProcessed
+        processRequest( httpClient, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
+
+        return httpClient.knowsResponseLength ? .ProcessedAndReusable : .Processed
     }
 
     private func addParameters(  inout parameters: [String:String], from queryString: String, delimeter: String = "&" ) {
@@ -106,6 +110,14 @@ public class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
 
     public func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
         dynamoLog( "DynamoApplicationSwiftlet.processRequest(): Subclass responsibility" )
+    }
+
+    /**
+        Sepcial treatment of JSON Post
+     */
+
+    public func processJSON( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String], json: AnyObject ) {
+        processRequest( out, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
     }
 
 }
@@ -347,7 +359,7 @@ public class ServerPagesSwiftlet: ApplicationSwiftlet {
         If present it will lbe loaded as a reloadable bnudle to process the request.
      */
 
-    override public func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+    override public func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
 
         let path = httpClient.path
 
@@ -378,7 +390,7 @@ public class ServerPagesSwiftlet: ApplicationSwiftlet {
             }
 
             if let reloader = reloaders[sspPath] {
-                return reloader.process( httpClient )
+                return reloader.present( httpClient )
             }
             else {
                 dynamoLog( "Missing .ssp bundle for path \(path)" )

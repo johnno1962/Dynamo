@@ -5,54 +5,21 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Servers.swift#2 $
+//  $Id: //depot/Dynamo/Sources/Servers.swift#3 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
 
 import Foundation
+
 #if os(Linux)
 import Glibc
+import NSLinux
 #endif
 
 // MARK: Private queues and missing IP functions
 
 let dynamoRequestQueue = dispatch_queue_create( "DynamoRequestThread", DISPATCH_QUEUE_CONCURRENT )
-
-/**
-     Result returned by a swiftlet to indicate whether it has handled the request. If a "Content-Length"
-     header has been provided the connection can be reused in the HTTP/1.1 protocol and the connection
-     will be kept open and recycled.
- */
-
-@objc public enum DynamoProcessed: Int {
-    case
-        NotProcessed, // does not recogise the request
-        Processed, // has processed the request
-        ProcessedAndReusable // "" and connection may be reused
-}
-
-/**
-     Basic protocol that switlets implement to pick up and process requests from a client.
- */
-
-#if os(Linux)
-public protocol DynamoSwiftlet {
-
-    /**
-     each request is presented ot each swiftlet until one indicates it has processed the request
-     */
-    func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
-}
-#else
-@objc public protocol DynamoSwiftlet {
-
-    /**
-     each request is presented ot each swiftlet until one indicates it has processed the request
-     */
-    func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
-}
-#endif
 
 // MARK: Basic http: Web server
 
@@ -69,10 +36,6 @@ public class DynamoWebServer: _NSObject_ {
     /** port allocated for server if specified as 0 */
     public var serverPort: UInt16 = 0
 
-    func wrapConnection( clientSocket: Int32 ) -> DynamoHTTPConnection? {
-        return DynamoHTTPConnection( clientSocket: clientSocket )
-    }
-
     /** basic initialiser for Swift web server processing using array of swiftlets */
     public convenience init?( portNumber: UInt16, swiftlets: [DynamoSwiftlet], localhostOnly: Bool = false ) {
 
@@ -86,12 +49,14 @@ public class DynamoWebServer: _NSObject_ {
         self.swiftlets = swiftlets
 
 #if os(Linux)
+        let sockType = Int32(SOCK_STREAM.rawValue)
         var ip4addr = sockaddr_in(
             sin_family: sa_family_t(AF_INET),
             sin_port: htons( portNumber ),
             sin_addr: in_addr( s_addr: INADDR_ANY ),
             sin_zero: (0,0,0,0,0,0,0,0) )
 #else
+        let sockType = SOCK_STREAM
         var ip4addr = sockaddr_in( sin_len: UInt8(sizeof(sockaddr_in)),
             sin_family: sa_family_t(AF_INET),
             sin_port: htons( portNumber ),
@@ -103,18 +68,12 @@ public class DynamoWebServer: _NSObject_ {
             inet_aton( "127.0.0.1", &ip4addr.sin_addr )
         }
 
-        #if os(Linux)
-        serverSocket = socket( Int32(ip4addr.sin_family), Int32(SOCK_STREAM.rawValue), 0 )
-        #else
-        serverSocket = socket( Int32(ip4addr.sin_family), SOCK_STREAM, 0 )
-        #endif
+        serverSocket = socket( Int32(ip4addr.sin_family), sockType, 0 )
 
         var yes: u_int = 1, yeslen = socklen_t(sizeof(yes.dynamicType))
         var addrLen = socklen_t(sizeof(ip4addr.dynamicType))
 
-        #if !os(Linux)
         super.init()
-        #endif
 
         if serverSocket < 0 {
             dynamoStrerror( "Could not get server socket" )
@@ -160,6 +119,10 @@ public class DynamoWebServer: _NSObject_ {
         } )
     }
 
+    func wrapConnection( clientSocket: Int32 ) -> DynamoHTTPConnection? {
+        return DynamoHTTPConnection( clientSocket: clientSocket )
+    }
+
     func httpConnectionHander( clientSocket: Int32 ) {
 
         if let httpClient = self.wrapConnection( clientSocket ) {
@@ -169,7 +132,7 @@ public class DynamoWebServer: _NSObject_ {
 
                 for swiftlet in swiftlets {
 
-                    switch swiftlet.process( httpClient ) {
+                    switch swiftlet.present( httpClient ) {
                     case .NotProcessed:
                         continue
                     case .Processed:
@@ -207,10 +170,6 @@ public class DynamoSSLWebServer: DynamoWebServer {
 
     private let certs: [AnyObject]
 
-    override func wrapConnection( clientSocket: Int32 ) -> DynamoHTTPConnection? {
-        return DynamoSSLConnection( sslSocket: clientSocket, certs: certs )
-    }
-
     /**
         default initialiser for SSL server. Can proxy a "surrogate" non-SSL server given it's URL
     */
@@ -229,6 +188,10 @@ public class DynamoSSLWebServer: DynamoWebServer {
         else {
             dynamoLog( "Invalid surrogate URL: \(surrogate)" )
         }
+    }
+
+    override func wrapConnection( clientSocket: Int32 ) -> DynamoHTTPConnection? {
+        return DynamoSSLConnection( sslSocket: clientSocket, certs: certs )
     }
 
     func sslProxyHandler( surrogateURL: NSURL )( clientSocket: Int32 ) {
@@ -302,40 +265,3 @@ class DynamoSSLConnection: DynamoHTTPConnection {
 
 #endif
 
-// MARK: Functions
-
-let INADDR_ANY = in_addr_t(0)
-
-func htons( port: UInt16 ) -> UInt16 {
-    return (port << 8) + (port >> 8)
-}
-let ntohs = htons
-
-func sockaddr_cast(p: UnsafeMutablePointer<Void>) -> UnsafeMutablePointer<sockaddr> {
-    return UnsafeMutablePointer<sockaddr>(p)
-}
-
-func sockaddr_in_cast(p: UnsafeMutablePointer<sockaddr>) -> UnsafeMutablePointer<sockaddr_in> {
-    return UnsafeMutablePointer<sockaddr_in>(p)
-}
-
-/** default tracer for frequent messages */
-public func dynamoTrace<T>( msg: T ) {
-    print( msg )
-}
-
-func dynamoLog<T>( msg: T ) {
-#if os(Linux)
-    print( "DynamoWebServer: \(msg)" )
-#else
-    NSLog( "DynamoWebServer: %@", "\(msg)" )
-#endif
-}
-
-func dynamoStrerror( msg: String ) {
-#if os(Linux)
-    dynamoLog( "\(msg)" )
-#else
-    dynamoLog( "\(msg) - \( String.fromCString( strerror(errno) )! )" )
-#endif
-}

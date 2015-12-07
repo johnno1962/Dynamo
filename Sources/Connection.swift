@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Connection.swift#4 $
+//  $Id: //depot/Dynamo/Sources/Connection.swift#5 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -16,10 +16,7 @@ import Foundation
 import Glibc
 #endif
 
-// MARK: HTTP request parser
-
 let dummyBase = NSURL( string: "http://nohost" )!
-private var dynamoRelayThreads = 0
 
 /**
     HTTP return status mapping
@@ -91,9 +88,7 @@ public class DynamoHTTPRequest: _NSObject_ {
 
         self.clientSocket = clientSocket
 
-        #if !os(Linux)
         super.init()
-        #endif
 
         if clientSocket >= 0 {
             #if !os(Linux)
@@ -261,11 +256,8 @@ public class DynamoHTTPRequest: _NSObject_ {
 
     /** POST data as String */
     public func postString() -> String? {
-        if let postLength = contentLength {
-            var buffer = [Int8](count: postLength+1, repeatedValue: 0)
-            if read( &buffer, count: postLength ) == postLength {
-               return String.fromCString( buffer )
-            }
+        if let postData = postData() {
+            return String.fromCString( UnsafePointer<Int8>(postData.bytes) )
         }
         return nil
     }
@@ -364,9 +356,9 @@ public class DynamoHTTPConnection: DynamoHTTPRequest {
 
     /** print a sring directly to browser */
     public func rawPrint( output: String ) {
-        output.withCString( { (bytes) in
+        output.withCString { (bytes) in
             write( bytes, count: Int(strlen(bytes)) )
-        } )
+        }
     }
 
     /** print a string, sending HTTP headers if not already sent */
@@ -432,92 +424,6 @@ public class DynamoHTTPConnection: DynamoHTTPRequest {
     deinit {
         flush()
         close( clientSocket )
-    }
-
-}
-
-// MARK: Cached gethostbyname()
-
-private var hostAddressCache = [String:UnsafeMutablePointer<sockaddr>]()
-
-/**
-    Caching version of gethostbyname() returning a struct sockaddr for use in a connect() call
-*/
-public func addressForHost( hostname: String, port: UInt16 ) -> sockaddr? {
-
-    var addr: UnsafeMutablePointer<hostent> = nil
-    var sockaddrTmp = hostAddressCache[hostname]?.memory
-
-    if sockaddrTmp == nil {
-        hostname.withCString { (hostString) in
-            addr = gethostbyname( hostString )
-        }
-        if addr == nil {
-	#if os(Linux)
-            dynamoLog( "Could not resolve \(hostname)" )
-	#else
-	    dynamoLog( "Could not resolve \(hostname) - "+String.fromCString( hstrerror(h_errno) )! )
-	#endif
-            return nil
-        }
-    }
-
-    if sockaddrTmp == nil {
-        let sockaddrPtr = UnsafeMutablePointer<sockaddr>(malloc(sizeof(sockaddr.self)))
-        switch addr.memory.h_addrtype {
-
-        case AF_INET:
-            let addr0 = UnsafePointer<in_addr>(addr.memory.h_addr_list.memory)
-#if os(Linux)
-	    var ip4addr = sockaddr_in(
-                sin_family: sa_family_t(addr.memory.h_addrtype),
-                sin_port: htons( port ), sin_addr: addr0.memory,
-                sin_zero: (UInt8(0),UInt8(0),UInt8(0),UInt8(0),UInt8(0),UInt8(0),UInt8(0),UInt8(0)))
-#else
-	    var ip4addr = sockaddr_in(sin_len: UInt8(sizeof(sockaddr_in)),
-                sin_family: sa_family_t(addr.memory.h_addrtype),
-                sin_port: htons( port ), sin_addr: addr0.memory,
-                sin_zero: (Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0)))
-#endif
-            sockaddrPtr.memory = sockaddr_cast(&ip4addr).memory
-
-        case AF_INET6: // TODO... completely untested
-            let addr0 = UnsafePointer<in6_addr>(addr.memory.h_addr_list.memory)
-#if os(Linux)
-            var ip6addr = sockaddr_in6(
-                sin6_family: sa_family_t(addr.memory.h_addrtype),
-                sin6_port: in_port_t(htons( port )), sin6_flowinfo: 0, sin6_addr: addr0.memory,
-                sin6_scope_id: 0)
-#else
-	    var ip6addr = sockaddr_in6(sin6_len: UInt8(sizeof(sockaddr_in6)),
-                sin6_family: sa_family_t(addr.memory.h_addrtype),
-                sin6_port: htons( port ), sin6_flowinfo: 0, sin6_addr: addr0.memory,
-                sin6_scope_id: 0)
-#endif
-            sockaddrPtr.memory = sockaddr_cast(&ip6addr).memory
-
-        default:
-            dynamoLog( "Unknown address family: \(addr.memory.h_addrtype)" )
-            return nil
-        }
-
-        hostAddressCache[hostname] = sockaddrPtr
-        sockaddrTmp = sockaddrPtr.memory
-    }
-    else {
-        sockaddr_in_cast( &(sockaddrTmp!) ).memory.sin_port = htons( port )
-    }
-
-    return sockaddrTmp
-}
-
-extension NSData {
-
-    /**
-        Overridden by NSData+deflate.m
-     */
-    func deflate() -> NSData? {
-        return nil
     }
 
 }
