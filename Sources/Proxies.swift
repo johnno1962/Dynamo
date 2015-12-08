@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Proxies.swift#5 $
+//  $Id: //depot/Dynamo/Sources/Proxies.swift#6 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -129,10 +129,10 @@ func FD_ISSET( fd: Int32, _ flags: UnsafeMutablePointer<Int32> ) -> Bool {
     return (set.memory & (1<<(fd&selectBitMask))) != 0
 }
 
-#if !os(Linux)
-@asmname("fcntl")
-func fcntl( filedesc: Int32, _ command: Int32, _ arg: Int32 ) -> Int32
-#endif
+//#if !os(Linux)
+//@asmname("fcntl")
+//func fcntl( filedesc: Int32, _ command: Int32, _ arg: Int32 ) -> Int32
+//#endif
 
 /**
     More efficient than relying on operating system to handle many reads on different threads when proxying
@@ -175,13 +175,13 @@ final class DynamoSelector {
                 to.label = "-> \(label)"
                 from.label = "<- \(label)"
 
-                #if !os(Linux)
-                if label == "surrogate" {
-                    var flags = fcntl( to.clientSocket, F_GETFL, 0 )
-                    flags |= O_NONBLOCK
-                    fcntl( to.clientSocket, F_SETFL, flags )
-                }
-                #endif
+//                #if !os(Linux)
+//                if label == "surrogate" {
+//                    var flags = fcntl( to.clientSocket, F_GETFL, 0 )
+//                    flags |= O_NONBLOCK
+//                    fcntl( to.clientSocket, F_SETFL, flags )
+//                }
+//                #endif
 
                 readMap[from.clientSocket] = to
                 readMap[to.clientSocket] = from
