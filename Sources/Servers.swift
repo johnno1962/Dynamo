@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Servers.swift#4 $
+//  $Id: //depot/Dynamo/Sources/Servers.swift#5 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -45,6 +45,8 @@ public class DynamoWebServer: _NSObject_ {
     }
 
     init?( _ portNumber: UInt16, swiftlets: [DynamoSwiftlet], localhostOnly: Bool ) {
+
+        signal( SIGPIPE, SIG_IGN )
 
         self.swiftlets = swiftlets
 
