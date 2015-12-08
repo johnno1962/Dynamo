@@ -38,6 +38,17 @@ public class _NSObject_ : NSObject {
 }
 
 /**
+    Simple enum for response data
+ */
+
+public enum DynamoResponse {
+    case OK( html: String )
+    case Data( data: NSData )
+    case JSON( json: AnyObject )
+    case Status( status: Int, text: String )
+}
+
+/**
 Basic protocol that switlets implement to pick up and process requests from a client.
 */
 

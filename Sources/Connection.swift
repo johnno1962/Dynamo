@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Connection.swift#5 $
+//  $Id: //depot/Dynamo/Sources/Connection.swift#8 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -369,11 +369,35 @@ public class DynamoHTTPConnection: DynamoHTTPRequest {
         rawPrint( output )
     }
 
+    /** enum base response */
+    public func sendResponse( resp: DynamoResponse ) -> DynamoProcessed {
+        status = 200
+
+        switch resp {
+        case .OK( let html ):
+            response( html )
+        case .JSON( let json ):
+            responseJSON( json )
+        case .Data( let data ):
+            responseData( data )
+        case .Status( let theStatus, let text ):
+            status = theStatus
+            response( text )
+        }
+
+        return .ProcessedAndReusable
+    }
+
     /** set response as a whole from a String */
     public func response( output: String ) {
         output.withCString { (bytes) in
-            responseData( NSData( bytesNoCopy: UnsafeMutablePointer<Void>(bytes),
-                length: Int(strlen( bytes )), freeWhenDone: false ) )
+            #if os(Linux)
+                responseData( NSData( bytes: UnsafeMutablePointer<Void>(bytes),
+                    length: Int(strlen( bytes )) ) )
+            #else
+                responseData( NSData( bytesNoCopy: UnsafeMutablePointer<Void>(bytes),
+                    length: Int(strlen( bytes )), freeWhenDone: false ) )
+            #endif
         }
     }
 
@@ -405,7 +429,9 @@ public class DynamoHTTPConnection: DynamoHTTPRequest {
 #endif
         contentLength = dout.length
         sendResponseHeaders()
-        write( dout.bytes, count: dout.length )
+        if write( dout.bytes, count: dout.length ) != dout.length {
+            dynamoLog( "Could not write \(dout.length) bytes to client " )
+        }
     }
 
     // for DynamoSelector used by proxies

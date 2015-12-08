@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/07/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Document.swift#4 $
+//  $Id: //depot/Dynamo/Sources/Document.swift#5 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -158,22 +158,17 @@ public class DocumentSwiftlet: _NSObject_, DynamoSwiftlet {
 
                 if let since = httpClient.requestHeaders["If-Modified-Since"]
                         where since == lastModified {
-                    httpClient.status = 304
-                    httpClient.response( "" )
-                    return .ProcessedAndReusable
+                    return httpClient.sendResponse( .Status( status: 304, text: "" ) )
                 }
 
                 if let data = NSData( contentsOfFile: fullPath ) {
-                    httpClient.responseData( data )
-                    return .ProcessedAndReusable
+                    return httpClient.sendResponse( .Data( data: data ) )
                 }
             }
 
             if report404 {
-                httpClient.status = 404
-                httpClient.response( "<b>File not found:</b> \(fullPath)" )
                 dynamoLog( "404 File not Found: \(fullPath)" )
-                return .ProcessedAndReusable
+                return httpClient.sendResponse( .Status( status: 404, text: "<b>File not found:</b> \(fullPath)" ) )
             }
         }
 
