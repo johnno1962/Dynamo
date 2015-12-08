@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#4 $
+//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#6 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -73,11 +73,11 @@ public class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
             }
 
             if httpClient.contentType == "application/x-www-form-urlencoded" {
-                if let postData = httpClient.postString() {
-                    addParameters( &parameters, from: postData )
+                if let postString = httpClient.postString() {
+                    addParameters( &parameters, from: postString )
                 }
                 else {
-                    dynamoLog( "POST data read error" )
+                    dynamoLog( "POST data not available" )
                 }
             }
         }

@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Connection.swift#8 $
+//  $Id: //depot/Dynamo/Sources/Connection.swift#9 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -168,6 +168,66 @@ public class DynamoHTTPRequest: _NSObject_ {
         return pos
     }
 
+    var buffer = [Int8](count: 8192, repeatedValue: 0), newlineChar = Int32(10)
+
+    func readLine() -> String? {
+        while true {
+            let endOfLine = memchr( readBuffer.bytes, newlineChar, readBuffer.length )
+            if endOfLine != nil {
+                UnsafeMutablePointer<Int8>(endOfLine).memory = 0
+                #if os(Linux)
+                    UnsafeMutablePointer<Int8>(endOfLine-1).memory = 0
+                #endif
+
+                let line = String.fromCString( UnsafePointer<Int8>(readBuffer.bytes) )?
+                    .stringByTrimmingCharactersInSet( NSCharacterSet.whitespaceAndNewlineCharacterSet() )
+                readBuffer.replaceBytesInRange( NSMakeRange( 0, UnsafePointer<Void>(endOfLine)+1-readBuffer.bytes ), withBytes:nil, length:0 )
+                return line
+            }
+
+            let bytesRead = _read( UnsafeMutablePointer<Void>(buffer), count: buffer.count )
+            if bytesRead <= 0 {
+                break ///
+            }
+            readBuffer.appendBytes( buffer, length: bytesRead )
+        }
+        return nil
+    }
+    
+    /** read/parse standard HTTP headers from browser */
+    func readHeaders() -> Bool {
+
+        if let request = readLine() {
+
+            let components = request.componentsSeparatedByString( " " )
+            if components.count == 3 {
+
+                method = components[0]
+                path = components[1]
+                version = components[2]
+
+                url = NSURL( string: path, relativeToURL: dummyBase ) ?? dummyBase
+                requestHeaders = [String: String]()
+                responseHeaders = ""
+                sentResponseHeaders = false
+                knowsResponseLength = false
+                compressResponse = false
+                status = 200
+
+                while let line = readLine() {
+                    if let divider = line.rangeOfString( ": " )?.startIndex {
+                        requestHeaders[line.substringToIndex( divider )] = line.substringFromIndex( divider.advancedBy( 2 ) )
+                    }
+                    else {
+                        return true
+                    }
+                }
+            }
+        }
+        
+        return false
+    }
+    
     /** add a HTTP header value to the response */
     public func addResponseHeader( name: String, value: String ) {
         responseHeaders += "\(name): \(value)\r\n"
@@ -194,70 +254,14 @@ public class DynamoHTTPRequest: _NSObject_ {
         }
     }
 
-    /** read/parse standard HTTP headers from browser */
-    func readHeaders() -> Bool {
-
-        if let request = readLine() {
-
-            let components = request.componentsSeparatedByString( " " )
-            if components.count == 3 {
-
-                method = components[0]
-                path = components[1]
-                version = components[2]
-
-                url = NSURL( string: path, relativeToURL: dummyBase ) ?? dummyBase
-                requestHeaders = [String: String]()
-                responseHeaders = ""
-                sentResponseHeaders = false
-                knowsResponseLength = false
-                compressResponse = false
-                status = 200
-
-                while let line = readLine() {
-                    if let divider = line.rangeOfString( ": " )?.startIndex {
-                        requestHeaders[line.substringToIndex( divider )] = line.substringFromIndex( divider.advancedBy(2 ) )
-                    }
-                    else {
-                        return true
-                    }
-                }
-            }
-        }
-
-        return false
-    }
-
-    var buffer = [Int8](count: 8192, repeatedValue: 0), newlineChar = Int32(10)
-
-    func readLine() -> String? {
-        while true {
-            let endOfLine = memchr( readBuffer.bytes, newlineChar, readBuffer.length )
-            if endOfLine != nil {
-                UnsafeMutablePointer<Int8>(endOfLine).memory = 0
-                #if os(Linux)
-                UnsafeMutablePointer<Int8>(endOfLine-1).memory = 0
-                #endif
-
-                let line = String.fromCString( UnsafePointer<Int8>(readBuffer.bytes) )?
-                    .stringByTrimmingCharactersInSet( NSCharacterSet.whitespaceAndNewlineCharacterSet() )
-                readBuffer.replaceBytesInRange( NSMakeRange( 0, UnsafePointer<Void>(endOfLine)+1-readBuffer.bytes ), withBytes:nil, length:0 )
-                return line
-            }
-
-            let bytesRead = _read( UnsafeMutablePointer<Void>(buffer), count: buffer.count )
-            if bytesRead <= 0 {
-                break ///
-            }
-            readBuffer.appendBytes( buffer, length: bytesRead )
-        }
-        return nil
-    }
-
     /** POST data as String */
     public func postString() -> String? {
-        if let postData = postData() {
-            return String.fromCString( UnsafePointer<Int8>(postData.bytes) )
+        if let postLength = contentLength {
+            var bytes = [Int8]( count: postLength + 1, repeatedValue: 0 )
+            if read( &bytes, count: postLength ) != postLength {
+                dynamoLog( "Could not read \(contentLength) bytes post data from client " )
+            }
+            return String.fromCString( bytes )
         }
         return nil
     }
@@ -265,7 +269,7 @@ public class DynamoHTTPRequest: _NSObject_ {
     /** POST data as NSData */
     public func postData() -> NSData? {
         if let postLength = contentLength, data = NSMutableData( length: postLength )
-            where read( UnsafeMutablePointer<Void>(data.bytes), count: postLength ) == postLength {
+                where read( UnsafeMutablePointer<Void>(data.bytes), count: postLength ) == postLength {
             return data
         }
         return nil
