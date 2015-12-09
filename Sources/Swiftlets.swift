@@ -5,12 +5,16 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#6 $
+//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#7 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
 
 import Foundation
+
+#if os(Linux)
+import NSLinux
+#endif
 
 // MARK: Swiftlets for dynamic content
 
@@ -165,10 +169,8 @@ public class SessionSwiftlet: ApplicationSwiftlet {
             }
         }
 
-#if !os(Linux)
         let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(sessionExpiryCheckInterval * Double(NSEC_PER_SEC)))
         dispatch_after( delayTime, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), cleanupSessions )
-#endif
     }
     /**
         Create a new instance of the application class to process the request if request and have it process it.
