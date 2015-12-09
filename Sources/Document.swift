@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/07/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Document.swift#5 $
+//  $Id: //depot/Dynamo/Sources/Document.swift#6 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -135,7 +135,7 @@ public class DocumentSwiftlet: _NSObject_, DynamoSwiftlet {
             var isDir: ObjCBool = false
             if fileManager.fileExistsAtPath( fullPath, isDirectory: &isDir ) && isDir {
                 #if os(Linux)
-                fullPath += "/index.html"
+                fullPath = NSURL( fileURLWithPath: fullPath ).URLByAppendingPathComponent( "index.html" )!.path!
                 #else
                 fullPath = NSURL( fileURLWithPath: fullPath ).URLByAppendingPathComponent( "index.html" ).path!
                 #endif
