@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Connection.swift#9 $
+//  $Id: //depot/Dynamo/Sources/Connection.swift#10 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -109,12 +109,14 @@ public class DynamoHTTPRequest: _NSObject_ {
             if let addr = addressForHost( host, port: port ) {
                 var addr = addr
                 #if os(Linux)
+                let sockType = Int32(SOCK_STREAM.rawValue)
                 let addrLen = socklen_t(sizeof(sockaddr))
                 #else
+                let sockType = SOCK_STREAM
                 let addrLen = socklen_t(addr.sa_len)
                 #endif
 
-                let remoteSocket = socket( Int32(addr.sa_family), 0, 0 )
+                let remoteSocket = socket( Int32(addr.sa_family), sockType, 0 )
                 if remoteSocket < 0 {
                     dynamoStrerror( "Could not obtain remote socket" )
                 }

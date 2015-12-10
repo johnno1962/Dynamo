@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Proxies.swift#6 $
+//  $Id: //depot/Dynamo/Sources/Proxies.swift#7 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -260,9 +260,7 @@ final class DynamoSelector {
                 if let writer = readMap[readFD], reader = readMap[writer.clientSocket]
                     where FD_ISSET( readFD, readFlags ) || writer.readTotal != 0 && reader.hasBytesAvailable {
 
-                        print( "READ.. \(writer.label)" )
                     if let bytesRead = reader.receive( &buffer, count: buffer.count ) {
-                        print( "READ \(writer.label)" )
                         let readBuffer = writer.readBuffer
 
                         logger?( "\(writer.label) \(writer.readTotal)+\(readBuffer.length)+\(bytesRead) bytes (\(readFD)/\(readMap.count)/\(fdcount))" )
@@ -286,9 +284,7 @@ final class DynamoSelector {
                 if FD_ISSET( writeFD, writeFlags ) {
                     let readBuffer = writer.readBuffer
 
-                    print( "WRITE.. \(writer.label)" )
                     if let bytesWritten = writer.forward( readBuffer.bytes, count: readBuffer.length ) {
-                        print( "WRITE \(writer.label)" )
                        if bytesWritten <= 0 {
                             writeMap.removeValueForKey( writer.clientSocket )
                             dynamoLog( "Short write on relay \(writer.label)" )
@@ -308,7 +304,7 @@ final class DynamoSelector {
             for errorFD in 0..<maxfd {
                 if FD_ISSET( errorFD, errorFlags ) {
                     writeMap.removeValueForKey( errorFD )
-                    dynamoLog( "ERROR on relay" )
+                    dynamoLog( "ERROR from select on relay" )
                     close( errorFD )
                 }
             }
