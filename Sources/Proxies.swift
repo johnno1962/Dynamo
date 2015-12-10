@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Proxies.swift#7 $
+//  $Id: //depot/Dynamo/Sources/Proxies.swift#8 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -39,32 +39,36 @@ public class ProxySwiftlet: _NSObject_, DynamoSwiftlet {
             return .NotProcessed
         }
 
-        if let host = httpClient.url.host, remoteConnection = DynamoHTTPConnection( url: httpClient.url ) {
+        if let host = httpClient.url.host {
+            if let remoteConnection = DynamoHTTPConnection( url: httpClient.url ) {
 
-            var remotePath = httpClient.url.path ?? "/"
-            if !remotePath.hasSuffix( "/" ) && (httpClient.path.hasSuffix( "/" ) || httpClient.path.rangeOfString( "/?" ) != nil) {
-                remotePath += "/"
-            }
-            if let query = httpClient.url.query {
-                remotePath += "?"+query
-            }
+                var remotePath = httpClient.url.path ?? "/"
+                if !remotePath.hasSuffix( "/" ) && (httpClient.path.hasSuffix( "/" ) || httpClient.path.rangeOfString( "/?" ) != nil) {
+                    remotePath += "/"
+                }
+                if let query = httpClient.url.query {
+                    remotePath += "?"+query
+                }
 
-            remoteConnection.rawPrint( "\(httpClient.method) \(remotePath) \(httpClient.version)\r\n" )
-            for (name, value) in httpClient.requestHeaders {
-                remoteConnection.rawPrint( "\(name): \(value)\r\n" )
-            }
-            remoteConnection.rawPrint( "\r\n" )
+                remoteConnection.rawPrint( "\(httpClient.method) \(remotePath) \(httpClient.version)\r\n" )
+                for (name, value) in httpClient.requestHeaders {
+                    remoteConnection.rawPrint( "\(name): \(value)\r\n" )
+                }
+                remoteConnection.rawPrint( "\r\n" )
 
-            if httpClient.readBuffer.length != 0 {
-                let readBuffer = httpClient.readBuffer
-                remoteConnection.write( readBuffer.bytes, count: readBuffer.length )
-                readBuffer.replaceBytesInRange( NSMakeRange( 0, readBuffer.length ), withBytes: nil, length: 0 )
-            }
-            remoteConnection.flush()
+                if httpClient.readBuffer.length != 0 {
+                    let readBuffer = httpClient.readBuffer
+                    remoteConnection.write( readBuffer.bytes, count: readBuffer.length )
+                    readBuffer.replaceBytesInRange( NSMakeRange( 0, readBuffer.length ), withBytes: nil, length: 0 )
+                }
+                remoteConnection.flush()
 
-            DynamoSelector.relay( host, from: httpClient, to: remoteConnection, logger )
+                DynamoSelector.relay( host, from: httpClient, to: remoteConnection, logger )
+            }
+            else {
+                httpClient.sendResponse( .OK( html: "Unable to resolve host \(host)" ) )
+            }
         }
-
         return .Processed
     }
 
