@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Connection.swift#10 $
+//  $Id: //depot/Dynamo/Sources/Connection.swift#12 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -109,10 +109,8 @@ public class DynamoHTTPRequest: _NSObject_ {
             if let addr = addressForHost( host, port: port ) {
                 var addr = addr
                 #if os(Linux)
-                let sockType = Int32(SOCK_STREAM.rawValue)
                 let addrLen = socklen_t(sizeof(sockaddr))
                 #else
-                let sockType = SOCK_STREAM
                 let addrLen = socklen_t(addr.sa_len)
                 #endif
 
@@ -174,11 +172,13 @@ public class DynamoHTTPRequest: _NSObject_ {
 
     func readLine() -> String? {
         while true {
-            let endOfLine = memchr( readBuffer.bytes, newlineChar, readBuffer.length )
+            let endOfLine = UnsafeMutablePointer<Int8>( memchr( readBuffer.bytes, newlineChar, readBuffer.length ) )
             if endOfLine != nil {
-                UnsafeMutablePointer<Int8>(endOfLine).memory = 0
+                endOfLine[0] = 0
                 #if os(Linux)
-                    UnsafeMutablePointer<Int8>(endOfLine-1).memory = 0
+                if endOfLine[-1] == 13 {
+                    endOfLine[-1] = 0
+                }
                 #endif
 
                 let line = String.fromCString( UnsafePointer<Int8>(readBuffer.bytes) )?

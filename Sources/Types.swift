@@ -88,6 +88,11 @@ public protocol DynamoBrowserSwiftlet: DynamoSwiftlet {
 // MARK: util definitions/functions
 
 let INADDR_ANY = in_addr_t(0)
+#if os(Linux)
+let sockType = Int32(SOCK_STREAM.rawValue)
+#else
+let sockType = SOCK_STREAM
+#endif
 
 func htons( port: UInt16 ) -> UInt16 {
     return (port << 8) + (port >> 8)
@@ -157,32 +162,24 @@ public func addressForHost( hostname: String, port: UInt16 ) -> sockaddr? {
 
         case AF_INET:
             let addr0 = UnsafePointer<in_addr>(addr.memory.h_addr_list.memory)
-            #if os(Linux)
-                var ip4addr = sockaddr_in(
-                    sin_family: sa_family_t(addr.memory.h_addrtype),
-                    sin_port: htons( port ), sin_addr: addr0.memory,
-                    sin_zero: (UInt8(0),UInt8(0),UInt8(0),UInt8(0),UInt8(0),UInt8(0),UInt8(0),UInt8(0)))
-            #else
-                var ip4addr = sockaddr_in(sin_len: UInt8(sizeof(sockaddr_in)),
-                    sin_family: sa_family_t(addr.memory.h_addrtype),
-                    sin_port: htons( port ), sin_addr: addr0.memory,
-                    sin_zero: (Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0),Int8(0)))
+            var ip4addr = sockaddr_in()
+            #if !os(Linux)
+            ip4addr.sin_len = UInt8(sizeof(sockaddr_in))
             #endif
+            ip4addr.sin_family = sa_family_t(addr.memory.h_addrtype)
+            ip4addr.sin_port = htons( port )
+            ip4addr.sin_addr = addr0.memory
             sockaddrPtr.memory = sockaddr_cast(&ip4addr).memory
 
         case AF_INET6: // TODO... completely untested
             let addr0 = UnsafePointer<in6_addr>(addr.memory.h_addr_list.memory)
-            #if os(Linux)
-                var ip6addr = sockaddr_in6(
-                    sin6_family: sa_family_t(addr.memory.h_addrtype),
-                    sin6_port: in_port_t(htons( port )), sin6_flowinfo: 0, sin6_addr: addr0.memory,
-                    sin6_scope_id: 0)
-            #else
-                var ip6addr = sockaddr_in6(sin6_len: UInt8(sizeof(sockaddr_in6)),
-                    sin6_family: sa_family_t(addr.memory.h_addrtype),
-                    sin6_port: htons( port ), sin6_flowinfo: 0, sin6_addr: addr0.memory,
-                    sin6_scope_id: 0)
+            var ip6addr = sockaddr_in6()
+            #if !os(Linux)
+            ip6addr.sin6_len = UInt8(sizeof(sockaddr_in6))
             #endif
+            ip6addr.sin6_family = sa_family_t(addr.memory.h_addrtype)
+            ip6addr.sin6_port = in_port_t(htons( port ))
+            ip6addr.sin6_addr = addr0.memory
             sockaddrPtr.memory = sockaddr_cast(&ip6addr).memory
 
         default:

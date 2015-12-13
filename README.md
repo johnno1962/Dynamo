@@ -11,15 +11,15 @@ has turned to the server side to set up a simple framework inside which it is po
 with SSL, Proxies and what you could call "Swift Server Pages" which are loadable bundles of code
 placed in the document hierarchy.
 
-The Dynamo server core is based on "Swiftlets", instances implementing the `DynamoSwiftlet` protocol
-which are presented with incoming HTTP requests from the browser and can choose to process it in any
+The Dynamo server core is based on "Swiftlets", instances implementing the `DynamoSwiftlet` protocol.
+These are presented with incoming HTTP requests from the browser and can choose to process it in any
 manner it chooses. The developer passes in an array of swiftlet instances combining the features 
 and applications desired on server startup.
 
 ```Swift
     @objc public protocol DynamoSwiftlet {
 
-        @objc func process( httpClient: DynamoHTTPConnection ) -> DynamoProcessed    
+        @objc func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed    
     }
 
     @objc public enum DynamoProcessed : Int {

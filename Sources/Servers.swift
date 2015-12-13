@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Servers.swift#6 $
+//  $Id: //depot/Dynamo/Sources/Servers.swift#11 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -50,21 +50,14 @@ public class DynamoWebServer: _NSObject_ {
 
         self.swiftlets = swiftlets
 
-#if os(Linux)
-        let sockType = Int32(SOCK_STREAM.rawValue)
-        var ip4addr = sockaddr_in(
-            sin_family: sa_family_t(AF_INET),
-            sin_port: htons( portNumber ),
-            sin_addr: in_addr( s_addr: INADDR_ANY ),
-            sin_zero: (0,0,0,0,0,0,0,0) )
-#else
-        let sockType = SOCK_STREAM
-        var ip4addr = sockaddr_in( sin_len: UInt8(sizeof(sockaddr_in)),
-            sin_family: sa_family_t(AF_INET),
-            sin_port: htons( portNumber ),
-            sin_addr: in_addr( s_addr: INADDR_ANY ),
-            sin_zero: (0,0,0,0,0,0,0,0) )
-#endif
+        var ip4addr = sockaddr_in()
+
+        #if !os(Linux)
+        ip4addr.sin_len = UInt8(sizeof(sockaddr_in))
+        #endif
+        ip4addr.sin_family = sa_family_t(AF_INET)
+        ip4addr.sin_port = htons( portNumber )
+        ip4addr.sin_addr = in_addr( s_addr: INADDR_ANY )
 
         if localhostOnly {
             inet_aton( "127.0.0.1", &ip4addr.sin_addr )
@@ -185,7 +178,13 @@ public class DynamoSSLWebServer: DynamoWebServer {
             runConnectionHandler( httpConnectionHander )
         }
         else if let surrogateURL = NSURL( string: surrogate! ) {
-            runConnectionHandler( sslProxyHandler( surrogateURL ) )
+            runConnectionHandler( {
+                (clientSocket: Int32) in
+                if let sslConnection = self.wrapConnection( clientSocket ),
+                    surrogateConnection = DynamoHTTPConnection( url: surrogateURL ) {
+                        DynamoSelector.relay( "surrogate", from: sslConnection, to: surrogateConnection, dynamoTrace )
+                }
+            } )
         }
         else {
             dynamoLog( "Invalid surrogate URL: \(surrogate)" )
@@ -194,13 +193,6 @@ public class DynamoSSLWebServer: DynamoWebServer {
 
     override func wrapConnection( clientSocket: Int32 ) -> DynamoHTTPConnection? {
         return DynamoSSLConnection( sslSocket: clientSocket, certs: certs )
-    }
-
-    func sslProxyHandler( surrogateURL: NSURL )( clientSocket: Int32 ) {
-        if let sslConnection = wrapConnection( clientSocket ),
-            localConnection = DynamoHTTPConnection( url: surrogateURL ) {
-                DynamoSelector.relay( "surrogate", from: sslConnection, to: localConnection, dynamoTrace )
-        }
     }
 
 }
