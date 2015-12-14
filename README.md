@@ -2,9 +2,8 @@
 # Dynamo - Dynamic Swift Web Server
 
 Starting this project the intention was to code the simplest possible Web Server entirely
-in Swift. Unfortunately I got a bit carried away adding features and besides this spot has been
-capably occupied by the [swifter](https://github.com/glock45/swifter) server along with it's
-Swift syntactic sugar.
+in Swift. Unfortunately I got a bit carried away adding features such as proxying and dynamic
+reloading of server code. Dynamo now also works on Linux, see [DynamoLinux](https://github.com/johnno1962/DynamoLinux).
 
 So.. while Dynamo can be used in an iOS application as is demonstrated in this project, the focus
 has turned to the server side to set up a simple framework inside which it is possible to experiment

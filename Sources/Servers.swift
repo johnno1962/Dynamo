@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Servers.swift#11 $
+//  $Id: //depot/Dynamo/Sources/Servers.swift#12 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -41,7 +41,9 @@ public class DynamoWebServer: _NSObject_ {
 
         self.init( portNumber, swiftlets: swiftlets, localhostOnly: localhostOnly )
 
-        runConnectionHandler( httpConnectionHander )
+        dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), {
+            self.runConnectionHandler( self.httpConnectionHandler )
+        } )
     }
 
     init?( _ portNumber: UInt16, swiftlets: [DynamoSwiftlet], localhostOnly: Bool ) {
@@ -97,28 +99,26 @@ public class DynamoWebServer: _NSObject_ {
     }
 
     func runConnectionHandler( connectionHandler: (Int32) -> Void ) {
-        dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), {
-            while self.serverSocket >= 0 {
+        while self.serverSocket >= 0 {
 
-                let clientSocket = accept( self.serverSocket, nil, nil )
+            let clientSocket = accept( self.serverSocket, nil, nil )
 
-                if clientSocket >= 0 {
-                    dispatch_async( dynamoRequestQueue, {
-                        connectionHandler( clientSocket )
-                    } )
-                }
-                else {
-                    NSThread.sleepForTimeInterval( 0.5 )
-                }
+            if clientSocket >= 0 {
+                dispatch_async( dynamoRequestQueue, {
+                    connectionHandler( clientSocket )
+                } )
             }
-        } )
+            else {
+                NSThread.sleepForTimeInterval( 0.5 )
+            }
+        }
     }
 
     func wrapConnection( clientSocket: Int32 ) -> DynamoHTTPConnection? {
         return DynamoHTTPConnection( clientSocket: clientSocket )
     }
 
-    func httpConnectionHander( clientSocket: Int32 ) {
+    public func httpConnectionHandler( clientSocket: Int32 ) {
 
         if let httpClient = self.wrapConnection( clientSocket ) {
 
@@ -152,7 +152,35 @@ public class DynamoWebServer: _NSObject_ {
 
 }
 
-#if !os(Linux)
+#if os(Linux)
+/**
+    Pre-forked worker model version e.g. https://github.com/kylef/Curassow
+ */
+
+public class DynamoWorkerServer : DynamoWebServer {
+
+    public init?( portNumber: UInt16, swiftlets: [DynamoSwiftlet], workers: Int, localhostOnly: Bool = false ) {
+
+        super.init( portNumber, swiftlets: swiftlets, localhostOnly: localhostOnly )
+
+        for _ in 0..<workers {
+            if fork() == 0 {
+                runConnectionHandler( httpConnectionHandler )
+            }
+        }
+
+        dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), {
+            while true {
+                var status = __WAIT_STATUS()
+                if wait( status ) != 0 && fork() == 0 {
+                    self.runConnectionHandler( self.httpConnectionHandler )
+                }
+            }
+        } )
+    }
+
+}
+#else
 
 // MARK: SSL https: Web Server
 
@@ -175,7 +203,9 @@ public class DynamoSSLWebServer: DynamoWebServer {
         super.init( portNumber, swiftlets: swiftlets, localhostOnly: false )
 
         if surrogate == nil {
-            runConnectionHandler( httpConnectionHander )
+            dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), {
+                self.runConnectionHandler( self.httpConnectionHandler )
+            } )
         }
         else if let surrogateURL = NSURL( string: surrogate! ) {
             runConnectionHandler( {

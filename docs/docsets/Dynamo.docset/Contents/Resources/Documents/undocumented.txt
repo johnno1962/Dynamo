@@ -8,6 +8,8 @@ Types.swift
 	case JSON( json: AnyObject )
 	case Status( status: Int, text: String )
 	@objc public protocol DynamoSwiftlet
+Servers.swift
+	public func httpConnectionHandler( clientSocket: Int32 )
 Connection.swift
 	public func toInt() -> Int?
 Swiftlets.swift
