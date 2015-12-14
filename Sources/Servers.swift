@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Servers.swift#12 $
+//  $Id: //depot/Dynamo/Sources/Servers.swift#13 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -171,7 +171,7 @@ public class DynamoWorkerServer : DynamoWebServer {
 
         dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), {
             while true {
-                var status = __WAIT_STATUS()
+                let status = __WAIT_STATUS()
                 if wait( status ) != 0 && fork() == 0 {
                     self.runConnectionHandler( self.httpConnectionHandler )
                 }
