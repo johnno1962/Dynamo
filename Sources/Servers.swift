@@ -165,18 +165,14 @@ public class DynamoWorkerServer : DynamoWebServer {
 
         super.init( portNumber, swiftlets: swiftlets, localhostOnly: localhostOnly )
 
-        for _ in 0..<workers {
-            if fork() == 0 {
-                runConnectionHandler( httpConnectionHandler )
-            }
-        }
-
         dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), {
+            var wcount = 0
             while true {
                 let status = __WAIT_STATUS()
-                if wait( status ) != 0 && fork() == 0 {
+                if (wcount < workers || wait( status ) != 0) && fork() == 0 {
                     self.runConnectionHandler( self.httpConnectionHandler )
                 }
+                wcount++
             }
         } )
     }
