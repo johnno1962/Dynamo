@@ -21,7 +21,7 @@
 
  */
 
-@import Cocoa;
+@import Foundation;
 @import Security;
 
 @interface DDKeychain : NSObject

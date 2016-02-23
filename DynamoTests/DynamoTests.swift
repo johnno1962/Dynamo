@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
 
-import Cocoa
+import Foundation
 import XCTest
 
 class DynamoTests: XCTestCase {

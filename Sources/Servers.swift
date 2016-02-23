@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Servers.swift#14 $
+//  $Id: //depot/Dynamo/Sources/Servers.swift#15 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -172,7 +172,7 @@ public class DynamoWorkerServer : DynamoWebServer {
                 if (wcount < workers || wait( status ) != 0) && fork() == 0 {
                     self.runConnectionHandler( self.httpConnectionHandler )
                 }
-                wcount++
+                wcount += 1
             }
         } )
     }

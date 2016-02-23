@@ -205,7 +205,7 @@ final class DynamoSelector {
                 if maxfd < fd {
                     maxfd = fd
                 }
-                fdcount++
+                fdcount += 1
             }
 
             var hasWrite = false

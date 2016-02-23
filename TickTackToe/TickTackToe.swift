@@ -92,7 +92,7 @@ public class TickTackToeSwiftlet: SessionApplication {
             for x in 0..<3 {
                 var attrs = ["bgcolor":engine.board[y][x], "width":"100", "height":"100"]
                 if engine.board[y][x] != "white" {
-                    played++
+                    played += 1
                 } else {
                     attrs["onclick"] = "document.location.replace( '\(pathInfo)?player=\(nextPlayer)&x=\(x)&y=\(y)' );"
                 }

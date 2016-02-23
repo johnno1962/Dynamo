@@ -302,7 +302,8 @@ public class BundleSwiftlet: SessionSwiftlet {
         if let attrs = try? fileManager.attributesOfItemAtPath( binaryPath),
             lastModified = (attrs[NSFileModificationDate] as? NSDate)?.timeIntervalSinceReferenceDate
                 where lastModified > loaded {
-            let nextPath = "/tmp/\(bundleName)V\(loadNumber++).ssp"
+            let nextPath = "/tmp/\(bundleName)V\(loadNumber).ssp"
+            loadNumber += 1
 
             do {
                 try fileManager.removeItemAtPath( nextPath )
