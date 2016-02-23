@@ -277,6 +277,7 @@ public class DynamoHTTPRequest: _NSObject_ {
         return nil
     }
 
+#if !os(Linux)
     /** POST data as JSON object */
     public func postJSON() -> AnyObject? {
         if let data = postData() {
@@ -288,6 +289,7 @@ public class DynamoHTTPRequest: _NSObject_ {
         }
         return nil
     }
+#endif
 
 }
 

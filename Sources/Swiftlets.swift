@@ -64,7 +64,7 @@ public class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
 
         if httpClient.method == "POST" {
             if httpClient.contentType == "application/json" {
-
+#if !os(Linux)
                 if let json = httpClient.postJSON() {
                     processJSON( httpClient,
                         pathInfo: pathInfo,
@@ -72,7 +72,7 @@ public class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
                         cookies: cookies,
                         json: json )
                 }
-
+#endif
                 return httpClient.knowsResponseLength ? .ProcessedAndReusable : .Processed
             }
 
