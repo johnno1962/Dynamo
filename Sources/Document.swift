@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/07/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Document.swift#6 $
+//  $Id: //depot/Dynamo/Sources/Document.swift#7 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -134,7 +134,7 @@ public class DocumentSwiftlet: _NSObject_, DynamoSwiftlet {
 
             var isDir: ObjCBool = false
             if fileManager.fileExistsAtPath( fullPath, isDirectory: &isDir ) && isDir {
-                #if os(Linux)
+                #if os(Linux) || swift(>=2.3)
                 fullPath = NSURL( fileURLWithPath: fullPath ).URLByAppendingPathComponent( "index.html" )!.path!
                 #else
                 fullPath = NSURL( fileURLWithPath: fullPath ).URLByAppendingPathComponent( "index.html" ).path!
@@ -168,7 +168,8 @@ public class DocumentSwiftlet: _NSObject_, DynamoSwiftlet {
 
             if report404 {
                 dynamoLog( "404 File not Found: \(fullPath)" )
-                return httpClient.sendResponse( .Status( status: 404, text: "<b>File not found:</b> \(fullPath)" ) )
+                return httpClient.sendResponse( .Status( status: 404, text: "<b>File not found:</b> \(fullPath)<p>" +
+                    "<button onclick='history.back();'>Back</button>" ) )
             }
         }
 

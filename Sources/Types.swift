@@ -60,6 +60,21 @@ public protocol DynamoSwiftlet {
      */
     func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
 }
+
+/**
+ Once a swiftlet has decided it can handle a request the headers are interpreted to extract parameters
+ and cookies and any POST parameters. The web application then implements this protocol.
+ */
+
+public protocol DynamoBrowserSwiftlet: DynamoSwiftlet {
+
+    /**
+     A request can be further parsed to extract parameters, method "POST" data and cookies before processing
+     */
+
+    func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
+    
+}
 #else
 @objc public protocol DynamoSwiftlet {
 
@@ -68,14 +83,13 @@ public protocol DynamoSwiftlet {
      */
     func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
 }
-#endif
 
 /**
     Once a swiftlet has decided it can handle a request the headers are interpreted to extract parameters
     and cookies and any POST parameters. The web application then implements this protocol.
  */
 
-public protocol DynamoBrowserSwiftlet: DynamoSwiftlet {
+@objc public protocol DynamoBrowserSwiftlet: DynamoSwiftlet {
 
     /**
         A request can be further parsed to extract parameters, method "POST" data and cookies before processing
@@ -84,6 +98,7 @@ public protocol DynamoBrowserSwiftlet: DynamoSwiftlet {
     func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
 
 }
+#endif
 
 // MARK: util definitions/functions
 

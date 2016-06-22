@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Servers.swift#16 $
+//  $Id: //depot/Dynamo/Sources/Servers.swift#17 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -200,23 +200,23 @@ public class DynamoSSLWebServer: DynamoWebServer {
 
         super.init( portNumber, swiftlets: swiftlets, localhostOnly: false )
 
-        if surrogate == nil {
-            dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), {
-                self.runConnectionHandler( self.httpConnectionHandler )
-            } )
-        }
-        else if let surrogateURL = NSURL( string: surrogate! ) {
-            runConnectionHandler( {
-                (clientSocket: Int32) in
-                if let sslConnection = self.wrapConnection( clientSocket ),
-                    surrogateConnection = DynamoHTTPConnection( url: surrogateURL ) {
-                        DynamoSelector.relay( "surrogate", from: sslConnection, to: surrogateConnection, dynamoTrace )
-                }
-            } )
-        }
-        else {
-            dynamoLog( "Invalid surrogate URL: \(surrogate)" )
-        }
+        dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), {
+            if surrogate == nil {
+                    self.runConnectionHandler( self.httpConnectionHandler )
+            }
+            else if let surrogateURL = NSURL( string: surrogate! ) {
+                    self.runConnectionHandler( {
+                        (clientSocket: Int32) in
+                        if let sslConnection = self.wrapConnection( clientSocket ),
+                            surrogateConnection = DynamoHTTPConnection( url: surrogateURL ) {
+                                DynamoSelector.relay( "surrogate", from: sslConnection, to: surrogateConnection, dynamoTrace )
+                        }
+                    } )
+            }
+            else {
+                dynamoLog( "Invalid surrogate URL: \(surrogate)" )
+            }
+        } )
     }
 
     override func wrapConnection( clientSocket: Int32 ) -> DynamoHTTPConnection? {
