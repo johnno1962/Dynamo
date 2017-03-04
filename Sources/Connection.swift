@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Connection.swift#15 $
+//  $Id: //depot/Dynamo/Sources/Connection.swift#16 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -79,7 +79,7 @@ open class DynamoHTTPRequest: _NSObject_ {
     var knowsResponseLength = false
 
     // read buffering
-    let readBuffer = NSMutableData()
+    var readBuffer = Data()
     var readTotal = 0
     var label = ""
 
@@ -153,10 +153,13 @@ open class DynamoHTTPRequest: _NSObject_ {
 
     /** read the requested number of bytes */
     open func read( buffer: UnsafeMutableRawPointer, count: Int ) -> Int {
-        var pos = min( readBuffer.length, count )
+        var pos = min( readBuffer.count, count )
         if pos != 0 {
-            memcpy( buffer, readBuffer.bytes, pos )
-            readBuffer.replaceBytes( in: NSMakeRange( 0, pos ), withBytes: nil, length: 0 )
+            readBuffer.withUnsafeBytes({
+                (bytes: UnsafePointer<Int8>) -> Void in
+                memcpy( buffer, bytes, pos )
+                readBuffer.replaceSubrange(0..<pos, with: Data())
+            })
         }
         while pos < count {
             let bytesRead = _read( buffer: buffer+pos, count: count-pos )
@@ -168,11 +171,15 @@ open class DynamoHTTPRequest: _NSObject_ {
         return pos
     }
 
-    var buffer = [Int8](repeating: 0, count: 8192), newlineChar = Int32(10)
+    var buffer = [UInt8](repeating: 0, count: 8192), newlineChar = Int32(10)
 
     func readLine() -> String? {
         while true {
-            let endOfLine = memchr( readBuffer.bytes, newlineChar, readBuffer.length )?.assumingMemoryBound(to: Int8.self)
+            let bytes = readBuffer.withUnsafeBytes({
+                (bytes: UnsafePointer<Int8>) -> UnsafePointer<Int8> in
+                return bytes
+            })
+            let endOfLine = memchr( bytes, newlineChar, readBuffer.count )?.assumingMemoryBound(to: Int8.self)
             if endOfLine != nil {
                 endOfLine![0] = 0
                 #if os(Linux)
@@ -181,9 +188,8 @@ open class DynamoHTTPRequest: _NSObject_ {
                 }
                 #endif
 
-                let line = String( cString: readBuffer.bytes.bindMemory(to: Int8.self, capacity: readBuffer.length) )
-                    .trimmingCharacters( in: CharacterSet.whitespacesAndNewlines )
-                readBuffer.replaceBytes( in: NSMakeRange( 0, UnsafeRawPointer(endOfLine!)+1-readBuffer.bytes ), withBytes:nil, length:0 )
+                let line = String( cString: bytes ).trimmingCharacters( in: CharacterSet.whitespacesAndNewlines )
+                readBuffer.replaceSubrange(0..<UnsafePointer<Int8>(endOfLine!)+1-bytes, with: Data())
                 return line
             }
 
@@ -191,7 +197,7 @@ open class DynamoHTTPRequest: _NSObject_ {
             if bytesRead <= 0 {
                 break ///
             }
-            readBuffer.append( buffer, length: bytesRead )
+            readBuffer.append( buffer, count: bytesRead )
         }
         return nil
     }
@@ -275,7 +281,7 @@ open class DynamoHTTPRequest: _NSObject_ {
             return data.withUnsafeBytes({
                 (bytes: UnsafePointer<Int8>) -> Data? in
                 if read( buffer: UnsafeMutableRawPointer(mutating: bytes), count: postLength ) == postLength {
-                    return data as Data
+                    return data
                 }
                 return nil
             })

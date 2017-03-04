@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/07/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Example.swift#4 $
+//  $Id: //depot/Dynamo/Sources/Example.swift#5 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -67,7 +67,7 @@ open class ExampleAppSwiftlet: HTMLApplicationSwiftlet {
                 for y in 0..<height {
                     out.print( tr( nil ) )
                     for x in 0..<width {
-                        out.print( td( parameters["x\(x)y\(y)"]! ) )
+                        out.print( td( parameters["x\(x)y\(y)"] ?? "??" ) )
                     }
                     out.print( _tr() )
                 }
