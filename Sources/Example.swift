@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/07/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Example.swift#2 $
+//  $Id: //depot/Dynamo/Sources/Example.swift#3 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -18,13 +18,13 @@ import Foundation
     Example web application or "swiftlet" testing form sbumission.
  */
 
-public class ExampleAppSwiftlet: HTMLApplicationSwiftlet {
+open class ExampleAppSwiftlet: HTMLApplicationSwiftlet {
 
     /**
         This is the entry point for most application swiftlets after browser parameters have been parsed.
      */
 
-    override public func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
+    override open func processRequest( _ out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
         out.print( html( nil ) + head( title( "Table Example" ) +
             style( "body, table { font: 10pt Arial" ) ) + body( nil ) )
 
@@ -48,7 +48,7 @@ public class ExampleAppSwiftlet: HTMLApplicationSwiftlet {
 
             out.print( h3( "Enter table values" ) + form( ["method": "POST"], nil ) + table( nil ) )
 
-            if let width = parameters["width"]?.toInt(), height = parameters["height"]?.toInt() {
+            if let width = parameters["width"]?.toInt(), let height = parameters["height"]?.toInt() {
                 for y in 0..<height {
                     out.print( tr( nil ) )
                     for x in 0..<width {
@@ -63,7 +63,7 @@ public class ExampleAppSwiftlet: HTMLApplicationSwiftlet {
         else {
             out.print( h3( "Your table:" ) + table( ["border":"1"], nil ) )
 
-            if let width = parameters["width"]?.toInt(), height = parameters["height"]?.toInt() {
+            if let width = parameters["width"]?.toInt(), let height = parameters["height"]?.toInt() {
                 for y in 0..<height {
                     out.print( tr( nil ) )
                     for x in 0..<width {

@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/07/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Document.swift#7 $
+//  $Id: //depot/Dynamo/Sources/Document.swift#8 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -18,19 +18,19 @@ import Foundation
     Null swiftlet to log each request as it is presented to the processing chain.
 */
 
-public class LoggingSwiftlet: _NSObject_, DynamoSwiftlet {
+open class LoggingSwiftlet: _NSObject_, DynamoSwiftlet {
 
     let logger: (String) -> Void
 
     /** default initialiser for logging Swiftlet */
-    public init( logger: ((String) -> Void) = dynamoTrace ) {
+    public init( logger: @escaping ((String) -> Void) = dynamoTrace ) {
         self.logger = logger
     }
 
     /** log current request */
-    public func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+    open func present( _ httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
         logger( "\(httpClient.method) \(httpClient.path) \(httpClient.version) - \(httpClient.remoteAddr)" )
-        return .NotProcessed
+        return .notProcessed
     }
     
 }
@@ -93,9 +93,9 @@ public var dynamoMimeTypeMapping = [
     This is either from the app resources directory for iOS apps or ~/Sites/hostname:port/... on OSX.
 */
 
-public class DocumentSwiftlet: _NSObject_, DynamoSwiftlet {
+open class DocumentSwiftlet: _NSObject_, DynamoSwiftlet {
 
-    let fileManager = NSFileManager.defaultManager()
+    let fileManager = FileManager.default
     let documentRoot: String
     let report404: Bool
 
@@ -104,7 +104,7 @@ public class DocumentSwiftlet: _NSObject_, DynamoSwiftlet {
     */
 
     public convenience override init() {
-        self.init( documentRoot: NSBundle.mainBundle().resourcePath! )
+        self.init( documentRoot: Bundle.main.resourcePath! )
     }
 
     /**
@@ -117,63 +117,64 @@ public class DocumentSwiftlet: _NSObject_, DynamoSwiftlet {
         self.report404 = report404
     }
 
-    private func webDate( date: NSDate ) -> String {
-        return webDateFormatter.stringFromDate( date )
+    fileprivate func webDate( _ date: Date ) -> String {
+        return webDateFormatter.string( from: date )
     }
 
     /**
         Look for static documents in directory named affter host(:port) used in url
     */
 
-    public func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+    open func present( _ httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
 
         if httpClient.method == "GET" {
 
             let siteHost = httpClient.requestHeaders["Host"] ?? "localhost"
-            var fullPath = "\(documentRoot)/\(siteHost)"+(httpClient.url.path ?? "/")
+            var fullPath = "\(documentRoot)/\(siteHost)"+(httpClient.url.path == "" ? "/" : httpClient.url.path)
 
             var isDir: ObjCBool = false
-            if fileManager.fileExistsAtPath( fullPath, isDirectory: &isDir ) && isDir {
-                #if os(Linux) || swift(>=2.3)
-                fullPath = NSURL( fileURLWithPath: fullPath ).URLByAppendingPathComponent( "index.html" )!.path!
-                #else
-                fullPath = NSURL( fileURLWithPath: fullPath ).URLByAppendingPathComponent( "index.html" ).path!
-                #endif
+            #if os(Linux)
+            if fileManager.fileExists( atPath: fullPath, isDirectory: &isDir ) && isDir {
+                fullPath = URL( fileURLWithPath: fullPath ).appendingPathComponent( "index.html" ).path
             }
+            #else
+            if fileManager.fileExists( atPath: fullPath, isDirectory: &isDir ) && isDir.boolValue {
+                fullPath = URL( fileURLWithPath: fullPath ).appendingPathComponent( "index.html" ).path
+            }
+            #endif
 
-            let ext = NSURL( fileURLWithPath: fullPath ).pathExtension
-            httpClient.contentType = (ext != nil ? dynamoMimeTypeMapping[ext!] : nil) ?? dynamoHtmlMimeType
+            let ext = URL( fileURLWithPath: fullPath ).pathExtension
+            httpClient.contentType = (ext != "" ? dynamoMimeTypeMapping[ext] : nil) ?? dynamoHtmlMimeType
 
             let zippedPath = fullPath+".gz"
-            if fileManager.fileExistsAtPath( zippedPath ) {
+            if fileManager.fileExists( atPath: zippedPath ) {
                 httpClient.addResponseHeader( "Content-Encoding", value: "gzip" )
                 fullPath = zippedPath
             }
 
-            if let attrs = try? fileManager.attributesOfItemAtPath( fullPath ),
-                        lastModifiedDate = attrs[NSFileModificationDate] as? NSDate {
+            if let attrs = try? fileManager.attributesOfItem( atPath: fullPath ),
+                        let lastModifiedDate = attrs[FileAttributeKey.modificationDate] as? Date {
 
                 let lastModified = webDate( lastModifiedDate )
                 httpClient.addResponseHeader( "Last-Modified", value: lastModified )
 
-                if let since = httpClient.requestHeaders["If-Modified-Since"]
-                        where since == lastModified {
-                    return httpClient.sendResponse( .Status( status: 304, text: "" ) )
+                if let since = httpClient.requestHeaders["If-Modified-Since"], since == lastModified {
+                    return httpClient.sendResponse( .status( status: 304, text: "" ) )
                 }
 
-                if let data = NSData( contentsOfFile: fullPath ) {
-                    return httpClient.sendResponse( .Data( data: data ) )
+                if let data = try? Data( contentsOf: URL(fileURLWithPath: fullPath) ) {
+                    return httpClient.sendResponse( .data( data: data ) )
                 }
             }
 
             if report404 {
                 dynamoLog( "404 File not Found: \(fullPath)" )
-                return httpClient.sendResponse( .Status( status: 404, text: "<b>File not found:</b> \(fullPath)<p>" +
+                return httpClient.sendResponse( .status( status: 404, text: "<b>File not found:</b> \(fullPath)<p>" +
                     "<button onclick='history.back();'>Back</button>" ) )
             }
         }
 
-        return .NotProcessed
+        return .notProcessed
     }
 
 }

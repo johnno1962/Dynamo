@@ -16,7 +16,7 @@ public class NumberGuesserSwiftlet: SessionApplication {
     private let number = Int(arc4random()%100)+1
     private var history = [String]()
 
-    override public func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
+    override public func processRequest( _ out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
         var response = ""
 
         response += "<html><head><title>Number Guesser Example</title></head>\n<body>\n    <form method=\"POST\" action=\"\(out.path)\">\n    "
