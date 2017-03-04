@@ -15,12 +15,12 @@ import Foundation
 #if os(Linux)
 import Glibc
 
-open class _NSObject_ {
+public class _NSObject_ {
     init() {
     }
 }
 #else
-open class _NSObject_ : NSObject {
+public class _NSObject_ : NSObject {
 }
 #endif
 
@@ -32,9 +32,9 @@ open class _NSObject_ : NSObject {
 
 @objc public enum DynamoProcessed: Int {
     case
-    notProcessed, // does not recogise the request
-    processed, // has processed the request
-    processedAndReusable // "" and connection may be reused
+    NotProcessed, // does not recogise the request
+    Processed, // has processed the request
+    ProcessedAndReusable // "" and connection may be reused
 }
 
 /**
@@ -42,10 +42,10 @@ open class _NSObject_ : NSObject {
  */
 
 public enum DynamoResponse {
-    case ok( html: String )
-    case data( data: Foundation.Data )
-    case json( json: AnyObject )
-    case status( status: Int, text: String )
+    case OK( html: String )
+    case Data( data: NSData )
+    case JSON( json: AnyObject )
+    case Status( status: Int, text: String )
 }
 
 /**
@@ -58,7 +58,7 @@ public protocol DynamoSwiftlet {
     /**
         each request is presented ot each swiftlet until one indicates it has processed the request
      */
-    func present( _ httpClient: DynamoHTTPConnection ) -> DynamoProcessed
+    func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
 }
 
 /**
@@ -72,7 +72,7 @@ public protocol DynamoBrowserSwiftlet: DynamoSwiftlet {
      A request can be further parsed to extract parameters, method "POST" data and cookies before processing
      */
 
-    func processRequest( _ out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
+    func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
     
 }
 #else
@@ -81,7 +81,7 @@ public protocol DynamoBrowserSwiftlet: DynamoSwiftlet {
     /**
         each request is presented ot each swiftlet until one indicates it has processed the request
      */
-    func present( _ httpClient: DynamoHTTPConnection ) -> DynamoProcessed
+    func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
 }
 
 /**
@@ -95,7 +95,7 @@ public protocol DynamoBrowserSwiftlet: DynamoSwiftlet {
         A request can be further parsed to extract parameters, method "POST" data and cookies before processing
      */
 
-    func processRequest( _ out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
+    func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
 
 }
 #endif
@@ -109,26 +109,26 @@ let sockType = Int32(SOCK_STREAM.rawValue)
 let sockType = SOCK_STREAM
 #endif
 
-func htons( _ port: UInt16 ) -> UInt16 {
+func htons( port: UInt16 ) -> UInt16 {
     return (port << 8) + (port >> 8)
 }
 let ntohs = htons
 
-func sockaddr_cast(_ p: UnsafeMutableRawPointer) -> UnsafeMutablePointer<sockaddr> {
-    return unsafeBitCast(p, to:UnsafeMutablePointer<sockaddr>.self)
+func sockaddr_cast(p: UnsafeMutablePointer<Void>) -> UnsafeMutablePointer<sockaddr> {
+    return UnsafeMutablePointer<sockaddr>(p)
 }
 
-func sockaddr_in_cast(_ p: UnsafeMutablePointer<sockaddr>) -> UnsafeMutablePointer<sockaddr_in> {
-    return unsafeBitCast(p, to:UnsafeMutablePointer<sockaddr_in>.self)
+func sockaddr_in_cast(p: UnsafeMutablePointer<sockaddr>) -> UnsafeMutablePointer<sockaddr_in> {
+    return UnsafeMutablePointer<sockaddr_in>(p)
 }
 
 /** default tracer for frequent messages */
-public func dynamoTrace<T>( _ msg: T ) {
+public func dynamoTrace<T>( msg: T ) {
     print( msg )
 }
 
 /** logger for server errors */
-func dynamoLog<T>( _ msg: T ) {
+func dynamoLog<T>( msg: T ) {
 #if os(Linux)
     print( "DynamoWebServer: \(msg)" )
 #else
@@ -137,11 +137,11 @@ func dynamoLog<T>( _ msg: T ) {
 }
 
 /** logger for low level errors */
-func dynamoStrerror( _ msg: String ) {
+func dynamoStrerror( msg: String ) {
 #if os(Linux)
     dynamoLog( "\(msg)" )
 #else
-    dynamoLog( "\(msg) - \( String( cString: strerror(errno) ) )" )
+    dynamoLog( "\(msg) - \( String.fromCString( strerror(errno) )! )" )
 #endif
 }
 
@@ -152,10 +152,10 @@ private var hostAddressCache = [String:UnsafeMutablePointer<sockaddr>]()
 /**
     Caching version of gethostbyname() returning a struct sockaddr for use in a connect() call
  */
-public func addressForHost( _ hostname: String, port: UInt16 ) -> sockaddr? {
+public func addressForHost( hostname: String, port: UInt16 ) -> sockaddr? {
 
-    var addr: UnsafeMutablePointer<hostent>! = nil
-    var sockaddrTmp = hostAddressCache[hostname]?.pointee
+    var addr: UnsafeMutablePointer<hostent> = nil
+    var sockaddrTmp = hostAddressCache[hostname]?.memory
 
     if sockaddrTmp == nil {
         hostname.withCString { (hostString) in
@@ -165,59 +165,59 @@ public func addressForHost( _ hostname: String, port: UInt16 ) -> sockaddr? {
             #if os(Linux)
                 dynamoLog( "Could not resolve \(hostname)" )
             #else
-                dynamoLog( "Could not resolve \(hostname) - "+String( cString: hstrerror(h_errno) ) )
+                dynamoLog( "Could not resolve \(hostname) - "+String.fromCString( hstrerror(h_errno) )! )
             #endif
             return nil
         }
     }
 
     if sockaddrTmp == nil {
-        let sockaddrPtr = sockaddr_cast(malloc(MemoryLayout<sockaddr>.size))
-        switch addr.pointee.h_addrtype {
+        let sockaddrPtr = UnsafeMutablePointer<sockaddr>(malloc(sizeof(sockaddr.self)))
+        switch addr.memory.h_addrtype {
 
         case AF_INET:
-            let addr0 = sockaddr_in_cast(sockaddr_cast(addr.pointee.h_addr_list.pointee!))
+            let addr0 = UnsafePointer<in_addr>(addr.memory.h_addr_list.memory)
             var ip4addr = sockaddr_in()
             #if !os(Linux)
-            ip4addr.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
+            ip4addr.sin_len = UInt8(sizeof(sockaddr_in))
             #endif
-            ip4addr.sin_family = sa_family_t((addr.pointee.h_addrtype))
+            ip4addr.sin_family = sa_family_t(addr.memory.h_addrtype)
             ip4addr.sin_port = htons( port )
-            ip4addr.sin_addr = (addr0.pointee.sin_addr)
-            sockaddrPtr.pointee = sockaddr_cast(&ip4addr).pointee
+            ip4addr.sin_addr = addr0.memory
+            sockaddrPtr.memory = sockaddr_cast(&ip4addr).memory
 
         case AF_INET6: // TODO... completely untested
-            let addr0 = unsafeBitCast(addr.pointee.h_addr_list.pointee, to: UnsafePointer<in6_addr>.self)
+            let addr0 = UnsafePointer<in6_addr>(addr.memory.h_addr_list.memory)
             var ip6addr = sockaddr_in6()
             #if !os(Linux)
-            ip6addr.sin6_len = UInt8(MemoryLayout<sockaddr_in6>.size)
+            ip6addr.sin6_len = UInt8(sizeof(sockaddr_in6))
             #endif
-            ip6addr.sin6_family = sa_family_t((addr.pointee.h_addrtype))
+            ip6addr.sin6_family = sa_family_t(addr.memory.h_addrtype)
             ip6addr.sin6_port = in_port_t(htons( port ))
-            ip6addr.sin6_addr = (addr0.pointee)
-            sockaddrPtr.pointee = sockaddr_cast(&ip6addr).pointee
+            ip6addr.sin6_addr = addr0.memory
+            sockaddrPtr.memory = sockaddr_cast(&ip6addr).memory
 
         default:
-            dynamoLog( "Unknown address family: \(addr?.pointee.h_addrtype)" )
+            dynamoLog( "Unknown address family: \(addr.memory.h_addrtype)" )
             return nil
         }
 
         hostAddressCache[hostname] = sockaddrPtr
-        sockaddrTmp = sockaddrPtr.pointee
+        sockaddrTmp = sockaddrPtr.memory
     }
     else {
-        sockaddr_in_cast( &(sockaddrTmp!) ).pointee.sin_port = htons( port )
+        sockaddr_in_cast( &(sockaddrTmp!) ).memory.sin_port = htons( port )
     }
     
     return sockaddrTmp
 }
 
-public extension Data {
+public extension NSData {
     
     /**
      Overridden by NSData+deflate.m
      */
-    func deflate() -> Data? {
+    func deflate() -> NSData? {
         return nil
     }
     

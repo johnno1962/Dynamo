@@ -5,13 +5,16 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#9 $
+//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#8 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
 
 import Foundation
-import Dispatch
+
+#if os(Linux)
+import NSLinux
+#endif
 
 // MARK: Swiftlets for dynamic content
 
@@ -20,7 +23,7 @@ import Dispatch
     process it. Handles parsing of HTTP headers to present to web application code.
  */
 
-open class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
+public class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
 
     let pathPrefix: String
 
@@ -32,15 +35,14 @@ open class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
         self.pathPrefix = pathPrefix
     }
 
-    open func present( _ httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+    public func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
 
-        let pathInfo = httpClient.url.path
-        if pathInfo.hasPrefix( pathPrefix ) {
-            let endIndex = pathInfo.range( of: pathPrefix )!.upperBound
-            return process( httpClient, pathInfo: pathInfo.substring( to: endIndex ) )
+        if let pathInfo = httpClient.url.path where pathInfo.hasPrefix( pathPrefix ) {
+            let endIndex = pathInfo.rangeOfString( pathPrefix )!.endIndex
+            return process( httpClient, pathInfo: pathInfo.substringToIndex( endIndex ) )
         }
 
-        return .notProcessed
+        return .NotProcessed
     }
 
     /**
@@ -48,7 +50,7 @@ open class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
         query string, any post data and cookeis arriving from the browser.
      */
 
-    open func process( _ httpClient: DynamoHTTPConnection, pathInfo: String ) -> DynamoProcessed {
+    public func process( httpClient: DynamoHTTPConnection, pathInfo: String ) -> DynamoProcessed {
 
         var cookies = [String:String]()
         if let cookieHeader = httpClient.requestHeaders["Cookie"] {
@@ -71,7 +73,7 @@ open class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
                         json: json )
                 }
 #endif
-                return httpClient.knowsResponseLength ? .processedAndReusable : .processed
+                return httpClient.knowsResponseLength ? .ProcessedAndReusable : .Processed
             }
 
             if httpClient.contentType == "application/x-www-form-urlencoded" {
@@ -86,17 +88,17 @@ open class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
 
         processRequest( httpClient, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
 
-        return httpClient.knowsResponseLength ? .processedAndReusable : .processed
+        return httpClient.knowsResponseLength ? .ProcessedAndReusable : .Processed
     }
 
-    fileprivate func addParameters(  _ parameters: inout [String:String], from queryString: String, delimeter: String = "&" ) {
-        for nameValue in queryString.components( separatedBy: delimeter ) {
-            if let divider = nameValue.range( of: "=" )?.lowerBound {
-                let value = nameValue.substring( from: nameValue.index(divider, offsetBy: 1) )
+    private func addParameters(  inout parameters: [String:String], from queryString: String, delimeter: String = "&" ) {
+        for nameValue in queryString.componentsSeparatedByString( delimeter ) {
+            if let divider = nameValue.rangeOfString( "=" )?.startIndex {
+                let value = nameValue.substringFromIndex( divider.advancedBy( 1 ) )
                 if let value = value
-                        .replacingOccurrences( of: "+", with: " " )
-                        .removingPercentEncoding {
-                    parameters[nameValue.substring( to: divider )] = value
+                        .stringByReplacingOccurrencesOfString( "+", withString: " " )
+                        .stringByRemovingPercentEncoding {
+                    parameters[nameValue.substringToIndex( divider )] = value
                 }
             }
             else {
@@ -110,7 +112,7 @@ open class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
         or setting a "response" as whole which will allow the connection to be reused.
      */	   
 
-    open func processRequest( _ out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
+    public func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
         dynamoLog( "DynamoApplicationSwiftlet.processRequest(): Subclass responsibility" )
     }
 
@@ -118,7 +120,7 @@ open class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
         Sepcial treatment of JSON Post
      */
 
-    open func processJSON( _ out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String], json: AnyObject ) {
+    public func processJSON( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String], json: AnyObject ) {
         processRequest( out, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
     }
 
@@ -130,21 +132,21 @@ open class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
  Default session expiry time in seconds
  */
 
-public var dynanmoDefaultSessionExpiry: TimeInterval = 15*60
-private var sessionExpiryCheckInterval: TimeInterval = 60
+public var dynanmoDefaultSessionExpiry: NSTimeInterval = 15*60
+private var sessionExpiryCheckInterval: NSTimeInterval = 60
 
 /**
     Swiftlet that creates now instancews of the application class per user session.
     Sessions are identified by a UUID in a "DynamoSession" Coookie.
  */
 
-open class SessionSwiftlet: ApplicationSwiftlet {
+public class SessionSwiftlet: ApplicationSwiftlet {
 
     var appClass: SessionApplication.Type
     var sessions = [String:ApplicationSwiftlet]()
 
-    fileprivate var sessionLock = NSLock()
-    fileprivate let cookieName: String
+    private var sessionLock = NSLock()
+    private let cookieName: String
 
     /**
         Makea bindling between a pat pah prefix and a class the will be instantieted to process a session of requests
@@ -157,28 +159,29 @@ open class SessionSwiftlet: ApplicationSwiftlet {
         cleanupSessions()
     }
 
-    fileprivate func cleanupSessions() {
+    private func cleanupSessions() {
         for (key, session) in sessions {
-            if let session = session as? SessionApplication, session.expiry < Date().timeIntervalSinceReferenceDate {
+            if let session = session as? SessionApplication
+                where session.expiry < NSDate().timeIntervalSinceReferenceDate {
                     sessionLock.lock()
-                    sessions.removeValue( forKey: key )
+                    sessions.removeValueForKey( key )
                     sessionLock.unlock()
             }
         }
 
-        let delayTime = DispatchTime.now() + DispatchTimeInterval.milliseconds(Int(sessionExpiryCheckInterval*1000.0))
-        DispatchQueue.global(qos: .background).asyncAfter( deadline: delayTime, execute: cleanupSessions )
+        let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(sessionExpiryCheckInterval * Double(NSEC_PER_SEC)))
+        dispatch_after( delayTime, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), cleanupSessions )
     }
     /**
         Create a new instance of the application class to process the request if request and have it process it.
      */
 
-    open override func processRequest( _ out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
+    public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
 
     	sessionLock.lock()
         var sessionKey = cookies[cookieName]
         if sessionKey == nil || sessions[sessionKey!] == nil {
-            sessionKey = UUID().uuidString
+            sessionKey = NSUUID().UUIDString
             sessions[sessionKey!] = appClass.init( manager: self, sessionKey: sessionKey! )
             out.setCookie( cookieName, value: sessionKey!, path: pathPrefix )
             out.contentType = dynamoHtmlMimeType
@@ -199,18 +202,18 @@ open class SessionSwiftlet: ApplicationSwiftlet {
     Class to be subclassed for the application code when writing session based applications
  */
 
-open class SessionApplication: HTMLApplicationSwiftlet {
+public class SessionApplication: HTMLApplicationSwiftlet {
 
     let sessionKey: String
     let manager: SessionSwiftlet
-    var expiry: TimeInterval
+    var expiry: NSTimeInterval
 
     /**
         Clear out the current session for the next request
      */
 
-    open func clearSession() {
-        manager.sessions.removeValue( forKey: sessionKey )
+    public func clearSession() {
+        manager.sessions.removeValueForKey( sessionKey )
     }
 
     /**
@@ -220,7 +223,7 @@ open class SessionApplication: HTMLApplicationSwiftlet {
     required public init( manager: SessionSwiftlet, sessionKey: String ) {
         self.manager = manager
         self.sessionKey = sessionKey
-        self.expiry = Date().timeIntervalSinceReferenceDate + dynanmoDefaultSessionExpiry
+        self.expiry = NSDate().timeIntervalSinceReferenceDate + dynanmoDefaultSessionExpiry
         super.init( pathPrefix: "N/A" )
     }
 
@@ -228,7 +231,7 @@ open class SessionApplication: HTMLApplicationSwiftlet {
         Overridden by applpication code toprocess request.
      */
 
-    open override func processRequest( _ out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
+    public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
         dynamoLog( "DynamoSessionApplication.processRequest(): Subclass responsibility" )
     }
 
@@ -243,13 +246,13 @@ open class SessionApplication: HTMLApplicationSwiftlet {
     but retain their state. This does not work for changes to the layout or number of properties in the class.
 */
 
-open class BundleSwiftlet: SessionSwiftlet {
+public class BundleSwiftlet: SessionSwiftlet {
 
     let bundleName: String
     let bundlePath: String
     let binaryPath: String
-    var loaded: TimeInterval
-    let fileManager = FileManager.default
+    var loaded: NSTimeInterval
+    let fileManager = NSFileManager.defaultManager()
     var loadNumber = 0
 
     /**
@@ -257,7 +260,7 @@ open class BundleSwiftlet: SessionSwiftlet {
      */
 
     public convenience init?( pathPrefix: String, bundleName: String ) {
-        let bundlePath = Bundle.main.path( forResource: bundleName, ofType: "ssp" )!
+        let bundlePath = NSBundle.mainBundle().pathForResource( bundleName, ofType: "ssp" )!
         self.init( pathPrefix: pathPrefix, bundleName: bundleName, bundlePath: bundlePath )
     }
 
@@ -271,9 +274,9 @@ open class BundleSwiftlet: SessionSwiftlet {
         self.bundleName = bundleName
         self.bundlePath = bundlePath
         self.binaryPath = "\(bundlePath)/Contents/MacOS/\(bundleName)"
-        self.loaded = Date().timeIntervalSinceReferenceDate
+        self.loaded = NSDate().timeIntervalSinceReferenceDate
 
-        if let bundle = Bundle( path: bundlePath ), bundle.load() {
+        if let bundle = NSBundle( path: bundlePath ) where bundle.load() {
             if let appClass = bundle.classNamed( "\(bundleName)Swiftlet" ) as? SessionApplication.Type {
                 super.init( pathPrefix: pathPrefix, appClass: appClass )
                 return
@@ -294,22 +297,23 @@ open class BundleSwiftlet: SessionSwiftlet {
         it to a new unique path in /tmp.
      */
 
-    open override func processRequest( _ out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
+    public override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
 
-        if let attrs = try? fileManager.attributesOfItem( atPath: binaryPath),
-            let lastModified = (attrs[FileAttributeKey.modificationDate] as? Date)?.timeIntervalSinceReferenceDate, lastModified > loaded {
+        if let attrs = try? fileManager.attributesOfItemAtPath( binaryPath),
+            lastModified = (attrs[NSFileModificationDate] as? NSDate)?.timeIntervalSinceReferenceDate
+                where lastModified > loaded {
             let nextPath = "/tmp/\(bundleName)V\(loadNumber).ssp"
             loadNumber += 1
 
             do {
-                try fileManager.removeItem( atPath: nextPath )
+                try fileManager.removeItemAtPath( nextPath )
             } catch _ {
             }
 
             do {
-                try fileManager.copyItem( atPath: bundlePath, toPath: nextPath )
+                try fileManager.copyItemAtPath( bundlePath, toPath: nextPath )
 
-                if let bundle = Bundle( path: nextPath ) {
+                if let bundle = NSBundle( path: nextPath ) {
                     if bundle.load() {
                         // AutoLoader.m Swizzles new implementation
                         self.loaded = lastModified
@@ -338,11 +342,11 @@ open class BundleSwiftlet: SessionSwiftlet {
 
 #if !os(Linux)
 
-open class ServerPagesSwiftlet: ApplicationSwiftlet {
+public class ServerPagesSwiftlet: ApplicationSwiftlet {
 
     let documentRoot: String
     var reloaders = [String:BundleSwiftlet]()
-    let fileManager = FileManager.default
+    let fileManager = NSFileManager.defaultManager()
 
     /**
         Document root indicates where the ".ssp" bundles are to be found
@@ -358,25 +362,25 @@ open class ServerPagesSwiftlet: ApplicationSwiftlet {
         If present it will lbe loaded as a reloadable bnudle to process the request.
      */
 
-    override open func present( _ httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+    override public func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
 
         let path = httpClient.path
 
-        if let sspMatch = path.range( of: ".ssp" )?.upperBound, let host = httpClient.requestHeaders["Host"] {
-            let sspPath = path.substring( to: sspMatch )
+        if let sspMatch = path.rangeOfString( ".ssp" )?.endIndex, host = httpClient.requestHeaders["Host"] {
+            let sspPath = path.substringToIndex( sspMatch )
 
-            if sspPath != path && fileManager.fileExists( atPath: "\(documentRoot)/\(host)\(path)") {
-                return .notProcessed
+            if sspPath != path && fileManager.fileExistsAtPath( "\(documentRoot)/\(host)\(path)") {
+                return .NotProcessed
             }
 
             let sspFullPath = "\(documentRoot)/\(host)\(sspPath)"
             let reloader = reloaders[sspPath]
 
-            if reloader == nil && fileManager.fileExists( atPath: sspFullPath ) {
-                if let nameStart = sspPath.range( of: "/",
-                                                options: NSString.CompareOptions.backwards )?.upperBound {
-                    let nameEnd = sspPath.characters.index(sspPath.endIndex, offsetBy: -4)
-                    let bundleName = sspPath.substring( with: (nameStart ..< nameEnd) )
+            if reloader == nil && fileManager.fileExistsAtPath( sspFullPath ) {
+                if let nameStart = sspPath.rangeOfString( "/",
+                                                options: NSStringCompareOptions.BackwardsSearch )?.endIndex {
+                    let nameEnd = sspPath.endIndex.advancedBy(-4 )
+                    let bundleName = sspPath.substringWithRange( Range( start: nameStart, end: nameEnd ) )
                     if let reloader = BundleSwiftlet( pathPrefix: sspPath,
                                     bundleName: bundleName, bundlePath: sspFullPath ) {
                         reloaders[sspPath] = reloader
@@ -384,7 +388,7 @@ open class ServerPagesSwiftlet: ApplicationSwiftlet {
                 }
                 else {
                     dynamoLog( "Unable to parse .ssp path: \(sspPath)" )
-                    return .notProcessed
+                    return .NotProcessed
                 }
             }
 
@@ -396,7 +400,7 @@ open class ServerPagesSwiftlet: ApplicationSwiftlet {
             }
         }
 
-        return .notProcessed
+        return .NotProcessed
     }
 }
 

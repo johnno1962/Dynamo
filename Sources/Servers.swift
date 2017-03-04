@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Servers.swift#18 $
+//  $Id: //depot/Dynamo/Sources/Servers.swift#17 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -13,13 +13,13 @@
 import Foundation
 
 #if os(Linux)
-import Dispatch
 import Glibc
+import NSLinux
 #endif
 
 // MARK: Private queues and missing IP functions
 
-let dynamoRequestQueue = DispatchQueue( label: "DynamoRequestThread", attributes: DispatchQueue.Attributes.concurrent )
+let dynamoRequestQueue = dispatch_queue_create( "DynamoRequestThread", DISPATCH_QUEUE_CONCURRENT )
 
 // MARK: Basic http: Web server
 
@@ -28,20 +28,20 @@ let dynamoRequestQueue = DispatchQueue( label: "DynamoRequestThread", attributes
      of swiftlets provided in a connecton thread until one is encountered that has processed the request.
  */
 
-open class DynamoWebServer: _NSObject_ {
+public class DynamoWebServer: _NSObject_ {
 
-    fileprivate let swiftlets: [DynamoSwiftlet]
-    fileprivate let serverSocket: Int32
+    private let swiftlets: [DynamoSwiftlet]
+    private let serverSocket: Int32
 
     /** port allocated for server if specified as 0 */
-    open var serverPort: UInt16 = 0
+    public var serverPort: UInt16 = 0
 
     /** basic initialiser for Swift web server processing using array of swiftlets */
     public convenience init?( portNumber: UInt16, swiftlets: [DynamoSwiftlet], localhostOnly: Bool = false ) {
 
         self.init( portNumber, swiftlets: swiftlets, localhostOnly: localhostOnly )
 
-        DispatchQueue.global(qos: .default).async(execute: {
+        dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), {
             self.runConnectionHandler( self.httpConnectionHandler )
         } )
     }
@@ -57,7 +57,7 @@ open class DynamoWebServer: _NSObject_ {
         var ip4addr = sockaddr_in()
 
         #if !os(Linux)
-        ip4addr.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
+        ip4addr.sin_len = UInt8(sizeof(sockaddr_in))
         #endif
         ip4addr.sin_family = sa_family_t(AF_INET)
         ip4addr.sin_port = htons( portNumber )
@@ -69,8 +69,8 @@ open class DynamoWebServer: _NSObject_ {
 
         serverSocket = socket( Int32(ip4addr.sin_family), sockType, 0 )
 
-        var yes: u_int = 1, yeslen = socklen_t(MemoryLayout<u_int>.size)
-        var addrLen = socklen_t(MemoryLayout<sockaddr_in>.size)
+        var yes: u_int = 1, yeslen = socklen_t(sizeof(yes.dynamicType))
+        var addrLen = socklen_t(sizeof(ip4addr.dynamicType))
 
         super.init()
 
@@ -91,7 +91,7 @@ open class DynamoWebServer: _NSObject_ {
             #if os(Linux)
             let s = ""
             #else
-            let s = type(of: self) === DynamoSSLWebServer.self ? "s" : ""
+            let s = self.dynamicType === DynamoSSLWebServer.self ? "s" : ""
             #endif
             dynamoLog( "Server available on http\(s)://localhost:\(serverPort)" )
             return
@@ -100,27 +100,27 @@ open class DynamoWebServer: _NSObject_ {
         return nil
     }
 
-    func runConnectionHandler( _ connectionHandler: @escaping (Int32) -> Void ) {
+    func runConnectionHandler( connectionHandler: (Int32) -> Void ) {
         while self.serverSocket >= 0 {
 
             let clientSocket = accept( self.serverSocket, nil, nil )
 
             if clientSocket >= 0 {
-                dynamoRequestQueue.async(execute: {
+                dispatch_async( dynamoRequestQueue, {
                     connectionHandler( clientSocket )
                 } )
             }
             else {
-                Thread.sleep( forTimeInterval: 0.5 )
+                NSThread.sleepForTimeInterval( 0.5 )
             }
         }
     }
 
-    func wrapConnection( _ clientSocket: Int32 ) -> DynamoHTTPConnection? {
+    func wrapConnection( clientSocket: Int32 ) -> DynamoHTTPConnection? {
         return DynamoHTTPConnection( clientSocket: clientSocket )
     }
 
-    open func httpConnectionHandler( _ clientSocket: Int32 ) {
+    public func httpConnectionHandler( clientSocket: Int32 ) {
 
         if let httpClient = self.wrapConnection( clientSocket ) {
 
@@ -130,11 +130,11 @@ open class DynamoWebServer: _NSObject_ {
                 for swiftlet in swiftlets {
 
                     switch swiftlet.present( httpClient ) {
-                    case .notProcessed:
+                    case .NotProcessed:
                         continue
-                    case .processed:
+                    case .Processed:
                         return
-                    case .processedAndReusable:
+                    case .ProcessedAndReusable:
                         httpClient.flush()
                         processed = true
                         break
@@ -165,7 +165,7 @@ public class DynamoWorkerServer : DynamoWebServer {
 
         super.init( portNumber, swiftlets: swiftlets, localhostOnly: localhostOnly )
 
-        DispatchQueue.global(qos: .default).async {
+        dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), {
             var wcount = 0
             while true {
                 let status = __WAIT_STATUS()
@@ -174,7 +174,7 @@ public class DynamoWorkerServer : DynamoWebServer {
                 }
                 wcount += 1
             }
-        }
+        } )
     }
 
 }
@@ -187,9 +187,9 @@ public class DynamoWorkerServer : DynamoWebServer {
     port to a surrogate DynamoWebServer on a random port on the localhost to actually process the requests.
 */
 
-open class DynamoSSLWebServer: DynamoWebServer {
+public class DynamoSSLWebServer: DynamoWebServer {
 
-    fileprivate let certs: [AnyObject]
+    private let certs: [AnyObject]
 
     /**
         default initialiser for SSL server. Can proxy a "surrogate" non-SSL server given it's URL
@@ -200,15 +200,15 @@ open class DynamoSSLWebServer: DynamoWebServer {
 
         super.init( portNumber, swiftlets: swiftlets, localhostOnly: false )
 
-        DispatchQueue.global(qos: .default).async(execute: {
+        dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), {
             if surrogate == nil {
                     self.runConnectionHandler( self.httpConnectionHandler )
             }
-            else if let surrogateURL = URL( string: surrogate! ) {
+            else if let surrogateURL = NSURL( string: surrogate! ) {
                     self.runConnectionHandler( {
                         (clientSocket: Int32) in
                         if let sslConnection = self.wrapConnection( clientSocket ),
-                            let surrogateConnection = DynamoHTTPConnection( url: surrogateURL ) {
+                            surrogateConnection = DynamoHTTPConnection( url: surrogateURL ) {
                                 DynamoSelector.relay( "surrogate", from: sslConnection, to: surrogateConnection, dynamoTrace )
                         }
                     } )
@@ -219,7 +219,7 @@ open class DynamoSSLWebServer: DynamoWebServer {
         } )
     }
 
-    override func wrapConnection( _ clientSocket: Int32 ) -> DynamoHTTPConnection? {
+    override func wrapConnection( clientSocket: Int32 ) -> DynamoHTTPConnection? {
         return DynamoSSLConnection( sslSocket: clientSocket, certs: certs )
     }
 
@@ -227,8 +227,8 @@ open class DynamoSSLWebServer: DynamoWebServer {
 
 class DynamoSSLConnection: DynamoHTTPConnection {
 
-    let inputStream: InputStream
-    let outputStream: OutputStream
+    let inputStream: NSInputStream
+    let outputStream: NSOutputStream
 
     init?( sslSocket: Int32, certs: [AnyObject]? ) {
 
@@ -247,13 +247,13 @@ class DynamoSSLConnection: DynamoHTTPConnection {
 
         if certs != nil {
             let sslSettings: [NSString:AnyObject] = [
-                kCFStreamSSLIsServer: NSNumber(value: true as Bool),
+                kCFStreamSSLIsServer: NSNumber( bool: true ),
                 kCFStreamSSLLevel: kCFStreamSSLLevel,
-                kCFStreamSSLCertificates: certs! as AnyObject
+                kCFStreamSSLCertificates: certs!
             ]
 
-            CFReadStreamSetProperty( inputStream, CFStreamPropertyKey(rawValue: kCFStreamPropertySSLSettings), sslSettings as CFTypeRef! )
-            CFWriteStreamSetProperty( outputStream, CFStreamPropertyKey(rawValue: kCFStreamPropertySSLSettings), sslSettings as CFTypeRef! )
+            CFReadStreamSetProperty( inputStream, kCFStreamPropertySSLSettings, sslSettings )
+            CFWriteStreamSetProperty( outputStream, kCFStreamPropertySSLSettings, sslSettings )
         }
     }
 
@@ -261,19 +261,19 @@ class DynamoSSLConnection: DynamoHTTPConnection {
         return inputStream.hasBytesAvailable
     }
 
-    override func _read( _ buffer: UnsafeMutableRawPointer, count: Int ) -> Int {
-        return inputStream.read( buffer.assumingMemoryBound(to: UInt8.self), maxLength: count )
+    override func _read( buffer: UnsafeMutablePointer<Void>, count: Int ) -> Int {
+        return inputStream.read( UnsafeMutablePointer<UInt8>(buffer), maxLength: count )
     }
 
-    override func _write( _ buffer: UnsafeRawPointer, count: Int ) -> Int {
-        return outputStream.write( buffer.assumingMemoryBound(to: UInt8.self), maxLength: count )
+    override func _write( buffer: UnsafePointer<Void>, count: Int ) -> Int {
+        return outputStream.write( UnsafePointer<UInt8>(buffer), maxLength: count )
     }
 
-    override func receive( _ buffer: UnsafeMutableRawPointer, count: Int ) -> Int? {
+    override func receive( buffer: UnsafeMutablePointer<Void>, count: Int ) -> Int? {
         return inputStream.hasBytesAvailable ? _read( buffer, count: count ) :  nil
     }
 
-    override func forward( _ buffer: UnsafeRawPointer, count: Int ) -> Int? {
+    override func forward( buffer: UnsafePointer<Void>, count: Int ) -> Int? {
         return outputStream.hasSpaceAvailable ? _write( buffer, count: count ) : nil
     }
 

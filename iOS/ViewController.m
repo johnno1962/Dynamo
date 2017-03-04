@@ -25,10 +25,10 @@
 
     NSArray *swiftlets = @[
         [[ExampleAppSwiftlet alloc] initWithPathPrefix:@"/example"],
-        [[SessionSwiftlet alloc] initWithPathPrefix:@"/ticktacktoe"
-                                                 appClass:[TickTackToeSwiftlet class] cookieName: @"TTT"],
-        [[SessionSwiftlet alloc] initWithPathPrefix:@"/NumberGuesser.ssp"
-                                                 appClass:[NumberGuesserSwiftlet class] cookieName: @"NUM"],
+//        [[SessionSwiftlet alloc] initWithPathPrefix:@"/ticktacktoe"
+//                                                 appClass:[TickTackToeSwiftlet class] cookieName: @"TTT"],
+//        [[SessionSwiftlet alloc] initWithPathPrefix:@"/NumberGuesser.ssp"
+//                                                 appClass:[NumberGuesserSwiftlet class] cookieName: @"NUM"],
         [[SSLProxySwiftlet alloc] initWithLogger:logger],
         [[ProxySwiftlet alloc] initWithLogger:logger],
         [[DocumentSwiftlet alloc] init]
