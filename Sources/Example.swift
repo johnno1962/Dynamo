@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/07/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Example.swift#3 $
+//  $Id: //depot/Dynamo/Sources/Example.swift#4 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -24,7 +24,7 @@ open class ExampleAppSwiftlet: HTMLApplicationSwiftlet {
         This is the entry point for most application swiftlets after browser parameters have been parsed.
      */
 
-    override open func processRequest( _ out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
+    override open func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
         out.print( html( nil ) + head( title( "Table Example" ) +
             style( "body, table { font: 10pt Arial" ) ) + body( nil ) )
 

@@ -50,7 +50,7 @@ open class TickTackToeSwiftlet: SessionApplication {
 
     fileprivate var engine = TickTackGameEngine()
 
-    @objc override open func processRequest( _ out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
+    @objc override open func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
         var cookies = cookies
 
         // reset board and keep scores
@@ -59,7 +59,7 @@ open class TickTackToeSwiftlet: SessionApplication {
             if whoWon != "draw" {
                 let newCount = cookies[whoWon] ?? "0"
                 let newValue = "\(Int(newCount)!+1)"
-                out.setCookie( whoWon, value: newValue, expires: 60 )
+                out.setCookie( name: whoWon, value: newValue, expires: 60 )
                 cookies[whoWon] = newValue
             }
         }

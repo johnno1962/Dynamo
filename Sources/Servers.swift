@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Servers.swift#18 $
+//  $Id: //depot/Dynamo/Sources/Servers.swift#19 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -129,7 +129,7 @@ open class DynamoWebServer: _NSObject_ {
 
                 for swiftlet in swiftlets {
 
-                    switch swiftlet.present( httpClient ) {
+                    switch swiftlet.present( httpClient: httpClient ) {
                     case .notProcessed:
                         continue
                     case .processed:
@@ -145,7 +145,7 @@ open class DynamoWebServer: _NSObject_ {
 
                 if !processed {
                     httpClient.status = 400
-                    httpClient.response( "Invalid request: \(httpClient.method) \(httpClient.path) \(httpClient.version)" )
+                    httpClient.response( text: "Invalid request: \(httpClient.method) \(httpClient.path) \(httpClient.version)" )
                     return
                 }
             }
@@ -261,20 +261,20 @@ class DynamoSSLConnection: DynamoHTTPConnection {
         return inputStream.hasBytesAvailable
     }
 
-    override func _read( _ buffer: UnsafeMutableRawPointer, count: Int ) -> Int {
+    override func _read( buffer: UnsafeMutableRawPointer, count: Int ) -> Int {
         return inputStream.read( buffer.assumingMemoryBound(to: UInt8.self), maxLength: count )
     }
 
-    override func _write( _ buffer: UnsafeRawPointer, count: Int ) -> Int {
+    override func _write( buffer: UnsafeRawPointer, count: Int ) -> Int {
         return outputStream.write( buffer.assumingMemoryBound(to: UInt8.self), maxLength: count )
     }
 
-    override func receive( _ buffer: UnsafeMutableRawPointer, count: Int ) -> Int? {
-        return inputStream.hasBytesAvailable ? _read( buffer, count: count ) :  nil
+    override func receive( buffer: UnsafeMutableRawPointer, count: Int ) -> Int? {
+        return inputStream.hasBytesAvailable ? _read( buffer: buffer, count: count ) :  nil
     }
 
-    override func forward( _ buffer: UnsafeRawPointer, count: Int ) -> Int? {
-        return outputStream.hasSpaceAvailable ? _write( buffer, count: count ) : nil
+    override func forward( buffer: UnsafeRawPointer, count: Int ) -> Int? {
+        return outputStream.hasSpaceAvailable ? _write( buffer: buffer, count: count ) : nil
     }
 
     deinit {

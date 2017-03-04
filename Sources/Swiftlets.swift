@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#9 $
+//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#10 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -32,12 +32,12 @@ open class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
         self.pathPrefix = pathPrefix
     }
 
-    open func present( _ httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+    open func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
 
         let pathInfo = httpClient.url.path
         if pathInfo.hasPrefix( pathPrefix ) {
             let endIndex = pathInfo.range( of: pathPrefix )!.upperBound
-            return process( httpClient, pathInfo: pathInfo.substring( to: endIndex ) )
+            return process( httpClient: httpClient, pathInfo: pathInfo.substring( to: endIndex ) )
         }
 
         return .notProcessed
@@ -48,7 +48,7 @@ open class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
         query string, any post data and cookeis arriving from the browser.
      */
 
-    open func process( _ httpClient: DynamoHTTPConnection, pathInfo: String ) -> DynamoProcessed {
+    open func process( httpClient: DynamoHTTPConnection, pathInfo: String ) -> DynamoProcessed {
 
         var cookies = [String:String]()
         if let cookieHeader = httpClient.requestHeaders["Cookie"] {
@@ -64,7 +64,7 @@ open class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
             if httpClient.contentType == "application/json" {
 #if !os(Linux)
                 if let json = httpClient.postJSON() {
-                    processJSON( httpClient,
+                    processJSON( out: httpClient,
                         pathInfo: pathInfo,
                         parameters: parameters,
                         cookies: cookies,
@@ -84,7 +84,7 @@ open class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
             }
         }
 
-        processRequest( httpClient, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
+        processRequest( out: httpClient, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
 
         return httpClient.knowsResponseLength ? .processedAndReusable : .processed
     }
@@ -110,7 +110,7 @@ open class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
         or setting a "response" as whole which will allow the connection to be reused.
      */	   
 
-    open func processRequest( _ out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
+    open func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
         dynamoLog( "DynamoApplicationSwiftlet.processRequest(): Subclass responsibility" )
     }
 
@@ -118,8 +118,8 @@ open class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
         Sepcial treatment of JSON Post
      */
 
-    open func processJSON( _ out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String], json: AnyObject ) {
-        processRequest( out, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
+    open func processJSON( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String], json: AnyObject ) {
+        processRequest( out: out, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
     }
 
 }
@@ -173,20 +173,20 @@ open class SessionSwiftlet: ApplicationSwiftlet {
         Create a new instance of the application class to process the request if request and have it process it.
      */
 
-    open override func processRequest( _ out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
+    open override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
 
     	sessionLock.lock()
         var sessionKey = cookies[cookieName]
         if sessionKey == nil || sessions[sessionKey!] == nil {
             sessionKey = UUID().uuidString
             sessions[sessionKey!] = appClass.init( manager: self, sessionKey: sessionKey! )
-            out.setCookie( cookieName, value: sessionKey!, path: pathPrefix )
+            out.setCookie( name: cookieName, value: sessionKey!, path: pathPrefix )
             out.contentType = dynamoHtmlMimeType
         }
         sessionLock.unlock()
 
         if let sessionApp = sessions[sessionKey!] {
-            sessionApp.processRequest( out, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
+            sessionApp.processRequest( out: out, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
         }
         else {
             dynamoLog( "Missing app for session \(sessionKey)" )
@@ -228,7 +228,7 @@ open class SessionApplication: HTMLApplicationSwiftlet {
         Overridden by applpication code toprocess request.
      */
 
-    open override func processRequest( _ out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
+    open override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
         dynamoLog( "DynamoSessionApplication.processRequest(): Subclass responsibility" )
     }
 
@@ -294,7 +294,7 @@ open class BundleSwiftlet: SessionSwiftlet {
         it to a new unique path in /tmp.
      */
 
-    open override func processRequest( _ out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
+    open override func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] ) {
 
         if let attrs = try? fileManager.attributesOfItem( atPath: binaryPath),
             let lastModified = (attrs[FileAttributeKey.modificationDate] as? Date)?.timeIntervalSinceReferenceDate, lastModified > loaded {
@@ -323,7 +323,7 @@ open class BundleSwiftlet: SessionSwiftlet {
             }
         }
 
-        super.processRequest( out, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
+        super.processRequest( out: out, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
     }
 
 }
@@ -358,7 +358,7 @@ open class ServerPagesSwiftlet: ApplicationSwiftlet {
         If present it will lbe loaded as a reloadable bnudle to process the request.
      */
 
-    override open func present( _ httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+    override open func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
 
         let path = httpClient.path
 
@@ -389,7 +389,7 @@ open class ServerPagesSwiftlet: ApplicationSwiftlet {
             }
 
             if let reloader = reloaders[sspPath] {
-                return reloader.present( httpClient )
+                return reloader.present( httpClient: httpClient )
             }
             else {
                 dynamoLog( "Missing .ssp bundle for path \(path)" )

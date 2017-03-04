@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Connection.swift#14 $
+//  $Id: //depot/Dynamo/Sources/Connection.swift#15 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -147,19 +147,19 @@ open class DynamoHTTPRequest: _NSObject_ {
     }
 
     /** raw read from browser/remote connection */
-    func _read( _ buffer: UnsafeMutableRawPointer, count: Int ) -> Int {
+    func _read( buffer: UnsafeMutableRawPointer, count: Int ) -> Int {
         return recv( clientSocket, buffer, count, 0 )
     }
 
     /** read the requested number of bytes */
-    open func read( _ buffer: UnsafeMutableRawPointer, count: Int ) -> Int {
+    open func read( buffer: UnsafeMutableRawPointer, count: Int ) -> Int {
         var pos = min( readBuffer.length, count )
         if pos != 0 {
             memcpy( buffer, readBuffer.bytes, pos )
             readBuffer.replaceBytes( in: NSMakeRange( 0, pos ), withBytes: nil, length: 0 )
         }
         while pos < count {
-            let bytesRead = _read( buffer+pos, count: count-pos )
+            let bytesRead = _read( buffer: buffer+pos, count: count-pos )
             if bytesRead <= 0 {
                 break
             }
@@ -187,7 +187,7 @@ open class DynamoHTTPRequest: _NSObject_ {
                 return line
             }
 
-            let bytesRead = _read( UnsafeMutableRawPointer(mutating: buffer), count: buffer.count )
+            let bytesRead = _read( buffer: UnsafeMutableRawPointer(mutating: buffer), count: buffer.count )
             if bytesRead <= 0 {
                 break ///
             }
@@ -231,7 +231,7 @@ open class DynamoHTTPRequest: _NSObject_ {
     }
     
     /** add a HTTP header value to the response */
-    open func addResponseHeader( _ name: String, value: String ) {
+    open func addResponseHeader( name: String, value: String ) {
         responseHeaders += "\(name): \(value)\r\n"
     }
 
@@ -241,7 +241,7 @@ open class DynamoHTTPRequest: _NSObject_ {
             return requestHeaders["Content-Type"] ?? requestHeaders["Content-type"] ?? "text/plain"
         }
         set {
-            addResponseHeader( "Content-Type", value: newValue )
+            addResponseHeader( name: "Content-Type", value: newValue )
         }
     }
 
@@ -251,7 +251,7 @@ open class DynamoHTTPRequest: _NSObject_ {
             return (requestHeaders["Content-Length"] ?? requestHeaders["Content-length"])?.toInt()
         }
         set {
-            addResponseHeader( "Content-Length", value: String( newValue ?? 0 ) )
+            addResponseHeader( name: "Content-Length", value: String( newValue ?? 0 ) )
             knowsResponseLength = true
         }
     }
@@ -260,7 +260,7 @@ open class DynamoHTTPRequest: _NSObject_ {
     open func postString() -> String? {
         if let postLength = contentLength {
             var bytes = [Int8]( repeating: 0, count: postLength + 1 )
-            if read( &bytes, count: postLength ) != postLength {
+            if read( buffer: &bytes, count: postLength ) != postLength {
                 dynamoLog( "Could not read \(contentLength) bytes post data from client " )
             }
             return String( cString: bytes )
@@ -274,7 +274,7 @@ open class DynamoHTTPRequest: _NSObject_ {
             let data = Data( capacity: postLength )
             return data.withUnsafeBytes({
                 (bytes: UnsafePointer<Int8>) -> Data? in
-                if read( UnsafeMutableRawPointer(mutating: bytes), count: postLength ) == postLength {
+                if read( buffer: UnsafeMutableRawPointer(mutating: bytes), count: postLength ) == postLength {
                     return data as Data
                 }
                 return nil
@@ -307,16 +307,16 @@ open class DynamoHTTPRequest: _NSObject_ {
 open class DynamoHTTPConnection: DynamoHTTPRequest {
 
     /** raw write to browser/remote connection */
-    func _write( _ buffer: UnsafeRawPointer, count: Int ) -> Int {
+    func _write( buffer: UnsafeRawPointer, count: Int ) -> Int {
         return send( clientSocket, buffer, count, 0 )
     }
 
     /** write the requested number of bytes */
     @discardableResult
-    open func write( _ buffer: UnsafeRawPointer, count: Int ) -> Int {
+    open func write( buffer: UnsafeRawPointer, count: Int ) -> Int {
         var pos = 0
         while pos < count {
-            let bytesWritten = _write( buffer+pos, count: count-pos )
+            let bytesWritten = _write( buffer: buffer+pos, count: count-pos )
             if bytesWritten <= 0 {
                 break
             }
@@ -331,10 +331,10 @@ open class DynamoHTTPConnection: DynamoHTTPRequest {
     }
     
     /** have browser set cookie for this session/domain/path */
-    open func setCookie( _ name: String, value: String, domain: String? = nil, path: String? = nil, expires: Int? = nil ) {
+    open func setCookie( name: String, value: String, domain: String? = nil, path: String? = nil, expires: Int? = nil ) {
 
         if !sentResponseHeaders {
-            var value = "\(name)=\(value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed))"
+            var value = "\(name)=\(value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? value)"
 
             if domain != nil {
                 value += "; Domain="+domain!
@@ -349,7 +349,7 @@ open class DynamoHTTPConnection: DynamoHTTPRequest {
                 value += "; Expires=" + cookieDateFormatter.string( from: expires )
             }
 
-            addResponseHeader( "Set-Cookie", value: value )
+            addResponseHeader( name: "Set-Cookie", value: value )
         }
         else {
             dynamoLog( "Cookies must be set before the first HTML content is sent" )
@@ -361,8 +361,8 @@ open class DynamoHTTPConnection: DynamoHTTPRequest {
             contentType = dynamoHtmlMimeType
         }
 
-        addResponseHeader( "Date", value: webDateFormatter.string( from: Date() ) )
-        addResponseHeader( "Server", value: "Dynamo" )
+        addResponseHeader( name: "Date", value: webDateFormatter.string( from: Date() ) )
+        addResponseHeader( name: "Server", value: "Dynamo" )
 
         let statusText = dynamoStatusText[status] ?? "Unknown Status"
         rawPrint( "\(version) \(status) \(statusText)\r\n\(responseHeaders)\r\n" )
@@ -372,7 +372,7 @@ open class DynamoHTTPConnection: DynamoHTTPRequest {
     /** print a sring directly to browser */
     open func rawPrint( _ output: String ) {
         output.withCString { (bytes) in
-            _ = write( bytes, count: Int(strlen(bytes)) )
+            _ = write( buffer: bytes, count: Int(strlen(bytes)) )
         }
     }
 
@@ -386,55 +386,55 @@ open class DynamoHTTPConnection: DynamoHTTPRequest {
 
     /** enum base response */
     @discardableResult
-    open func sendResponse( _ resp: DynamoResponse ) -> DynamoProcessed {
+    open func sendResponse( resp: DynamoResponse ) -> DynamoProcessed {
         status = 200
 
         switch resp {
         case .ok( let html ):
-            response( html )
+            response( text: html )
         case .json( let json ):
-            responseJSON( json )
+            response( json: json )
         case .data( let data ):
-            responseData( data )
+            response( data: data )
         case .status( let theStatus, let text ):
             status = theStatus
-            response( text )
+            response( text: text )
         }
 
         return .processedAndReusable
     }
 
     /** set response as a whole from a String */
-    open func response( _ output: String ) {
-        output.withCString { (bytes) in
-            responseData( Data( bytesNoCopy: unsafeBitCast(bytes, to: UnsafeMutablePointer<Int8>.self),
-                                count: Int(strlen( bytes )), deallocator: .none ) )
+    open func response( text: String ) {
+        text.withCString { (bytes) in
+            response( data: Data( bytesNoCopy: unsafeBitCast(bytes, to: UnsafeMutablePointer<Int8>.self),
+                                  count: Int(strlen( bytes )), deallocator: .none ) )
         }
     }
 
     /** set response as a whole from JSON object */
-    open func responseJSON( _ object: AnyObject ) {
-        if JSONSerialization.isValidJSONObject( object ) {
+    open func response( json: AnyObject ) {
+        if JSONSerialization.isValidJSONObject( json ) {
             do {
-                let json = try JSONSerialization.data( withJSONObject: object,
+                let json = try JSONSerialization.data( withJSONObject: json,
                         options: JSONSerialization.WritingOptions.prettyPrinted )
                 contentType = dynamoMimeTypeMapping["json"] ?? "application/json"
-                responseData( json )
+                response( data: json )
                 return
             } catch let error as NSError {
-                dynamoLog( "Could not encode: \(object) \(error)" )
+                dynamoLog( "Could not encode: \(json) \(error)" )
             }
         }
     }
 
     /** set response as a whole from NSData */
-    open func responseData( _ data: Data ) {
+    open func response( data: Data ) {
         var dout = data
 #if os(OSX)
         if compressResponse && requestHeaders["Accept-Encoding"] == "gzip, deflate" {
             if let deflated = dout.deflate() {
                 dout = deflated
-                addResponseHeader( "Content-Encoding", value: "deflate" )
+                addResponseHeader( name: "Content-Encoding", value: "deflate" )
             }
         }
 #endif
@@ -442,7 +442,7 @@ open class DynamoHTTPConnection: DynamoHTTPRequest {
         sendResponseHeaders()
         dout.withUnsafeBytes {
             (bytes: UnsafePointer<Int8>) -> Void in
-            if write( bytes, count: dout.count ) != dout.count {
+            if write( buffer: bytes, count: dout.count ) != dout.count {
                 dynamoLog( "Could not write \(dout.count) bytes to client " )
             }
         }
@@ -453,12 +453,12 @@ open class DynamoHTTPConnection: DynamoHTTPRequest {
         return false
     }
 
-    func receive( _ buffer: UnsafeMutableRawPointer, count: Int ) -> Int? {
-        return _read( buffer, count: count )
+    func receive( buffer: UnsafeMutableRawPointer, count: Int ) -> Int? {
+        return _read( buffer: buffer, count: count )
     }
 
-    func forward( _ buffer: UnsafeRawPointer, count: Int ) -> Int? {
-        return _write( buffer, count: count )
+    func forward( buffer: UnsafeRawPointer, count: Int ) -> Int? {
+        return _write( buffer: buffer, count: count )
     }
 
     deinit {

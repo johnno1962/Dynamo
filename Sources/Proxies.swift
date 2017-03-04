@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Proxies.swift#12 $
+//  $Id: //depot/Dynamo/Sources/Proxies.swift#13 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -33,7 +33,7 @@ open class ProxySwiftlet: _NSObject_, DynamoSwiftlet {
     }
 
     /** process as proxy request if request path has "host" */
-    open func present( _ httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+    open func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
 
         if httpClient.url.host == dummyBase.host {
             return .notProcessed
@@ -58,7 +58,7 @@ open class ProxySwiftlet: _NSObject_, DynamoSwiftlet {
 
                 if httpClient.readBuffer.length != 0 {
                     let readBuffer = httpClient.readBuffer
-                    remoteConnection.write( readBuffer.bytes, count: readBuffer.length )
+                    remoteConnection.write( buffer: readBuffer.bytes, count: readBuffer.length )
                     readBuffer.replaceBytes( in: NSMakeRange( 0, readBuffer.length ), withBytes: nil, length: 0 )
                 }
                 remoteConnection.flush()
@@ -66,7 +66,7 @@ open class ProxySwiftlet: _NSObject_, DynamoSwiftlet {
                 DynamoSelector.relay( host, from: httpClient, to: remoteConnection, logger )
             }
             else {
-                httpClient.sendResponse( .ok( html: "Unable to resolve host \(host)" ) )
+                httpClient.sendResponse( resp: .ok( html: "Unable to resolve host \(host)" ) )
             }
         }
         return .processed
@@ -82,7 +82,7 @@ open class ProxySwiftlet: _NSObject_, DynamoSwiftlet {
 open class SSLProxySwiftlet: ProxySwiftlet {
 
     /** connect socket through to destination SSL server for method "CONNECT" */
-    open override func present( _ httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+    open override func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
         if httpClient.method == "CONNECT" {
 
             if let urlForDestination = URL( string: "https://\(httpClient.path)" ),
@@ -267,7 +267,7 @@ final class DynamoSelector {
             for readFD in 0...maxfd {
                 if let writer = readMap[readFD], let reader = readMap[writer.clientSocket], FD_ISSET( readFD, readFlags ) || writer.readTotal != 0 && reader.hasBytesAvailable {
 
-                    if let bytesRead = reader.receive( &buffer, count: buffer.count ) {
+                    if let bytesRead = reader.receive( buffer: &buffer, count: buffer.count ) {
                         let readBuffer = writer.readBuffer
 
                         logger?( "\(writer.label) \(writer.readTotal)+\(readBuffer.length)+\(bytesRead) bytes (\(readFD)/\(readMap.count)/\(fdcount))" )
@@ -291,7 +291,7 @@ final class DynamoSelector {
                 if FD_ISSET( writeFD, writeFlags ) {
                     let readBuffer = writer.readBuffer
 
-                    if let bytesWritten = writer.forward( readBuffer.bytes, count: readBuffer.length ) {
+                    if let bytesWritten = writer.forward( buffer: readBuffer.bytes, count: readBuffer.length ) {
                        if bytesWritten <= 0 {
                             writeMap.removeValue( forKey: writer.clientSocket )
                             dynamoLog( "Short write on relay \(writer.label)" )

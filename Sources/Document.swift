@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/07/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Document.swift#8 $
+//  $Id: //depot/Dynamo/Sources/Document.swift#9 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -28,7 +28,7 @@ open class LoggingSwiftlet: _NSObject_, DynamoSwiftlet {
     }
 
     /** log current request */
-    open func present( _ httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+    open func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
         logger( "\(httpClient.method) \(httpClient.path) \(httpClient.version) - \(httpClient.remoteAddr)" )
         return .notProcessed
     }
@@ -117,7 +117,7 @@ open class DocumentSwiftlet: _NSObject_, DynamoSwiftlet {
         self.report404 = report404
     }
 
-    fileprivate func webDate( _ date: Date ) -> String {
+    fileprivate func webDate( date: Date ) -> String {
         return webDateFormatter.string( from: date )
     }
 
@@ -125,7 +125,7 @@ open class DocumentSwiftlet: _NSObject_, DynamoSwiftlet {
         Look for static documents in directory named affter host(:port) used in url
     */
 
-    open func present( _ httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
+    open func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed {
 
         if httpClient.method == "GET" {
 
@@ -148,28 +148,28 @@ open class DocumentSwiftlet: _NSObject_, DynamoSwiftlet {
 
             let zippedPath = fullPath+".gz"
             if fileManager.fileExists( atPath: zippedPath ) {
-                httpClient.addResponseHeader( "Content-Encoding", value: "gzip" )
+                httpClient.addResponseHeader( name: "Content-Encoding", value: "gzip" )
                 fullPath = zippedPath
             }
 
             if let attrs = try? fileManager.attributesOfItem( atPath: fullPath ),
                         let lastModifiedDate = attrs[FileAttributeKey.modificationDate] as? Date {
 
-                let lastModified = webDate( lastModifiedDate )
-                httpClient.addResponseHeader( "Last-Modified", value: lastModified )
+                let lastModified = webDate( date: lastModifiedDate )
+                httpClient.addResponseHeader( name: "Last-Modified", value: lastModified )
 
                 if let since = httpClient.requestHeaders["If-Modified-Since"], since == lastModified {
-                    return httpClient.sendResponse( .status( status: 304, text: "" ) )
+                    return httpClient.sendResponse( resp: .status( status: 304, text: "" ) )
                 }
 
                 if let data = try? Data( contentsOf: URL(fileURLWithPath: fullPath) ) {
-                    return httpClient.sendResponse( .data( data: data ) )
+                    return httpClient.sendResponse( resp: .data( data: data ) )
                 }
             }
 
             if report404 {
                 dynamoLog( "404 File not Found: \(fullPath)" )
-                return httpClient.sendResponse( .status( status: 404, text: "<b>File not found:</b> \(fullPath)<p>" +
+                return httpClient.sendResponse( resp: .status( status: 404, text: "<b>File not found:</b> \(fullPath)<p>" +
                     "<button onclick='history.back();'>Back</button>" ) )
             }
         }

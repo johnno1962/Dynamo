@@ -58,7 +58,7 @@ public protocol DynamoSwiftlet {
     /**
         each request is presented ot each swiftlet until one indicates it has processed the request
      */
-    func present( _ httpClient: DynamoHTTPConnection ) -> DynamoProcessed
+    func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
 }
 
 /**
@@ -72,7 +72,7 @@ public protocol DynamoBrowserSwiftlet: DynamoSwiftlet {
      A request can be further parsed to extract parameters, method "POST" data and cookies before processing
      */
 
-    func processRequest( _ out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
+    func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
     
 }
 #else
@@ -81,7 +81,7 @@ public protocol DynamoBrowserSwiftlet: DynamoSwiftlet {
     /**
         each request is presented ot each swiftlet until one indicates it has processed the request
      */
-    func present( _ httpClient: DynamoHTTPConnection ) -> DynamoProcessed
+    func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
 }
 
 /**
@@ -95,7 +95,7 @@ public protocol DynamoBrowserSwiftlet: DynamoSwiftlet {
         A request can be further parsed to extract parameters, method "POST" data and cookies before processing
      */
 
-    func processRequest( _ out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
+    func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
 
 }
 #endif

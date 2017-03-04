@@ -63,12 +63,12 @@ public class %sSwiftlet: SessionApplication {
 
 %s
 
-    override public func processRequest( _ out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
+    override public func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String:String], cookies: [String:String] ) {
         var response = ""
 
         response += "%s"
 
-        out.response( response )
+        out.response( text: response )
     }
 
 }
