@@ -58,10 +58,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, /*WebFrameLoadDelegate,*/ WK
             tickTackToeGame,
             ServerPagesSwiftlet( documentRoot: documentRoot ),
             DocumentSwiftlet( documentRoot: documentRoot )
-        ], certs: certs as! [AnyObject] )
+        ], certs: certs! as [AnyObject] )
 
         // or can make SSL proxy to any non-SSL web server
-        _ = DynamoSSLWebServer( portNumber: 9191, certs: certs as! [AnyObject], surrogate: "http://localhost:\(serverPort)" )
+        _ = DynamoSSLWebServer( portNumber: 9191, certs: certs! as [AnyObject], surrogate: "http://localhost:\(serverPort)" )
 
         evalJavaScript = {
             javascript in

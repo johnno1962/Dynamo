@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Connection.swift#16 $
+//  $Id: //depot/Dynamo/Sources/Connection.swift#17 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -267,7 +267,7 @@ open class DynamoHTTPRequest: _NSObject_ {
         if let postLength = contentLength {
             var bytes = [Int8]( repeating: 0, count: postLength + 1 )
             if read( buffer: &bytes, count: postLength ) != postLength {
-                dynamoLog( "Could not read \(contentLength) bytes post data from client " )
+                dynamoLog( "Could not read \(String(describing: contentLength)) bytes post data from client " )
             }
             return String( cString: bytes )
         }
@@ -413,7 +413,7 @@ open class DynamoHTTPConnection: DynamoHTTPRequest {
     /** set response as a whole from a String */
     open func response( text: String ) {
         text.withCString { (bytes) in
-            response( data: Data( bytesNoCopy: unsafeBitCast(bytes, to: UnsafeMutablePointer<Int8>.self),
+            response( data: Data( bytesNoCopy: UnsafeMutablePointer(mutating: bytes),
                                   count: Int(strlen( bytes )), deallocator: .none ) )
         }
     }

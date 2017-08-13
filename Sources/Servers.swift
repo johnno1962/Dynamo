@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Servers.swift#19 $
+//  $Id: //depot/Dynamo/Sources/Servers.swift#20 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -214,7 +214,7 @@ open class DynamoSSLWebServer: DynamoWebServer {
                     } )
             }
             else {
-                dynamoLog( "Invalid surrogate URL: \(surrogate)" )
+                dynamoLog( "Invalid surrogate URL: \(String(describing: surrogate))" )
             }
         } )
     }

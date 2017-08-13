@@ -64,7 +64,7 @@
                             const char *className;
                             int fieldcount, flags2;
                             const char *ivarNames;
-                            struct _swift_field **(*get_field_data)();
+                            struct _swift_field **(*get_field_data)(void);
                         } *swiftData;
 
                         IMP dispatch[1];

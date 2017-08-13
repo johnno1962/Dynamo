@@ -115,7 +115,7 @@ func htons( _ port: UInt16 ) -> UInt16 {
 let ntohs = htons
 
 func sockaddr_cast(_ p: UnsafeMutableRawPointer) -> UnsafeMutablePointer<sockaddr> {
-    return unsafeBitCast(p, to:UnsafeMutablePointer<sockaddr>.self)
+    return p.assumingMemoryBound(to: sockaddr.self)
 }
 
 func sockaddr_in_cast(_ p: UnsafeMutablePointer<sockaddr>) -> UnsafeMutablePointer<sockaddr_in> {
@@ -198,7 +198,7 @@ public func addressForHost( _ hostname: String, port: UInt16 ) -> sockaddr? {
             sockaddrPtr.pointee = sockaddr_cast(&ip6addr).pointee
 
         default:
-            dynamoLog( "Unknown address family: \(addr?.pointee.h_addrtype)" )
+            dynamoLog( "Unknown address family: \(String(describing: addr?.pointee.h_addrtype))" )
             return nil
         }
 

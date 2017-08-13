@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#10 $
+//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#11 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -189,7 +189,7 @@ open class SessionSwiftlet: ApplicationSwiftlet {
             sessionApp.processRequest( out: out, pathInfo: pathInfo, parameters: parameters, cookies: cookies )
         }
         else {
-            dynamoLog( "Missing app for session \(sessionKey)" )
+            dynamoLog( "Missing app for session \(String(describing: sessionKey))" )
         }
     }
 
