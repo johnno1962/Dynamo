@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Servers.swift#20 $
+//  $Id: //depot/Dynamo/Sources/Servers.swift#21 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -37,7 +37,7 @@ open class DynamoWebServer: _NSObject_ {
     open var serverPort: UInt16 = 0
 
     /** basic initialiser for Swift web server processing using array of swiftlets */
-    public convenience init?( portNumber: UInt16, swiftlets: [DynamoSwiftlet], localhostOnly: Bool = false ) {
+    @objc public convenience init?( portNumber: UInt16, swiftlets: [DynamoSwiftlet], localhostOnly: Bool = false ) {
 
         self.init( portNumber, swiftlets: swiftlets, localhostOnly: localhostOnly )
 
@@ -46,7 +46,7 @@ open class DynamoWebServer: _NSObject_ {
         } )
     }
 
-    init?( _ portNumber: UInt16, swiftlets: [DynamoSwiftlet], localhostOnly: Bool ) {
+    @objc init?( _ portNumber: UInt16, swiftlets: [DynamoSwiftlet], localhostOnly: Bool ) {
 
         #if os(Linux)
         signal( SIGPIPE, SIG_IGN )
@@ -194,7 +194,7 @@ open class DynamoSSLWebServer: DynamoWebServer {
     /**
         default initialiser for SSL server. Can proxy a "surrogate" non-SSL server given it's URL
     */
-    public init?( portNumber: UInt16, swiftlets: [DynamoSwiftlet] = [], certs: [AnyObject], surrogate: String? = nil ) {
+    @objc public init?( portNumber: UInt16, swiftlets: [DynamoSwiftlet] = [], certs: [AnyObject], surrogate: String? = nil ) {
 
         self.certs = certs
 

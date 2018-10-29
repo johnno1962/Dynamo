@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/07/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Document.swift#9 $
+//  $Id: //depot/Dynamo/Sources/Document.swift#10 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -23,7 +23,7 @@ open class LoggingSwiftlet: _NSObject_, DynamoSwiftlet {
     let logger: (String) -> Void
 
     /** default initialiser for logging Swiftlet */
-    public init( logger: @escaping ((String) -> Void) = dynamoTrace ) {
+    @objc public init( logger: @escaping ((String) -> Void) = dynamoTrace ) {
         self.logger = logger
     }
 
@@ -103,7 +103,7 @@ open class DocumentSwiftlet: _NSObject_, DynamoSwiftlet {
         Convenience initialiser taking document root from the resources directory/localhost:port
     */
 
-    public convenience override init() {
+    @objc public convenience override init() {
         self.init( documentRoot: Bundle.main.resourcePath! )
     }
 
@@ -112,7 +112,7 @@ open class DocumentSwiftlet: _NSObject_, DynamoSwiftlet {
         if a document is not found.
     */
 
-    public init( documentRoot: String, report404: Bool = true ) {
+    @objc public init( documentRoot: String, report404: Bool = true ) {
         self.documentRoot = documentRoot
         self.report404 = report404
     }

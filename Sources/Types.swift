@@ -81,7 +81,7 @@ public protocol DynamoBrowserSwiftlet: DynamoSwiftlet {
     /**
         each request is presented ot each swiftlet until one indicates it has processed the request
      */
-    func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
+    @objc func present( httpClient: DynamoHTTPConnection ) -> DynamoProcessed
 }
 
 /**
@@ -95,7 +95,7 @@ public protocol DynamoBrowserSwiftlet: DynamoSwiftlet {
         A request can be further parsed to extract parameters, method "POST" data and cookies before processing
      */
 
-    func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
+    @objc func processRequest( out: DynamoHTTPConnection, pathInfo: String, parameters: [String : String], cookies: [String : String] )
 
 }
 #endif
@@ -119,7 +119,7 @@ func sockaddr_cast(_ p: UnsafeMutableRawPointer) -> UnsafeMutablePointer<sockadd
 }
 
 func sockaddr_in_cast(_ p: UnsafeMutablePointer<sockaddr>) -> UnsafeMutablePointer<sockaddr_in> {
-    return unsafeBitCast(p, to:UnsafeMutablePointer<sockaddr_in>.self)
+    return p.withMemoryRebound(to: sockaddr_in.self, capacity: 1) { $0 }
 }
 
 /** default tracer for frequent messages */

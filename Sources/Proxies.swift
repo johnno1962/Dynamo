@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Proxies.swift#14 $
+//  $Id: //depot/Dynamo/Sources/Proxies.swift#15 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -28,7 +28,7 @@ open class ProxySwiftlet: _NSObject_, DynamoSwiftlet {
     var logger: ((String) -> ())?
 
     /** default initialiser with optional "tracer" for all traffic */
-    public init( logger: ((String) -> ())? = nil ) {
+    @objc public init( logger: ((String) -> ())? = nil ) {
         self.logger = logger
     }
 
@@ -228,7 +228,7 @@ final class DynamoSelector {
             #endif
 
             func fd_set_ptr( _ p: UnsafeMutablePointer<Int32> ) -> UnsafeMutablePointer<fd_set> {
-                return unsafeBitCast(p, to: UnsafeMutablePointer<fd_set>.self)
+                return p.withMemoryRebound(to: fd_set.self, capacity: 1) { $0 }
             }
 
             if select( maxfd+1,

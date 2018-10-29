@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#11 $
+//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#12 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -28,7 +28,7 @@ open class ApplicationSwiftlet: _NSObject_, DynamoBrowserSwiftlet {
         Basic Application Swiftlets are identified by a prefix to their URL's path
      */
 
-    public init( pathPrefix: String ) {
+    @objc public init( pathPrefix: String ) {
         self.pathPrefix = pathPrefix
     }
 
@@ -150,7 +150,7 @@ open class SessionSwiftlet: ApplicationSwiftlet {
         Makea bindling between a pat pah prefix and a class the will be instantieted to process a session of requests
      */
 
-    public init( pathPrefix: String, appClass: SessionApplication.Type, cookieName: String = "DynamoSession" ) {
+    @objc public init( pathPrefix: String, appClass: SessionApplication.Type, cookieName: String = "DynamoSession" ) {
         self.appClass = appClass
         self.cookieName = cookieName
         super.init( pathPrefix: pathPrefix )
@@ -348,7 +348,7 @@ open class ServerPagesSwiftlet: ApplicationSwiftlet {
         Document root indicates where the ".ssp" bundles are to be found
      */
 
-    public init( documentRoot: String ) {
+    @objc public init( documentRoot: String ) {
         self.documentRoot = documentRoot
         super.init( pathPrefix: "/**.ssp" )
     }

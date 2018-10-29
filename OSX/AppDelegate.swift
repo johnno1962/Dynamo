@@ -71,11 +71,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, /*WebFrameLoadDelegate,*/ WK
         webView.mainFrame.load( URLRequest( url: URL( string: "http://localhost:\(serverPort)" )! ) )
     }
 
-    func webView( _ aWebView: WebView, didReceiveTitle aTitle: String, forFrame frame: WebFrame ) {
+    @objc func webView( _ aWebView: WebView, didReceiveTitle aTitle: String, forFrame frame: WebFrame ) {
         window.title = aTitle
     }
 
-    func webView( _ sender: WebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WebFrame ) {
+    @objc func webView( _ sender: WebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WebFrame ) {
         let alert = NSAlert()
         alert.messageText = "JavaScript message from page"
         alert.informativeText = message
