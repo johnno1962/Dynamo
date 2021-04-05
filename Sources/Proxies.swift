@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Proxies.swift#15 $
+//  $Id: //depot/Dynamo/Sources/Proxies.swift#16 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -175,7 +175,7 @@ final class DynamoSelector {
 
         while true {
 
-	    dynamoQueueLock.lock()
+            dynamoQueueLock.lock()
             while queue.count != 0 {
                 let (label,from,to) = queue.remove(at: 0)
                 to.label = "-> \(label)"
@@ -192,7 +192,7 @@ final class DynamoSelector {
                 readMap[from.clientSocket] = to
                 readMap[to.clientSocket] = from
             }
-	    dynamoQueueLock.unlock()
+            dynamoQueueLock.unlock()
 
             FD_ZERO( readFlags )
             FD_ZERO( writeFlags )
@@ -267,7 +267,9 @@ final class DynamoSelector {
             }
 
             for readFD in 0...maxfd {
-                if let writer = readMap[readFD], let reader = readMap[writer.clientSocket], FD_ISSET( readFD, readFlags ) || writer.readTotal != 0 && reader.hasBytesAvailable {
+                if let writer = readMap[readFD], let reader =
+                    readMap[writer.clientSocket], FD_ISSET( readFD, readFlags ) ||
+                        writer.readTotal != 0 && reader.hasBytesAvailable {
 
                     if let bytesRead = reader.receive( buffer: &buffer, count: buffer.count ) {
 
@@ -275,6 +277,7 @@ final class DynamoSelector {
 
                         if bytesRead <= 0 {
                             close( readFD )
+                            readMap[readFD] = nil
                         }
                         else {
                             writer.readBuffer.append( buffer, count: bytesRead )

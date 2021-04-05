@@ -148,6 +148,7 @@ func dynamoStrerror( _ msg: String ) {
 // MARK: Cached gethostbyname()
 
 private var hostAddressCache = [String:UnsafeMutablePointer<sockaddr>]()
+private var hostAddressLock = NSLock()
 
 /**
     Caching version of gethostbyname() returning a struct sockaddr for use in a connect() call
@@ -172,18 +173,19 @@ public func addressForHost( _ hostname: String, port: UInt16 ) -> sockaddr? {
     }
 
     if sockaddrTmp == nil {
-        let sockaddrPtr = sockaddr_cast(malloc(MemoryLayout<sockaddr>.size))
+        let sockaddrPtr = sockaddr_cast(calloc(MemoryLayout<sockaddr>.size, 1))
         switch addr.pointee.h_addrtype {
 
         case AF_INET:
-            let addr0 = sockaddr_in_cast(sockaddr_cast(addr.pointee.h_addr_list.pointee!))
+            let addr0 = addr.pointee.h_addr_list.pointee!
+                .withMemoryRebound(to: in_addr.self, capacity: 1) {$0}
             var ip4addr = sockaddr_in()
             #if !os(Linux)
             ip4addr.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
             #endif
             ip4addr.sin_family = sa_family_t((addr.pointee.h_addrtype))
             ip4addr.sin_port = htons( port )
-            ip4addr.sin_addr = (addr0.pointee.sin_addr)
+            ip4addr.sin_addr = (addr0.pointee)
             sockaddrPtr.pointee = sockaddr_cast(&ip4addr).pointee
 
         case AF_INET6: // TODO... completely untested
@@ -202,8 +204,10 @@ public func addressForHost( _ hostname: String, port: UInt16 ) -> sockaddr? {
             return nil
         }
 
+        hostAddressLock.lock()
         hostAddressCache[hostname] = sockaddrPtr
         sockaddrTmp = sockaddrPtr.pointee
+        hostAddressLock.unlock()
     }
     else {
         sockaddr_in_cast( &(sockaddrTmp!) ).pointee.sin_port = htons( port )

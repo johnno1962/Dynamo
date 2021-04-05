@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 20/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#12 $
+//  $Id: //depot/Dynamo/Sources/Swiftlets.swift#13 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -266,7 +266,7 @@ open class BundleSwiftlet: SessionSwiftlet {
         Bundle must contain a class with the @objc name "\(bundleNme)Swiftlet".
      */
 
-    public init?( pathPrefix: String, bundleName: String, bundlePath: String ) {
+    @objc public init?( pathPrefix: String, bundleName: String, bundlePath: String ) {
 
         self.bundleName = bundleName
         self.bundlePath = bundlePath
@@ -375,7 +375,7 @@ open class ServerPagesSwiftlet: ApplicationSwiftlet {
             if reloader == nil && fileManager.fileExists( atPath: sspFullPath ) {
                 if let nameStart = sspPath.range( of: "/",
                                                 options: NSString.CompareOptions.backwards )?.upperBound {
-                    let nameEnd = sspPath.characters.index(sspPath.endIndex, offsetBy: -4)
+                    let nameEnd = sspPath.index(sspPath.endIndex, offsetBy: -4)
                     let bundleName = sspPath.substring( with: (nameStart ..< nameEnd) )
                     if let reloader = BundleSwiftlet( pathPrefix: sspPath,
                                     bundleName: bundleName, bundlePath: sspFullPath ) {

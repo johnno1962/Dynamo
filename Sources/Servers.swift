@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Servers.swift#21 $
+//  $Id: //depot/Dynamo/Sources/Servers.swift#23 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -122,7 +122,7 @@ open class DynamoWebServer: _NSObject_ {
 
     open func httpConnectionHandler( _ clientSocket: Int32 ) {
 
-        if let httpClient = self.wrapConnection( clientSocket ) {
+        if let httpClient = wrapConnection( clientSocket ) {
 
             while httpClient.readHeaders() {
                 var processed = false
@@ -137,7 +137,6 @@ open class DynamoWebServer: _NSObject_ {
                     case .processedAndReusable:
                         httpClient.flush()
                         processed = true
-                        break
                     }
 
                     break
@@ -240,10 +239,32 @@ class DynamoSSLConnection: DynamoHTTPConnection {
         inputStream = readStream!.takeRetainedValue()
         outputStream = writeStream!.takeRetainedValue()
 
-        super.init( clientSocket: sslSocket )
-
         inputStream.open()
         outputStream.open()
+
+        super.init(clientSocket: sslSocket,
+        readFP: funopen(readStream!.toOpaque(), {
+            (cookie, buffer, count) in
+            let inputStream = Unmanaged<InputStream>
+                .fromOpaque(cookie!).takeUnretainedValue()
+//            Swift.print("READ", count)
+            return Int32(inputStream.read( buffer!.withMemoryRebound(to: UInt8.self, capacity: Int(count)) {$0}, maxLength: Int(count) ))
+        }, nil, nil, {cookie -> Int32 in
+            Unmanaged<InputStream>.fromOpaque(cookie!)
+                .takeUnretainedValue().close()
+            return 0
+        }),
+        writeFP: funopen(writeStream!.toOpaque(), nil, {
+            (cookie, buffer, count) in
+            let outputStream = Unmanaged<OutputStream>
+                .fromOpaque(cookie!).takeUnretainedValue()
+//            Swift.print("WRITE", count)
+            return Int32(outputStream.write( buffer!.withMemoryRebound(to: UInt8.self, capacity: Int(count)) {$0}, maxLength: Int(count) ))
+        }, nil, {cookie -> Int32 in
+            Unmanaged<OutputStream>.fromOpaque(cookie!)
+                .takeUnretainedValue().close()
+            return 0
+        }))
 
         if certs != nil {
             let sslSettings: [NSString:AnyObject] = [
@@ -252,8 +273,8 @@ class DynamoSSLConnection: DynamoHTTPConnection {
                 kCFStreamSSLCertificates: certs! as AnyObject
             ]
 
-            CFReadStreamSetProperty( inputStream, CFStreamPropertyKey(rawValue: kCFStreamPropertySSLSettings), sslSettings as CFTypeRef! )
-            CFWriteStreamSetProperty( outputStream, CFStreamPropertyKey(rawValue: kCFStreamPropertySSLSettings), sslSettings as CFTypeRef! )
+            CFReadStreamSetProperty( inputStream, CFStreamPropertyKey(rawValue: kCFStreamPropertySSLSettings), sslSettings as CFTypeRef )
+            CFWriteStreamSetProperty( outputStream, CFStreamPropertyKey(rawValue: kCFStreamPropertySSLSettings), sslSettings as CFTypeRef )
         }
     }
 
@@ -276,14 +297,5 @@ class DynamoSSLConnection: DynamoHTTPConnection {
     override func forward( buffer: UnsafeRawPointer, count: Int ) -> Int? {
         return outputStream.hasSpaceAvailable ? _write( buffer: buffer, count: count ) : nil
     }
-
-    deinit {
-        flush()
-        outputStream.close()
-        inputStream.close()
-    }
-
 }
-
 #endif
-

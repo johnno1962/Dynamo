@@ -29,8 +29,11 @@
                                                     "__DATA", "__objc_classlist", &size );
 #else
     uint64_t size = 0;
-    char *referencesSection = getsectdatafromheader_64((struct mach_header_64 *)info.dli_fbase,
-                                                       "__DATA", "__objc_classlist", &size );
+    char *referencesSection =
+        getsectdatafromheader_64((struct mach_header_64 *)info.dli_fbase,
+                                 "__DATA", "__objc_classlist", &size ) ?:
+        getsectdatafromheader_64((struct mach_header_64 *)info.dli_fbase,
+                                 "__DATA_CONST", "__objc_classlist", &size );
 #endif
 
     if ( referencesSection )

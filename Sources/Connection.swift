@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Connection.swift#17 $
+//  $Id: //depot/Dynamo/Sources/Connection.swift#18 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -36,7 +36,7 @@ var webDateFormatter: DateFormatter = {
 }()
 
 public extension String {
-    public func toInt() -> Int? {
+    func toInt() -> Int? {
         return Int(self)
     }
 }
@@ -49,6 +49,8 @@ public extension String {
 open class DynamoHTTPRequest: _NSObject_ {
 
     let clientSocket: Int32
+    let readFP: UnsafeMutablePointer<FILE>
+    let writeFP: UnsafeMutablePointer<FILE>
 
     /** reeust method received frmo browser */
     open var method = "GET"
@@ -83,12 +85,22 @@ open class DynamoHTTPRequest: _NSObject_ {
     var readTotal = 0
     var label = ""
 
-    /** initialise connection to browser with socket */
-    public init?( clientSocket: Int32 ) {
-
+    public init( clientSocket: Int32,
+                  readFP: UnsafeMutablePointer<FILE>,
+                  writeFP: UnsafeMutablePointer<FILE>) {
         self.clientSocket = clientSocket
-
+        self.readFP  = readFP
+        self.writeFP = writeFP
         super.init()
+    }
+
+    /** initialise connection to browser with socket */
+    @objc public convenience init?( clientSocket: Int32 ) {
+        guard clientSocket >= 0 else { return nil }
+
+        self.init(clientSocket: clientSocket,
+                  readFP: fdopen(clientSocket, "r"),
+                  writeFP: fdopen(clientSocket, "w"))
 
         if clientSocket >= 0 {
             #if !os(Linux)
@@ -119,7 +131,7 @@ open class DynamoHTTPRequest: _NSObject_ {
                     dynamoStrerror( "Could not obtain remote socket" )
                 }
                 else if connect( remoteSocket, &addr, addrLen ) < 0 {
-                    dynamoStrerror( "Could not connect to: \(host):\(port)" )
+                    dynamoStrerror( "Could not connect to: \(host):\(port) (\(String( cString: inet_ntoa(sockaddr_in_cast(&addr).pointee.sin_addr))))" )
                 }
                 else {
                     self.init( clientSocket: remoteSocket )
@@ -153,51 +165,18 @@ open class DynamoHTTPRequest: _NSObject_ {
 
     /** read the requested number of bytes */
     open func read( buffer: UnsafeMutableRawPointer, count: Int ) -> Int {
-        var pos = min( readBuffer.count, count )
-        if pos != 0 {
-            readBuffer.withUnsafeBytes({
-                (bytes: UnsafePointer<Int8>) -> Void in
-                memcpy( buffer, bytes, pos )
-                readBuffer.replaceSubrange(0..<pos, with: Data())
-            })
-        }
-        while pos < count {
-            let bytesRead = _read( buffer: buffer+pos, count: count-pos )
-            if bytesRead <= 0 {
-                break
-            }
-            pos += bytesRead
-        }
-        return pos
+        return fread(buffer, 1, count, readFP)
     }
 
-    var buffer = [UInt8](repeating: 0, count: 8192), newlineChar = Int32(10)
-
     func readLine() -> String? {
-        while true {
-            let bytes = readBuffer.withUnsafeBytes({
-                (bytes: UnsafePointer<Int8>) -> UnsafePointer<Int8> in
-                return bytes
-            })
-            let endOfLine = memchr( bytes, newlineChar, readBuffer.count )?.assumingMemoryBound(to: Int8.self)
-            if endOfLine != nil {
-                endOfLine![0] = 0
-                #if os(Linux)
-                if endOfLine![-1] == 13 {
-                    endOfLine![-1] = 0
-                }
-                #endif
-
-                let line = String( cString: bytes ).trimmingCharacters( in: CharacterSet.whitespacesAndNewlines )
-                readBuffer.replaceSubrange(0..<UnsafePointer<Int8>(endOfLine!)+1-bytes, with: Data())
-                return line
+        var buffer = [Int8](repeating: 0, count: 8192)
+        if fgets(&buffer, Int32(buffer.count), readFP) != nil {
+            let len = strlen(buffer)
+            buffer[len-1] = 0
+            if buffer[len-2] == UInt8(ascii: "\r") {
+                buffer[len-2] = 0
             }
-
-            let bytesRead = _read( buffer: UnsafeMutableRawPointer(mutating: buffer), count: buffer.count )
-            if bytesRead <= 0 {
-                break ///
-            }
-            readBuffer.append( buffer, count: bytesRead )
+            return String(cString: buffer)
         }
         return nil
     }
@@ -320,20 +299,13 @@ open class DynamoHTTPConnection: DynamoHTTPRequest {
     /** write the requested number of bytes */
     @discardableResult
     open func write( buffer: UnsafeRawPointer, count: Int ) -> Int {
-        var pos = 0
-        while pos < count {
-            let bytesWritten = _write( buffer: buffer+pos, count: count-pos )
-            if bytesWritten <= 0 {
-                break
-            }
-            pos += bytesWritten
-        }
-        return pos
+        return fwrite(buffer, 1, count, writeFP)
     }
 
     /** flush any buffered print() output to browser */
     open func flush() {
         // writes not buffered currently
+        fflush(writeFP)
     }
     
     /** have browser set cookie for this session/domain/path */
@@ -468,8 +440,10 @@ open class DynamoHTTPConnection: DynamoHTTPRequest {
     }
 
     deinit {
+//        Swift.print("deinit \(self)")
         flush()
-        close( clientSocket )
+        fclose(writeFP)
+        fclose(readFP)
+        close(clientSocket)
     }
-
 }
