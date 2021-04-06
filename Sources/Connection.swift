@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 22/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Connection.swift#18 $
+//  $Id: //depot/Dynamo/Sources/Connection.swift#19 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -96,11 +96,13 @@ open class DynamoHTTPRequest: _NSObject_ {
 
     /** initialise connection to browser with socket */
     @objc public convenience init?( clientSocket: Int32 ) {
-        guard clientSocket >= 0 else { return nil }
+        guard let readFP = fdopen(clientSocket, "r"),
+            let writeFP = fdopen(clientSocket, "w") else {
+                return nil
+        }
 
         self.init(clientSocket: clientSocket,
-                  readFP: fdopen(clientSocket, "r"),
-                  writeFP: fdopen(clientSocket, "w"))
+                  readFP: readFP, writeFP: writeFP)
 
         if clientSocket >= 0 {
             #if !os(Linux)

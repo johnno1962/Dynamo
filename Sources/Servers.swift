@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Servers.swift#23 $
+//  $Id: //depot/Dynamo/Sources/Servers.swift#24 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -165,10 +165,9 @@ public class DynamoWorkerServer : DynamoWebServer {
         super.init( portNumber, swiftlets: swiftlets, localhostOnly: localhostOnly )
 
         DispatchQueue.global(qos: .default).async {
-            var wcount = 0
+            var wcount = 0, status: Int32 = 0
             while true {
-                let status = __WAIT_STATUS()
-                if (wcount < workers || wait( status ) != 0) && fork() == 0 {
+                if (wcount < workers || wait( &status ) != 0) && fork() == 0 {
                     self.runConnectionHandler( self.httpConnectionHandler )
                 }
                 wcount += 1
