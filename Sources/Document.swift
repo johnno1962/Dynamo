@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/07/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/Document.swift#10 $
+//  $Id: //depot/Dynamo/Sources/Document.swift#11 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
@@ -133,15 +133,9 @@ open class DocumentSwiftlet: _NSObject_, DynamoSwiftlet {
             var fullPath = "\(documentRoot)/\(siteHost)"+(httpClient.url.path == "" ? "/" : httpClient.url.path)
 
             var isDir: ObjCBool = false
-            #if os(Linux)
-            if fileManager.fileExists( atPath: fullPath, isDirectory: &isDir ) && isDir {
-                fullPath = URL( fileURLWithPath: fullPath ).appendingPathComponent( "index.html" ).path
-            }
-            #else
             if fileManager.fileExists( atPath: fullPath, isDirectory: &isDir ) && isDir.boolValue {
                 fullPath = URL( fileURLWithPath: fullPath ).appendingPathComponent( "index.html" ).path
             }
-            #endif
 
             let ext = URL( fileURLWithPath: fullPath ).pathExtension
             httpClient.contentType = (ext != "" ? dynamoMimeTypeMapping[ext] : nil) ?? dynamoHtmlMimeType

@@ -213,7 +213,7 @@
 		BBEC4ABC1C14290800195C43 /* Servers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Servers.swift; path = Sources/Servers.swift; sourceTree = SOURCE_ROOT; };
 		BBEC4ABD1C14290800195C43 /* Swiftlets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Swiftlets.swift; path = Sources/Swiftlets.swift; sourceTree = SOURCE_ROOT; };
 		BBEC4AC51C14291D00195C43 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Sources/Info.plist; sourceTree = SOURCE_ROOT; };
-		BBEC4AC61C14291D00195C43 /* NSData+deflate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSData+deflate.m"; path = "Sources/NSData+deflate.m"; sourceTree = SOURCE_ROOT; };
+		BBEC4AC61C14291D00195C43 /* NSData+deflate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSData+deflate.m"; path = "Deflate/NSData+deflate.m"; sourceTree = SOURCE_ROOT; };
 		BBEC4AE51C142D6400195C43 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		BBEC4AE91C14358400195C43 /* Package.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */

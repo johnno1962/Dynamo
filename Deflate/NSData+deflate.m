@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 11/07/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Dynamo/Sources/NSData+deflate.m#1 $
+//  $Id: //depot/Dynamo/Deflate/NSData+deflate.m#1 $
 //
 //  Repo: https://github.com/johnno1962/Dynamo
 //
